@@ -3,7 +3,6 @@
 #include "root.hpp"
 #include "message.hpp"
 #include "user.hpp"
-#include <sstream>
 
 using namespace tamandua;
 
@@ -17,6 +16,7 @@ server::server(boost::asio::io_service &io_service, tcp::endpoint &endpoint, log
 	last_group_id_(0),
 	last_message_id_(0)
 {
+	Log(log_, "Adding root user");
 	add_participant_(std::shared_ptr<participant>(new root(shared_from_this())));
 	accept_connection_();
 }
@@ -52,14 +52,16 @@ void server::accept_connection_()
 		if (!ec)
 		{
 			Log(log_, "Accepted connection of new user from IP: ",socket_.remote_endpoint().address().to_string());
-			id_number_t uid = get_new_participant_id_();
-			std::stringstream stream;
-			stream << "User#" << uid;
-			std::shared_ptr<participant> usr(new user(shared_from_this(), stream.str(), std::move(socket_)));
-			add_participant_(usr);
-			send_init_message_(usr);
+			add_new_user_();
 		}
 	});
+}
+
+void server::add_new_user_()
+{
+	std::shared_ptr<participant> usr(new user(shared_from_this(), std::string(), std::move(socket_)));
+	add_participant_(usr);
+	send_init_message_(usr);
 }
 
 void server::add_participant_(std::shared_ptr<participant> pt)

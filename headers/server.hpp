@@ -42,6 +42,7 @@ namespace tamandua
 			id_number_t get_last_message_id() const;
 
 		private:
+			void add_new_user_();
 			void add_participant_(std::shared_ptr<participant>);
 			void add_group_(std::shared_ptr<group>);
 			void accept_connection_();

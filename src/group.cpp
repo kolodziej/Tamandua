@@ -1,5 +1,4 @@
 #include "group.hpp"
-#include "participant.hpp"
 #include "message_header.hpp"
 
 using namespace tamandua;
