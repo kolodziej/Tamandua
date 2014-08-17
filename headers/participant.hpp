@@ -8,8 +8,6 @@
 
 namespace tamandua
 {
-	class server;
-
 	class participant
 	{
 		private:

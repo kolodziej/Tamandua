@@ -1,8 +1,6 @@
 #ifndef TAMANDUA_SERVER_HPP
 #define TAMANDUA_SERVER_HPP
 #include "types.hpp"
-#include "participant.hpp"
-#include "group.hpp"
 #include "logger.hpp"
 #include <map>
 #include <string>
@@ -15,6 +13,9 @@ using boost::asio::ip::tcp;
 
 namespace tamandua
 {
+	class participant;
+	class group;
+
 	class server :
 		public std::enable_shared_from_this<server>
 	{
