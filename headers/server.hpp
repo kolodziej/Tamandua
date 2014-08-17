@@ -35,6 +35,7 @@ namespace tamandua
 			server(boost::asio::io_service &, tcp::endpoint &, logger &);
 			~server();
 
+			void start_server();
 			void process_message();
 
 			id_number_t get_last_participant_id() const;
@@ -42,6 +43,7 @@ namespace tamandua
 			id_number_t get_last_message_id() const;
 
 		private:
+			void add_root_();
 			void add_new_user_();
 			void add_participant_(std::shared_ptr<participant>);
 			void add_group_(std::shared_ptr<group>);

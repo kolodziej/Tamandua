@@ -9,20 +9,24 @@ using namespace tamandua;
 server::server(boost::asio::io_service &io_service, tcp::endpoint &endpoint, logger &log) :
 	io_service_(io_service),
 	acceptor_(io_service, endpoint),
-	socket_(io_service_),
+	socket_(io_service),
 	endpoint_(endpoint),
 	log_(log),
 	last_participant_id_(0),
 	last_group_id_(0),
 	last_message_id_(0)
-{
-	Log(log_, "Adding root user");
-	add_participant_(std::shared_ptr<participant>(new root(shared_from_this())));
-	accept_connection_();
-}
+{}
 
 server::~server()
 {}
+
+void server::start_server()
+{
+	Log(log_, "Starting server at: ");
+	add_root_();
+	Log(log_, "Root user joined!");
+	accept_connection_();
+}
 
 void server::process_message()
 {
@@ -55,6 +59,12 @@ void server::accept_connection_()
 			add_new_user_();
 		}
 	});
+	Log(log_, "Waiting for connection");
+}
+
+void server::add_root_()
+{
+	add_participant_(std::shared_ptr<participant>(new root(shared_from_this())));
 }
 
 void server::add_new_user_()

@@ -19,6 +19,7 @@ int main(int argc, char ** argv)
 	tcp::endpoint endpoint(tcp::v4(), stoi(port));
 	logger log(std::cerr);
 	server svr(io_service, endpoint, log);
+	svr.start_server();
 	io_service.run();
 	return 0;
 }
