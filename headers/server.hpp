@@ -34,6 +34,11 @@ namespace tamandua
 		public:
 			server(boost::asio::io_service &, tcp::endpoint &, logger &);
 			~server();
+		
+			static std::shared_ptr<server> factory(boost::asio::io_service &io_service, tcp::endpoint &endpoint, logger &log)
+			{
+				return std::make_shared<server>(io_service, endpoint, log);
+			}
 
 			void start_server();
 			void process_message();
