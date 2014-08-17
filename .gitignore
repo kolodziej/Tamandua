@@ -1,4 +1,5 @@
-{cli,gui}/bin/{Release,Debug}/*
+tests/tamandua_client
+tests/tamandua_server
 *.o
 *.a
 *.swp
