@@ -40,7 +40,7 @@ namespace tamandua
 			id_number_t get_id();
 			void send_message(message &);
 			bool is_next_message();
-			std::pair<std::string, std::string> get_next_message();
+			std::pair<std::string, message> get_next_message();
 
 		private:
 			void add_message_();

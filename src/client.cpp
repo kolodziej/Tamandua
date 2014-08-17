@@ -56,7 +56,7 @@ bool client::is_next_message()
 	return (messages_.empty()) ? false : true;
 }
 
-std::pair<std::string, std::string> client::get_next_message()
+std::pair<std::string, message> client::get_next_message()
 {
 	message msg = messages_.front();
 	messages_queue_lock_.lock();
@@ -67,7 +67,7 @@ std::pair<std::string, std::string> client::get_next_message()
 	if (iter != participants_.end())
 		author = (*iter).second;
 
-	return make_pair(author, msg.body);
+	return make_pair(author, msg);
 }
 
 void client::add_message_()
