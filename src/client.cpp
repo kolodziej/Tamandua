@@ -64,9 +64,7 @@ std::pair<std::string, std::string> client::get_next_message()
 	messages_queue_lock_.unlock();
 	auto iter = participants_.find(msg.header.author);
 	std::string author;
-	if (iter == participants_.end())
-		author = "__unknown";
-	else
+	if (iter != participants_.end())
 		author = (*iter).second;
 
 	return make_pair(author, msg.body);

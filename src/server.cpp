@@ -1,4 +1,5 @@
 #include "server.hpp"
+#include "logger.hpp"
 #include "root.hpp"
 #include "message.hpp"
 #include "user.hpp"
@@ -6,12 +7,15 @@
 
 using namespace tamandua;
 
-server::server(boost::asio::io_service &io_service, tcp::endpoint &endpoint, std::ostream &log_stream) :
+server::server(boost::asio::io_service &io_service, tcp::endpoint &endpoint, logger &log) :
 	io_service_(io_service),
 	acceptor_(io_service, endpoint),
 	socket_(io_service_),
 	endpoint_(endpoint),
-	log_stream_(log_stream)
+	log_(log),
+	last_participant_id_(0),
+	last_group_id_(0),
+	last_message_id_(0)
 {
 	add_participant(std::shared_ptr<participant>(new root));
 
@@ -28,6 +32,7 @@ void server::accept_connection()
 	{
 		if (!ec)
 		{
+			Log(log_, "Accepted connection of new user from IP: ",socket_.remote_endpoint().address().to_string());
 			id_number_t uid = get_new_participant_id();
 			std::stringstream stream;
 			stream << "User" << uid;
@@ -46,6 +51,7 @@ void server::process_message()
 void server::add_participant(std::shared_ptr<participant> pt)
 {
 	participants_.insert(std::pair<id_number_t, std::shared_ptr<participant>>(pt->get_id(), pt));
+	Log(log_, "Added new participant ID: ",pt->get_id());
 }
 
 void server::add_group(std::shared_ptr<group> gr)
@@ -92,5 +98,6 @@ void server::send_init_message_(std::shared_ptr<participant> usr)
 	header.size = usr->get_name().length();
 	std::string body = usr->get_name();
 	usr->deliver_message(message(header, body));
+	Log(log_, "Init message for user ID ",usr->get_id()," has been queued for delivery");
 	accept_connection();
 }

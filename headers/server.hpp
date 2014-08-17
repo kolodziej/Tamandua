@@ -3,12 +3,13 @@
 #include "types.hpp"
 #include "participant.hpp"
 #include "group.hpp"
-#include "log.hpp"
+#include "logger.hpp"
 #include <map>
 #include <string>
 #include <memory>
-#include <ostream>
 #include <boost/asio.hpp>
+
+#define ServerLog(...) stream_log(log_stream_, __VA_ARGS__)
 
 using boost::asio::ip::tcp;
 
@@ -21,7 +22,7 @@ namespace tamandua
 			tcp::acceptor acceptor_;
 			tcp::socket socket_;
 			tcp::endpoint endpoint_;
-			std::ostream &log_stream_;
+			logger &log_;
 
 			std::map<id_number_t, std::shared_ptr<participant>> participants_;
 			std::map<id_number_t, std::shared_ptr<group>> groups_;
@@ -29,7 +30,7 @@ namespace tamandua
 			id_number_t last_participant_id_, last_group_id_, last_message_id_;
 
 		public:
-			server(boost::asio::io_service &, tcp::endpoint &, std::ostream &);
+			server(boost::asio::io_service &, tcp::endpoint &, logger &);
 			~server();
 
 			void add_participant(std::shared_ptr<participant>);

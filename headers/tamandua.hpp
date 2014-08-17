@@ -11,3 +11,4 @@
 #include "message_buffer.hpp"
 #include "server.hpp"
 #include "client.hpp"
+#include "logger.hpp"

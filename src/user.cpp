@@ -5,6 +5,11 @@
 
 using namespace tamandua;
 
+std::string user::get_ip_address()
+{
+	return socket_.remote_endpoint().address().to_string();
+}
+
 void user::read_message()
 {
 	read_message_header_();
@@ -41,7 +46,6 @@ void user::read_message_body_()
 			if (!ec)
 			{
 				read_message_.body = std::string(buffer.get(), read_message_.header.size);
-				std::cout << read_message_.body << "\n";
 				read_message();
 			}
 		});

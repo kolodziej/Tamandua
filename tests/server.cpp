@@ -17,7 +17,8 @@ int main(int argc, char ** argv)
 	std::string port(argv[1]);
 	boost::asio::io_service io_service;
 	tcp::endpoint endpoint(tcp::v4(), stoi(port));
-	server svr(io_service, endpoint);
+	logger log(std::cerr);
+	server svr(io_service, endpoint, log);
 	io_service.run();
 	return 0;
 }

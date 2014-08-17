@@ -25,10 +25,17 @@ int main(int argc, char ** argv)
 
 	std::thread io_service_thread([&io_service]() { io_service.run(); });
 	std::thread display_msg_thread([&cl]() {
-		if (cl.is_next_message())
+		bool running = true;
+		while (running)
 		{
-			auto msg = cl.get_next_message();
-			std::cout << "<" << msg.first << ">: " << msg.second << "\n";
+			if (cl.is_next_message())
+			{
+				auto msg = cl.get_next_message();
+				if (msg.first.empty())
+					std::cout << "\e[1;33m" << msg.second << "\e[0m\n";
+				else
+					std::cout << "<" << msg.first << ">: " << msg.second << "\n";
+			}
 		}
 	});
 	std::string msg_body;

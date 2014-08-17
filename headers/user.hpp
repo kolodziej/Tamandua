@@ -24,6 +24,8 @@ namespace tamandua
 		public:
 			user(id_number_t id, std::string & name, tcp::socket socket) : participant(id, name), socket_(std::move(socket)) {}
 			user(id_number_t id, std::string && name, tcp::socket socket) : participant(id, name), socket_(std::move(socket)) {}
+
+			std::string get_ip_address();
 			
 			virtual void read_message();
 			virtual void deliver_message(const message&);
