@@ -30,11 +30,26 @@ int main(int argc, char ** argv)
 		{
 			if (cl.is_next_message())
 			{
-				auto msg = cl.get_next_message();
-				if (msg.first.empty())
-					std::cout << "\e[1;33m" << msg.second << "\e[0m\n";
+				auto msg_pair = cl.get_next_message();
+				std::string &author = msg_pair.first;
+				message &msg = msg_pair.second;
+				if (msg.header.type != message_type::standard_message)
+				{
+					switch (msg.header.type)
+					{
+						case message_type::info_message:
+							std::cout << "\e[1;33m";
+							break;
+
+						case message_type::error_message:
+							std::cout << "\e[1;91m";
+							break;
+
+					}
+					std::cout << msg.body << "\e[0m\n";
+				}
 				else
-					std::cout << "<" << msg.first << ">: " << msg.second << "\n";
+					std::cout << "<" << author << ">: " << msg.body << "\n";
 			}
 		}
 	});

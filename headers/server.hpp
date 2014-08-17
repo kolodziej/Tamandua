@@ -15,7 +15,8 @@ using boost::asio::ip::tcp;
 
 namespace tamandua
 {
-	class server
+	class server :
+		public std::enable_shared_from_this<server>
 	{
 		private:
 			boost::asio::io_service &io_service_;
