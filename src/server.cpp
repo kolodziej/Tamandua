@@ -17,8 +17,7 @@ server::server(boost::asio::io_service &io_service, tcp::endpoint &endpoint, log
 	last_group_id_(0),
 	last_message_id_(0)
 {
-	add_participant_(std::shared_ptr<participant>(new root));
-
+	add_participant_(std::shared_ptr<participant>(new root(shared_from_this())));
 	accept_connection_();
 }
 
@@ -55,8 +54,8 @@ void server::accept_connection_()
 			Log(log_, "Accepted connection of new user from IP: ",socket_.remote_endpoint().address().to_string());
 			id_number_t uid = get_new_participant_id_();
 			std::stringstream stream;
-			stream << "User" << uid;
-			std::shared_ptr<participant> usr(new user(uid, stream.str(), std::move(socket_)));
+			stream << "User#" << uid;
+			std::shared_ptr<participant> usr(new user(shared_from_this(), stream.str(), std::move(socket_)));
 			add_participant_(usr);
 			send_init_message_(usr);
 		}
