@@ -1,0 +1,4 @@
+{cli,gui}/bin/{Release,Debug}/*
+*.o
+*.a
+*.swp
