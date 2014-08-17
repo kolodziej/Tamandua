@@ -47,7 +47,9 @@ namespace tamandua
 			void send_init_message_(std::shared_ptr<participant>);
 			void send_to_all_(message_type, std::string);
 
+			friend class participant;
 			id_number_t get_new_participant_id_();
+			friend class group;
 			id_number_t get_new_group_id_();
 			id_number_t get_new_message_id_();
 	};

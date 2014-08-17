@@ -89,15 +89,15 @@ void server::send_init_message_(std::shared_ptr<participant> usr)
 
 id_number_t server::get_new_participant_id_()
 {
-	return ++last_participant_id_;
+	return last_participant_id_++;
 }
 
 id_number_t server::get_new_group_id_()
 {
-	return ++last_group_id_;
+	return last_group_id_++;
 }
 
 id_number_t server::get_new_message_id_()
 {
-	return ++last_message_id_;
+	return last_message_id_++;
 }

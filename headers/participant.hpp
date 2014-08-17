@@ -3,19 +3,23 @@
 #include "types.hpp"
 #include "message.hpp"
 #include <string>
+#include <memory>
 #include <utility>
 
 namespace tamandua
 {
+	class server;
+
 	class participant
 	{
 		private:
 			id_number_t id_;
 			std::string name_;
+			std::shared_ptr<server> server_;
 
 		public:
-			participant(id_number_t id, std::string & name) : id_(id), name_(std::move(name)) {};
-			participant(id_number_t id, std::string && name) : id_(id), name_(name) {};
+			participant(std::shared_ptr<server> svr, std::string & name) : id_(svr->get_new_participant_id_()), name_(std::move(name)), server_(svr) {};
+			participant(std::shared_ptr<server> svr, std::string && name) : id_(svr->get_new_participant_id_()), name_(name), server_(svr) {};
 
 			id_number_t get_id() const;
 			std::string get_name();
