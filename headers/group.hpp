@@ -1,6 +1,7 @@
 #ifndef TAMANDUA_GROUP_HPP
 #define TAMANDUA_GROUP_HPP
 #include "types.hpp"
+#include "server.hpp"
 #include "participant.hpp"
 #include "message.hpp"
 #include <string>

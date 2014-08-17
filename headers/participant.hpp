@@ -1,5 +1,6 @@
 #ifndef TAMANDUA_PARTICIPANT_HPP
 #define TAMANDUA_PARTICIPANT_HPP
+#include "server.hpp"
 #include "types.hpp"
 #include "message.hpp"
 #include <string>
