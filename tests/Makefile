@@ -2,9 +2,9 @@ CXX=g++
 CXXFLAGS=-std=c++11 -I../headers -L../lib/Debug -g -DDEBUG
 LIBS=-lboost_system
 SERVER_TARGET=tamandua_server
-SERVER_OBJS=server.o
+SERVER_OBJS=server_main.o
 CLIENT_TARGET=tamandua_client
-CLIENT_OBJS=client.o
+CLIENT_OBJS=client_main.o
 
 $(SERVER_OBJS): %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@

@@ -18,8 +18,8 @@ int main(int argc, char ** argv)
 	boost::asio::io_service io_service;
 	tcp::endpoint endpoint(tcp::v4(), stoi(port));
 	logger log(std::cerr);
-	std::shared_ptr<server> svr = server::factory(io_service, endpoint, log);
-	svr->start_server();
+	server svr(io_service, endpoint, log);
+	svr.start_server();
 	io_service.run();
 	return 0;
 }
