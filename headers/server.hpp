@@ -39,6 +39,9 @@ namespace tamandua
 			void add_participant(std::shared_ptr<participant>);
 			void add_group(std::shared_ptr<group>);
 
+			std::shared_ptr<participant> get_participant(id_number_t);
+			std::shared_ptr<group> get_group(id_number_t);
+
 			id_number_t get_last_participant_id() const;
 			id_number_t get_last_group_id() const;
 			id_number_t get_last_message_id() const;
