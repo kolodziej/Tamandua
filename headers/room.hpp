@@ -12,8 +12,8 @@ namespace tamandua
 			std::string name_;
 
 		public:
-			room(id_number_t id, std::string & name) : group(id), name_(std::move(name)) {}
-			room(id_number_t id, std::string && name) : group(id), name_(name) {}
+			room(server &svr, std::string & name) : group(svr), name_(std::move(name)) {}
+			room(server &svr, std::string && name) : group(svr), name_(name) {}
 
 			virtual bool is_hidden();
 	};

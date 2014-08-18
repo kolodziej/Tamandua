@@ -15,9 +15,10 @@ namespace tamandua
 		private:
 			id_number_t id_;
 			std::vector<std::shared_ptr<participant>> participants_;
+			server &server_;
 		
 		public:
-			group(id_number_t id) : id_(id) {}
+			group(server &svr) : id_(svr.get_new_group_id_()) {}
 
 			id_number_t get_id();
 			virtual void join_participant(std::shared_ptr<participant>);
