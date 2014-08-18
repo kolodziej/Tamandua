@@ -33,6 +33,18 @@ void server::process_message()
 
 }
 
+void server::add_participant(std::shared_ptr<participant> pt)
+{
+	participants_.insert(std::pair<id_number_t, std::shared_ptr<participant>>(pt->get_id(), pt));
+	Log(log_, "Added new participant ID: ",pt->get_id());
+}
+
+void server::add_group(std::shared_ptr<group> gr)
+{
+	groups_.insert(std::pair<id_number_t, std::shared_ptr<group>>(gr->get_id(), gr));
+}
+
+
 id_number_t server::get_last_participant_id() const
 {
 	return last_participant_id_;
@@ -64,25 +76,14 @@ void server::accept_connection_()
 
 void server::add_root_()
 {
-	add_participant_(std::shared_ptr<participant>(new root(shared_from_this())));
+	add_participant_(std::shared_ptr<participant>(new root(*this)));
 }
 
 void server::add_new_user_()
 {
-	std::shared_ptr<participant> usr(new user(shared_from_this(), std::string(), std::move(socket_)));
+	std::shared_ptr<participant> usr(new user(*this, std::string(), std::move(socket_)));
 	add_participant_(usr);
 	send_init_message_(usr);
-}
-
-void server::add_participant_(std::shared_ptr<participant> pt)
-{
-	participants_.insert(std::pair<id_number_t, std::shared_ptr<participant>>(pt->get_id(), pt));
-	Log(log_, "Added new participant ID: ",pt->get_id());
-}
-
-void server::add_group_(std::shared_ptr<group> gr)
-{
-	groups_.insert(std::pair<id_number_t, std::shared_ptr<group>>(gr->get_id(), gr));
 }
 
 void server::send_init_message_(std::shared_ptr<participant> usr)

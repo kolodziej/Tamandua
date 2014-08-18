@@ -16,8 +16,7 @@ namespace tamandua
 	class participant;
 	class group;
 
-	class server :
-		public std::enable_shared_from_this<server>
+	class server
 	{
 		private:
 			boost::asio::io_service &io_service_;
@@ -35,13 +34,11 @@ namespace tamandua
 			server(boost::asio::io_service &, tcp::endpoint &, logger &);
 			~server();
 		
-			static std::shared_ptr<server> factory(boost::asio::io_service &io_service, tcp::endpoint &endpoint, logger &log)
-			{
-				return std::make_shared<server>(io_service, endpoint, log);
-			}
-
 			void start_server();
 			void process_message();
+
+			void add_participant(std::shared_ptr<participant>);
+			void add_group(std::shared_ptr<group>);
 
 			id_number_t get_last_participant_id() const;
 			id_number_t get_last_group_id() const;
@@ -50,8 +47,6 @@ namespace tamandua
 		private:
 			void add_root_();
 			void add_new_user_();
-			void add_participant_(std::shared_ptr<participant>);
-			void add_group_(std::shared_ptr<group>);
 			void accept_connection_();
 			void send_init_message_(std::shared_ptr<participant>);
 			void send_to_all_(message_type, std::string);
