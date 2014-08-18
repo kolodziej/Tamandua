@@ -3,6 +3,7 @@
 #include "root.hpp"
 #include "message.hpp"
 #include "user.hpp"
+#include <sstream>
 
 using namespace tamandua;
 
@@ -112,4 +113,11 @@ id_number_t server::get_new_group_id_()
 id_number_t server::get_new_message_id_()
 {
 	return last_message_id_++;
+}
+
+std::string server::get_default_user_name_(id_number_t id)
+{
+	std::stringstream username;
+	username << "User#" << id;
+	return username.str();
 }

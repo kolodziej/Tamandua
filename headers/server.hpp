@@ -56,6 +56,8 @@ namespace tamandua
 			friend class group;
 			id_number_t get_new_group_id_();
 			id_number_t get_new_message_id_();
+
+			std::string get_default_user_name_(id_number_t);
 	};
 }
 
