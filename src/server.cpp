@@ -76,13 +76,13 @@ void server::accept_connection_()
 
 void server::add_root_()
 {
-	add_participant_(std::shared_ptr<participant>(new root(*this)));
+	add_participant(std::shared_ptr<participant>(new root(*this)));
 }
 
 void server::add_new_user_()
 {
 	std::shared_ptr<participant> usr(new user(*this, std::string(), std::move(socket_)));
-	add_participant_(usr);
+	add_participant(usr);
 	send_init_message_(usr);
 }
 
