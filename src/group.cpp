@@ -8,6 +8,11 @@ id_number_t group::get_id()
 	return id_;
 }
 
+std::string group::get_name()
+{
+	return std::string("[untitled group]");
+}
+
 void group::join_participant(std::shared_ptr<participant> participant)
 {
 	participants_.push_back(participant);

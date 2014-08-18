@@ -21,6 +21,7 @@ namespace tamandua
 			group(server &svr) : id_(svr.get_new_group_id_()), server_(svr) {}
 
 			id_number_t get_id();
+			std::string get_name();
 			virtual void join_participant(std::shared_ptr<participant>);
 			virtual void deliver_message(const message&);
 			virtual bool is_hidden() = 0;
