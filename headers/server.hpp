@@ -50,6 +50,8 @@ namespace tamandua
 			void add_new_user_();
 			void accept_connection_();
 			void send_init_message_(std::shared_ptr<participant>);
+			void send_rooms_list_();
+			void send_participants_list_();
 			void send_to_all_(message_type, std::string);
 
 			friend class participant;
@@ -59,6 +61,8 @@ namespace tamandua
 			id_number_t get_new_message_id_();
 
 			std::string get_default_user_name_(id_number_t);
+			std::string generate_rooms_list_();
+			std::string generate_participants_list_();
 	};
 }
 

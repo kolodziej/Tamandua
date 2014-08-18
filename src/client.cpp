@@ -43,9 +43,6 @@ void client::send_message(message &msg)
 			if (ec)
 			{
 				add_message_(message_type::error_message, std::string("Error while sending message!"));
-			} else
-			{
-				std::cout << "Message sent!\n";
 			}
 		});
 }
@@ -150,10 +147,12 @@ void client::set_participants_list_()
 {
 	std::stringstream stream(read_message_.body);
 	std::string record, id, name;
-	while (stream.eof() == false)
+	while (stream)
 	{
 		getline(stream, record, ';');
 		size_t colon_pos = record.find_first_of(':');
+		if (colon_pos == std::string::npos)
+			break;
 		id = record.substr(0, colon_pos);
 		name = record.substr(colon_pos + 1);
 		participants_.insert(make_pair(stoull(id), name));
@@ -164,12 +163,14 @@ void client::set_rooms_list_()
 {
 	std::stringstream stream(read_message_.body);
 	std::string record, id, name;
-	while (stream.eof() == false)
+	while (stream)
 	{
 		getline(stream, record, ';');
 		size_t colon_pos = record.find_first_of(':');
+		if (colon_pos == std::string::npos)
+			break;
 		id = record.substr(0, colon_pos);
 		name = record.substr(colon_pos + 1);
-		participants_.insert(make_pair(stoull(id), name));
+		rooms_.insert(make_pair(stoull(id), name));
 	}
 }

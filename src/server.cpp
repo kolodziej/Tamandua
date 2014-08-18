@@ -84,7 +84,7 @@ void server::accept_connection_()
 
 void server::add_root_()
 {
-	add_participant(std::shared_ptr<participant>(new root(*this)));
+	add_participant(std::shared_ptr<participant>(new root(*this, "dd"))); // test password
 }
 
 void server::add_new_user_()
@@ -103,8 +103,34 @@ void server::send_init_message_(std::shared_ptr<participant> usr)
 	header.size = usr->get_name().length();
 	std::string body = usr->get_name();
 	usr->deliver_message(message(header, body));
-	Log(log_, "Init message for user ID ",usr->get_id()," has been queued for delivery");
+
+	send_participants_list_();
+	send_rooms_list_();
 	accept_connection_();
+}
+
+void server::send_rooms_list_()
+{
+	message_header header;
+	header.id = get_new_message_id_();
+	header.author = 0;
+	header.type = message_type::rooms_list;
+	std::string rooms_list = generate_rooms_list_();
+	header.size = rooms_list.size();
+	for (auto &part : participants_)
+		part.second->deliver_message(message(header, rooms_list));
+}
+
+void server::send_participants_list_()
+{
+	message_header header;
+	header.id = get_new_message_id_();
+	header.author = 0;
+	header.type = message_type::participants_list;
+	std::string pt_list = generate_participants_list_();
+	header.size = pt_list.size();
+	for (auto &part : participants_)
+		part.second->deliver_message(message(header, pt_list));
 }
 
 id_number_t server::get_new_participant_id_()
@@ -127,4 +153,27 @@ std::string server::get_default_user_name_(id_number_t id)
 	std::stringstream username;
 	username << "User#" << id;
 	return username.str();
+}
+
+std::string server::generate_rooms_list_()
+{
+	std::stringstream stream;
+	for (auto &room : groups_)
+	{
+		if (room.second->is_hidden() == false)
+			stream << room.first << ":" << room.second->get_name() << ";";
+	}
+
+	return stream.str();
+}
+
+std::string server::generate_participants_list_()
+{
+	std::stringstream stream;
+	for(auto &part : participants_)
+	{
+		if (part.second->is_hidden() == false)
+			stream << part.first << ":" << part.second->get_name() << ";";
+	}
+	return stream.str();
 }
