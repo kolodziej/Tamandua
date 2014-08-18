@@ -22,8 +22,8 @@ namespace tamandua
 			std::shared_ptr<group> group_;
 			message read_message_;
 		public:
-			user(std::shared_ptr<server> svr, std::string & name, tcp::socket socket) : participant(svr, name), socket_(std::move(socket)) {}
-			user(std::shared_ptr<server> svr, std::string && name, tcp::socket socket) : participant(svr, name), socket_(std::move(socket)) {}
+			user(server &svr, std::string & name, tcp::socket socket) : participant(svr, name), socket_(std::move(socket)) {}
+			user(server &svr, std::string && name, tcp::socket socket) : participant(svr, name), socket_(std::move(socket)) {}
 
 			std::string get_ip_address();
 			

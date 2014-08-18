@@ -18,7 +18,7 @@ namespace tamandua
 			server &server_;
 		
 		public:
-			group(server &svr) : id_(svr.get_new_group_id_()) {}
+			group(server &svr) : id_(svr.get_new_group_id_()), server_(svr) {}
 
 			id_number_t get_id();
 			virtual void join_participant(std::shared_ptr<participant>);
