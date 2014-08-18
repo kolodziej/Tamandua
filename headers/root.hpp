@@ -9,7 +9,7 @@ namespace tamandua
 		public hidden_participant
 	{
 		public:
-			root(std::shared_ptr<server> svr) : hidden_participant(svr, std::string("root")) {}
+			root(server &svr) : hidden_participant(svr, std::string("root")) {}
 			
 			void read_message();
 			void deliver_message(const message&);
