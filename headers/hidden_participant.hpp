@@ -1,7 +1,6 @@
 #ifndef TAMANDUA_HIDDEN_PARTICIPANT_HPP
 #define TAMANDUA_HIDDEN_PARTICIPANT_HPP
 #include "participant.hpp"
-#include <memory>
 
 namespace tamandua
 {
@@ -9,8 +8,8 @@ namespace tamandua
 		public participant
 	{
 		public:
-			hidden_participant(std::shared_ptr<server> svr, std::string & name) : participant(svr, name) {}
-			hidden_participant(std::shared_ptr<server> svr, std::string && name) : participant(svr, name) {}
+			hidden_participant(server &svr, std::string & name) : participant(svr, name) {}
+			hidden_participant(server &svr, std::string && name) : participant(svr, name) {}
 
 			virtual void deliver_message(const message&) = 0;
 			bool is_hidden();
