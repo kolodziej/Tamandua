@@ -18,7 +18,7 @@ void user::read_message()
 void user::deliver_message(const message &message)
 {
 	bool start_sending = messages_queue_.empty();
-	messages_queue_.push_back(std::move(message));
+	messages_queue_.push_back(message);
 	if (start_sending)
 		send_messages_();
 }
