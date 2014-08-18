@@ -13,6 +13,11 @@ std::string participant::get_name()
 	return name_;
 }
 
+server & participant::get_server()
+{
+	return server_;
+}
+
 void participant::set_name(std::string & name)
 {
 	name_ = std::move(name);

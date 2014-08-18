@@ -16,11 +16,20 @@ namespace tamandua
 			server &server_;
 
 		public:
-			participant(server &svr, std::string & name) : id_(svr.get_new_participant_id_()), name_(std::move(name)), server_(svr) {};
-			participant(server &svr, std::string && name) : id_(svr.get_new_participant_id_()), name_(name), server_(svr) {};
+			participant(server &svr, std::string & name) : id_(svr.get_new_participant_id_()), name_(std::move(name)), server_(svr)
+			{
+				if (name_.empty())
+					name_ = svr.get_default_user_name_(id_);
+			};
+			participant(server &svr, std::string && name) : id_(svr.get_new_participant_id_()), name_(name), server_(svr)
+			{
+				if (name_.empty())
+					name_ = svr.get_default_user_name_(id_);
+			};
 
 			id_number_t get_id() const;
 			std::string get_name();
+			server & get_server();
 			void set_name(std::string &);
 			void set_name(std::string &&);
 			virtual void read_message() = 0;

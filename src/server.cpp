@@ -29,9 +29,11 @@ void server::start_server()
 	accept_connection_();
 }
 
-void server::process_message()
+void server::process_message(message &msg)
 {
-
+	Log(log_, "Received message to processing form user ID ", msg.header.author);
+	for (auto &part : participants_)
+		part.second->deliver_message(msg);
 }
 
 void server::add_participant(std::shared_ptr<participant> pt)
@@ -59,6 +61,11 @@ id_number_t server::get_last_group_id() const
 id_number_t server::get_last_message_id() const
 {
 	return last_message_id_;
+}
+
+logger & server::get_logger()
+{
+	return log_;
 }
 
 void server::accept_connection_()

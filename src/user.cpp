@@ -46,9 +46,19 @@ void user::read_message_body_()
 			if (!ec)
 			{
 				read_message_.body = std::string(buffer.get(), read_message_.header.size);
-				read_message();
+				Log(get_server().get_logger(), "User ", get_id(), " received a message!");
+				process_message_();
+			} else
+			{
+				Error(get_server().get_logger(), "User ", get_id(), " failed receiveg a message!");
 			}
 		});
+}
+
+void user::process_message_()
+{
+	get_server().process_message(read_message_);
+	read_message();
 }
 
 void user::send_messages_()

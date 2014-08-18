@@ -2,12 +2,11 @@
 #define TAMANDUA_SERVER_HPP
 #include "types.hpp"
 #include "logger.hpp"
+#include "message.hpp"
 #include <map>
 #include <string>
 #include <memory>
 #include <boost/asio.hpp>
-
-#define ServerLog(...) stream_log(log_stream_, __VA_ARGS__)
 
 using boost::asio::ip::tcp;
 
@@ -35,7 +34,7 @@ namespace tamandua
 			~server();
 		
 			void start_server();
-			void process_message();
+			void process_message(message &);
 
 			void add_participant(std::shared_ptr<participant>);
 			void add_group(std::shared_ptr<group>);
@@ -43,6 +42,8 @@ namespace tamandua
 			id_number_t get_last_participant_id() const;
 			id_number_t get_last_group_id() const;
 			id_number_t get_last_message_id() const;
+
+			logger & get_logger();
 
 		private:
 			void add_root_();
