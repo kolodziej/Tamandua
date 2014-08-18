@@ -10,7 +10,7 @@ namespace tamandua
 		id_number_t id;
 		id_number_t author;
 		message_type type;
-		size_t size;
+		message_size size;
 	};
 }
 

@@ -2,6 +2,7 @@
 #define TYPES_HPP
 
 typedef unsigned long long int id_number_t;
+typedef unsigned long long int message_size;
 typedef enum {
 	init_message = 0,
 	participants_list = 1,
