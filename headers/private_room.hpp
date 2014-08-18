@@ -8,7 +8,7 @@ namespace tamandua
 		public room
 	{
 		public:
-			private_room(server &srv, std::string & name) : room(svr, name) {}
+			private_room(server &svr, std::string & name) : room(svr, name) {}
 			private_room(server &svr, std::string && name) : room(svr, name) {}
 
 			virtual bool is_hidden();
