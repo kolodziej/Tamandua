@@ -59,6 +59,7 @@ void user::cmd_room(std::string &params)
 		deliver_message(msg);
 	} else
 	{
+		group_ = room_ptr;
 		std::stringstream stream;
 		stream << "Your room is now: " << room_name;
 		message msg(message_type::info_message, stream.str());
