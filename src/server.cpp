@@ -7,12 +7,13 @@
 
 using namespace tamandua;
 
-server::server(boost::asio::io_service &io_service, tcp::endpoint &endpoint, logger &log) :
+server::server(boost::asio::io_service &io_service, tcp::endpoint &endpoint, logger &log, message_interpreter &interp) :
 	io_service_(io_service),
 	acceptor_(io_service, endpoint),
 	socket_(io_service),
 	endpoint_(endpoint),
 	log_(log),
+	interpreter_(interp),
 	last_participant_id_(0),
 	last_group_id_(0),
 	last_message_id_(0)
@@ -66,6 +67,11 @@ id_number_t server::get_last_message_id() const
 logger & server::get_logger()
 {
 	return log_;
+}
+
+user_message_interpreter & get_interpreter()
+{
+	return interpreter_;
 }
 
 void server::accept_connection_()

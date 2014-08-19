@@ -3,6 +3,7 @@
 #include "types.hpp"
 #include "logger.hpp"
 #include "message.hpp"
+#include "user_message_interpreter.hpp"
 #include <map>
 #include <string>
 #include <memory>
@@ -23,6 +24,7 @@ namespace tamandua
 			tcp::socket socket_;
 			tcp::endpoint endpoint_;
 			logger &log_;
+			user_message_interpreter &interpreter_;
 
 			std::map<id_number_t, std::shared_ptr<participant>> participants_;
 			std::map<id_number_t, std::shared_ptr<group>> groups_;
@@ -30,7 +32,7 @@ namespace tamandua
 			id_number_t last_participant_id_, last_group_id_, last_message_id_;
 
 		public:
-			server(boost::asio::io_service &, tcp::endpoint &, logger &);
+			server(boost::asio::io_service &, tcp::endpoint &, logger &, user_message_interpreter &);
 			~server();
 		
 			void start_server();
@@ -47,6 +49,7 @@ namespace tamandua
 			id_number_t get_last_message_id() const;
 
 			logger & get_logger();
+			user_message_interpreter & get_interpreter();
 
 		private:
 			void add_root_();

@@ -3,31 +3,62 @@
 #include "types.hpp"
 #include "message.hpp"
 #include <string>
+#include <sstream>
 #include <map>
 
-#define DECLARE_FUNCTION_MAP(x) std::map<std::string, void (x::*)(user &, std::string &)> function_map_;
-#define BEGIN_FUNCTION_MAP(x) void x::init_function_map_() {
-#define ADD_FUNCTION(x,y) function_map_.insert(std::make_pair(x, y));
-#define ADD_FAIL_COMMAND_FUNCTION(y) function_map_.insert(std::make_pair(std::string("_fail_command"), y));
-#define END_FUNCTION_MAP() } 
+#define ADD_FUNCTION(x,y) function_map_.insert(std::make_pair(x, y))
 
 namespace tamandua
 {
+	template <typename T, char S>
 	class message_interpreter
 	{
 		private:
-			server &server_;
-			DECLARE_FUNCTION_MAP(message_interpreter)
+			std::map<std::string, void (T::*)(std::string &)> function_map_;
+
 		public:
-			message_interpreter(server &svr) :
-				server_(svr)
+			enum processing_status {
+				bad_cmd = 0,
+				cmd_processed = 1,
+				std_msg = 2
+			};
+
+			message_interpreter()
 			{
 				init_function_map_();
 			}
 
-			void process_message(user &, message &);
+			virtual processing_status process_message(T &u, message &msg)
+			{
+				std::string &bd = msg.body;
+				if (msg.body[0] != S)
+				{
+					if (process_command_(u, msg))
+						return cmd_processed;
+					else
+						return bad_cmd;
+				}
+
+				return std_msg;
+			}
+
 		private:
-			void init_function_map_();
+			virtual bool process_command_(T &u, message &msg)
+			{
+				std::string command, params;
+				std::stringstream stream(msg.body.substr(1));
+				stream >> command;
+				auto it = function_map_.find(command);
+				if (it == function_map_.end())
+				{
+					return false;
+				}
+				params = stream.str().substr(command.size() + 1);
+				(u.*it)(params);
+
+				return true;
+			}
+			virtual void init_function_map_() = 0;
 
 	};
 }
