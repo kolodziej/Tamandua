@@ -60,11 +60,75 @@ void user::cmd_room(std::string &params)
 	} else
 	{
 		group_ = room_ptr;
+		group_->join_participant(shared_from_this());
 		std::stringstream stream;
 		stream << "Your room is now: " << room_name;
 		message msg(message_type::info_message, stream.str());
 		deliver_message(msg);
 	}
+}
+
+void user::cmd_proom(std::string &params)
+{
+	std::stringstream params_stream(params);
+	std::string room_name, password;
+	params_stream >> room_name >> password;
+	auto room_ptr = get_server().get_group(room_name);
+	if (room_ptr == nullptr || room_ptr->is_hidden() == false)
+	{
+		std::stringstream stream;
+		stream << "Private room called " << room_name << " does not exist!";
+		message msg(message_type::error_message, stream.str());
+		deliver_message(msg);
+	} else
+	{
+		std::shared_ptr<private_room> proom_ptr = dynamic_pointer_cast<private_room>(room_ptr);
+		if (proom_ptr->check_password(password))
+		{
+			group_ = room_ptr;
+			room_ptr->join_participant(shared_from_this());
+			std::stringstream stream;
+			stream << "You are now in private room: " << room_name;
+			message msg(message_type::info_message, stream.str());
+			deliver_message(msg);
+		} else
+		{
+			message msg(message_type::error_message, "Wrond password!");
+			deliver_message(msg);
+		}
+	}
+}
+
+void user::cmd_nick(std::string &params)
+{
+	std::stringstream params_stream(params);
+	std::string newname, oldname = get_name();
+	params_stream >> newname;
+	if (get_server().is_participant_name_available(newname))
+	{
+		auto it = participants_.find(oldname);
+		std::shared_ptr<participant> ptr = (*it).second;
+		participant_ids_.erase(id_);
+		participants_.erase(oldname);
+		participant_ids_.insert(make_pair(id_, newname));
+		participants_.insert(make_pair(newname, ptr));
+
+		std::stringstream stream;
+		stream << "You changed your nick from '" << oldname << "' to '" << newname << "!";
+		message msg(message_type::info_message, stream.str());
+		deliver_message(msg);
+	} else
+	{
+		std::stringstream stream;
+		stream << "Nick which you choose (" << newname << ") is in use. Try another one!";
+		message msg(message_type::error_message, stream.str());
+		deliver_message(msg);
+	}
+}
+
+void user::cmd_msg(std::string &params)
+{
+
 }
 
 void user::cmd_quit(std::string &params)

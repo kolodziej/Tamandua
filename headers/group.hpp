@@ -30,6 +30,7 @@ namespace tamandua
 			virtual void join_participant(std::shared_ptr<participant>);
 			virtual void deliver_message(const message&);
 			virtual bool is_hidden() = 0;
+			virtual bool is_password() = 0;
 	};
 }
 

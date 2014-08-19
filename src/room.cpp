@@ -6,3 +6,8 @@ bool room::is_hidden()
 {
 	return false;
 }
+
+bool room::is_password()
+{
+	return false;
+}

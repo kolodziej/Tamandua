@@ -14,7 +14,8 @@ using boost::asio::ip::tcp;
 namespace tamandua
 {
 	class user :
-		public participant
+		public participant,
+		public std::enable_shared_from_this<user>
 	{
 		private:
 			tcp::socket socket_;
@@ -41,7 +42,9 @@ namespace tamandua
 			// commands
 			void cmd_id(std::string &);
 			void cmd_room(std::string &);
-			//void cmd_proom(std::string &);
+			void cmd_proom(std::string &);
+			void cmd_nick(std::string &);
+			void cmd_msg(std::string &);
 			void cmd_quit(std::string &);
 
 		private:

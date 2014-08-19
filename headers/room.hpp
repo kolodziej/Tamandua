@@ -13,6 +13,7 @@ namespace tamandua
 			room(server &svr, std::string && name) : group(svr, name) {}
 
 			virtual bool is_hidden();
+			virtual bool is_password();
 	};
 }
 
