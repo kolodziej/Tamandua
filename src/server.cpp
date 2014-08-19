@@ -61,6 +61,24 @@ void server::add_group(std::shared_ptr<group> gr)
 	}
 }
 
+bool server::change_participant_name(std::string oldname, std::string newname)
+{
+	if (is_participant_name_available(newname))
+	{
+		auto ptr = get_participant(oldname);
+		id_number_t id = ptr->get_id();
+		participants_ids_.erase(oldname);
+		participants_.erase(id);
+		participants_ids_.insert(make_pair(newname, id));
+		participants_.insert(make_pair(id, ptr));
+		ptr->set_name(newname);
+		send_participants_list_();
+		return true;
+	}
+
+	return false;
+}
+
 void server::quit_user(id_number_t uid)
 {
 	auto u = participants_.find(uid);

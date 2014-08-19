@@ -145,6 +145,7 @@ void client::process_message_()
 
 void client::set_participants_list_()
 {
+	participants_.clear();
 	std::stringstream stream(read_message_.body);
 	std::string record, id, name;
 	while (stream)
@@ -161,6 +162,7 @@ void client::set_participants_list_()
 
 void client::set_rooms_list_()
 {
+	rooms_.clear();
 	std::stringstream stream(read_message_.body);
 	std::string record, id, name;
 	while (stream)

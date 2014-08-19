@@ -1,5 +1,7 @@
 #include "user.hpp"
 #include "message_buffer.hpp"
+#include "room.hpp"
+#include "private_room.hpp"
 #include <utility>
 #include <iostream>
 
@@ -82,7 +84,7 @@ void user::cmd_proom(std::string &params)
 		deliver_message(msg);
 	} else
 	{
-		std::shared_ptr<private_room> proom_ptr = dynamic_pointer_cast<private_room>(room_ptr);
+		std::shared_ptr<private_room> proom_ptr = std::dynamic_pointer_cast<private_room>(room_ptr);
 		if (proom_ptr->check_password(password))
 		{
 			group_ = room_ptr;
@@ -104,15 +106,8 @@ void user::cmd_nick(std::string &params)
 	std::stringstream params_stream(params);
 	std::string newname, oldname = get_name();
 	params_stream >> newname;
-	if (get_server().is_participant_name_available(newname))
+	if (get_server().change_participant_name(oldname, newname))
 	{
-		auto it = participants_.find(oldname);
-		std::shared_ptr<participant> ptr = (*it).second;
-		participant_ids_.erase(id_);
-		participants_.erase(oldname);
-		participant_ids_.insert(make_pair(id_, newname));
-		participants_.insert(make_pair(newname, ptr));
-
 		std::stringstream stream;
 		stream << "You changed your nick from '" << oldname << "' to '" << newname << "!";
 		message msg(message_type::info_message, stream.str());
