@@ -14,11 +14,16 @@ namespace tamandua
 	{
 		private:
 			id_number_t id_;
+			std::string name_;
 			std::vector<std::shared_ptr<participant>> participants_;
 			server &server_;
 		
 		public:
-			group(server &svr) : id_(svr.get_new_group_id_()), server_(svr) {}
+			group(server &svr, std::string name) : id_(svr.get_new_group_id_()), name_(name), server_(svr)
+			{
+				if (name_.empty())
+					name_ = svr.get_default_group_name_(id_);
+			}
 
 			id_number_t get_id();
 			std::string get_name();

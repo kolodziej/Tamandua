@@ -10,7 +10,7 @@ id_number_t group::get_id()
 
 std::string group::get_name()
 {
-	return std::string("[untitled group]");
+	return name_;
 }
 
 void group::join_participant(std::shared_ptr<participant> participant)

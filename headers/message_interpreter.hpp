@@ -5,8 +5,9 @@
 #include <string>
 #include <sstream>
 #include <map>
-
-#define ADD_FUNCTION(x,y) function_map_.insert(std::make_pair(x, y))
+#include <utility>
+#include <stdexcept>
+#include <iostream>
 
 namespace tamandua
 {
@@ -17,48 +18,68 @@ namespace tamandua
 			std::map<std::string, void (T::*)(std::string &)> function_map_;
 
 		public:
-			enum processing_status {
-				bad_cmd = 0,
-				cmd_processed = 1,
-				std_msg = 2
-			};
-
-			message_interpreter()
-			{
-				init_function_map_();
-			}
+			message_interpreter() {}
 
 			virtual processing_status process_message(T &u, message &msg)
 			{
-				std::string &bd = msg.body;
-				if (msg.body[0] != S)
-				{
-					if (process_command_(u, msg))
-						return cmd_processed;
-					else
-						return bad_cmd;
-				}
+				try {
+					if (msg.body.empty())
+						return empty_msg;
 
-				return std_msg;
+					if (msg.body[0] == S)
+					{
+						if (process_command_(u, msg))
+							return cmd_processed;
+						else
+							return bad_cmd;
+					}
+
+					return std_msg;
+				} catch (std::out_of_range e)
+				{
+					return empty_msg;
+				}
+			}
+
+			std::string get_commands_list()
+			{
+				std::stringstream stream;
+				for (auto f : function_map_)
+					stream << f.first << " ";
+
+				return stream.str();
+			}
+
+		protected:
+
+			void add_function(std::string key, void (T::*function)(std::string &))
+			{
+				function_map_.insert(make_pair(key, function));
 			}
 
 		private:
 			virtual bool process_command_(T &u, message &msg)
 			{
+				if (msg.body.empty())
+					return false;
+			
 				std::string command, params;
-				std::stringstream stream(msg.body.substr(1));
+				std::stringstream stream(msg.body);
 				stream >> command;
-				auto it = function_map_.find(command);
+				auto it = function_map_.find(command.substr(1));
 				if (it == function_map_.end())
 				{
 					return false;
 				}
-				params = stream.str().substr(command.size() + 1);
-				(u.*it)(params);
-
+				try {
+					params = stream.str().substr(command.size() + 1);
+				} catch (std::out_of_range e)
+				{
+					params = std::string();
+				}
+				(u.*((*it).second))(params);
 				return true;
 			}
-			virtual void init_function_map_() = 0;
 
 	};
 }

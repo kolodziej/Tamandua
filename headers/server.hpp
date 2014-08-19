@@ -27,7 +27,9 @@ namespace tamandua
 			user_message_interpreter &interpreter_;
 
 			std::map<id_number_t, std::shared_ptr<participant>> participants_;
+			std::map<std::string, id_number_t> participants_ids_;
 			std::map<id_number_t, std::shared_ptr<group>> groups_;
+			std::map<std::string, id_number_t> groups_ids_;
 
 			id_number_t last_participant_id_, last_group_id_, last_message_id_;
 
@@ -36,13 +38,16 @@ namespace tamandua
 			~server();
 		
 			void start_server();
-			void process_message(message &);
 
 			void add_participant(std::shared_ptr<participant>);
 			void add_group(std::shared_ptr<group>);
 
+			void quit_user(id_number_t);
+
 			std::shared_ptr<participant> get_participant(id_number_t);
+			std::shared_ptr<participant> get_participant(std::string);
 			std::shared_ptr<group> get_group(id_number_t);
+			std::shared_ptr<group> get_group(std::string);
 
 			id_number_t get_last_participant_id() const;
 			id_number_t get_last_group_id() const;
@@ -67,6 +72,7 @@ namespace tamandua
 			id_number_t get_new_message_id_();
 
 			std::string get_default_user_name_(id_number_t);
+			std::string get_default_group_name_(id_number_t);
 			std::string generate_rooms_list_();
 			std::string generate_participants_list_();
 	};

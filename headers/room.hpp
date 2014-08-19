@@ -8,12 +8,9 @@ namespace tamandua
 	class room :
 		public group
 	{
-		private:
-			std::string name_;
-
 		public:
-			room(server &svr, std::string & name) : group(svr), name_(std::move(name)) {}
-			room(server &svr, std::string && name) : group(svr), name_(name) {}
+			room(server &svr, std::string & name) : group(svr, name) {}
+			room(server &svr, std::string && name) : group(svr, name) {}
 
 			virtual bool is_hidden();
 	};

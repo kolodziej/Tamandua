@@ -5,6 +5,13 @@
 
 using namespace tamandua;
 
+user::~user()
+{
+	socket_.cancel();
+	socket_.close();
+	Log(get_server().get_logger(), "User ID ", get_id(), " is leaving server!");
+}
+
 std::string user::get_ip_address()
 {
 	return socket_.remote_endpoint().address().to_string();
@@ -12,6 +19,12 @@ std::string user::get_ip_address()
 
 void user::read_message()
 {
+	if (quit_)
+	{
+		get_server().quit_user(get_id());
+		return;
+	}
+	
 	read_message_header_();
 }
 
@@ -21,6 +34,26 @@ void user::deliver_message(const message &message)
 	messages_queue_.push_back(message);
 	if (start_sending)
 		send_messages_();
+}
+
+// commands
+void user::cmd_id(std::string &params)
+{
+	std::stringstream str;
+	str << "Your id number is " << get_id();
+	message msg(message_type::info_message, str.str());
+	deliver_message(msg);
+}
+
+void user::cmd_room(std::string &params)
+{
+	std::stringstream params_stream(params);
+	
+}
+
+void user::cmd_quit(std::string &params)
+{
+	quit_ = true;	
 }
 
 void user::read_message_header_()
@@ -46,18 +79,36 @@ void user::read_message_body_()
 			if (!ec)
 			{
 				read_message_.body = std::string(buffer.get(), read_message_.header.size);
-				Log(get_server().get_logger(), "User ", get_id(), " received a message!");
+				Log(get_server().get_logger(), "User ", get_id(), " passed a message!");
 				process_message_();
 			} else
 			{
-				Error(get_server().get_logger(), "User ", get_id(), " failed receiveg a message!");
+				Error(get_server().get_logger(), "User ", get_id(), " failed receiveg a message from client!");
 			}
 		});
 }
 
 void user::process_message_()
 {
-	get_server().process_message(read_message_);
+	switch (get_server().get_interpreter().process_message(*this, read_message_))
+	{
+		case processing_status::std_msg:
+			if (group_)
+				group_->deliver_message(read_message_);
+			else
+			{
+				message msg(message_type::error_message, std::string("You must select group using /room <name> or /proom <name> <password>. Your client received full list of public rooms."));
+				deliver_message(msg);
+			}
+			break;
+
+		case processing_status::bad_cmd:
+			std::stringstream str;
+			str << "Unknown command: [" << read_message_.body << "]! Available commands: " << get_server().get_interpreter().get_commands_list();
+			message msg(message_type::error_message, str.str());
+			deliver_message(msg);
+			break;
+	}
 	read_message();
 }
 

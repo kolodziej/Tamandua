@@ -3,17 +3,10 @@
 
 using namespace tamandua;
 
-message_buffer::message_buffer(message_header &header, std::string &&message) : buffer_(nullptr), buffer_size_(0)
+message_buffer::message_buffer(message_header header, std::string message) : buffer_(nullptr), buffer_size_(0)
 {
-	size_t header_size = sizeof(header);
-	size_t size = header_size + message.size();
-	buffer_ = std::shared_ptr<char>(new char[size]);
-	buffer_size_ = size;
-	memcpy(buffer_.get(), reinterpret_cast<char*>(&header), header_size);
-	memcpy(buffer_.get() + header_size, message.data(), message.size());
+	compose_(header, message);
 }
-
-message_buffer::message_buffer(message_header &header, std::string &message) : message_buffer(header, std::move(message)) {}
 
 std::shared_ptr<char> message_buffer::get_buffer()
 {
@@ -37,4 +30,14 @@ std::string message_buffer::get_message()
 	size_t header_size = sizeof(message_header);
 	std::string message(buffer_.get() + header_size, get_buffer_size() - header_size);
 	return message;
+}
+
+void message_buffer::compose_(message_header header, std::string body)
+{
+	size_t header_size = sizeof(header);
+	size_t size = header_size + body.size();
+	buffer_.reset(new char[size]);
+	buffer_size_ = size;
+	memcpy(buffer_.get(), reinterpret_cast<char*>(&header), header_size);
+	memcpy(buffer_.get() + header_size, body.data(), body.size());
 }

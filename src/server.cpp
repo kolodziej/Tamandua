@@ -7,7 +7,7 @@
 
 using namespace tamandua;
 
-server::server(boost::asio::io_service &io_service, tcp::endpoint &endpoint, logger &log, message_interpreter &interp) :
+server::server(boost::asio::io_service &io_service, tcp::endpoint &endpoint, logger &log, user_message_interpreter &interp) :
 	io_service_(io_service),
 	acceptor_(io_service, endpoint),
 	socket_(io_service),
@@ -30,24 +30,54 @@ void server::start_server()
 	accept_connection_();
 }
 
-void server::process_message(message &msg)
-{
-	Log(log_, "Received message to processing form user ID ", msg.header.author);
-	for (auto &part : participants_)
-		part.second->deliver_message(msg);
-}
-
 void server::add_participant(std::shared_ptr<participant> pt)
 {
-	participants_.insert(std::pair<id_number_t, std::shared_ptr<participant>>(pt->get_id(), pt));
-	Log(log_, "Added new participant ID: ",pt->get_id());
+	std::string username = pt->get_name();
+	auto id_it = participants_ids_.find(username);
+	if (id_it == participants_ids_.end())
+	{
+		participants_.insert(make_pair(pt->get_id(), pt));
+		participants_ids_.insert(make_pair(username, pt->get_id()));
+		Log(log_, "Added new participant ID: ",pt->get_id());
+	} else
+	{
+		Error(log_, "Could not add new participant! Name '", username, "' is already in use!");
+	}
 }
 
 void server::add_group(std::shared_ptr<group> gr)
 {
-	groups_.insert(std::pair<id_number_t, std::shared_ptr<group>>(gr->get_id(), gr));
+	std::string groupname = gr->get_name();
+	auto id_it = groups_ids_.find(groupname);
+	if (id_it == groups_ids_.end())
+	{
+		groups_.insert(make_pair(gr->get_id(), gr));
+		groups_ids_.insert(make_pair(groupname, gr->get_id()));
+		Log(log_, "Added new group ID: ",gr->get_id());
+	} else
+	{
+		Error(log_, "Could not add new group! Name '", groupname, "' is already in use!");
+	}
 }
 
+void server::quit_user(id_number_t uid)
+{
+	auto u = participants_.find(uid);
+	message quit_msg(message_type::quit_message, std::string());
+	std::string username((*u).second->get_name());
+	(*u).second->deliver_message(quit_msg);
+
+	if (u != participants_.end())
+		participants_.erase(u);
+
+	std::stringstream stream;
+	stream << "User " << username << " is quitting server!";
+	message quit_info(message_type::info_message, stream.str());
+	for (auto part : participants_)
+		part.second->deliver_message(quit_info);
+
+	send_participants_list_();
+}
 
 id_number_t server::get_last_participant_id() const
 {
@@ -69,7 +99,7 @@ logger & server::get_logger()
 	return log_;
 }
 
-user_message_interpreter & get_interpreter()
+user_message_interpreter & server::get_interpreter()
 {
 	return interpreter_;
 }
@@ -159,6 +189,13 @@ std::string server::get_default_user_name_(id_number_t id)
 	std::stringstream username;
 	username << "User#" << id;
 	return username.str();
+}
+
+std::string server::get_default_group_name_(id_number_t id)
+{
+	std::stringstream groupname;
+	groupname << "Group#" << id;
+	return groupname.str();
 }
 
 std::string server::generate_rooms_list_()
