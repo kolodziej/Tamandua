@@ -18,11 +18,11 @@ int main(int argc, char ** argv)
 	}
 
 	boost::asio::io_service io_service;
-	tcp::resolver resolver(io_service);
-	tcp::resolver::iterator endpoint_it = resolver.resolve({ argv[1], argv[2] });
+//	tcp::resolver resolver(io_service);
+//	tcp::resolver::iterator endpoint_it = resolver.resolve({ argv[1], argv[2] });
 
 	client cl(io_service);
-	cl.connect(argv[1], argv[2]);
+	cl.connect(std::string(argv[1]), std::string(argv[2]));
 
 	std::thread io_service_thread([&io_service]() { io_service.run(); });
 	std::thread display_msg_thread([&cl]() {
