@@ -8,8 +8,16 @@
 
 using namespace tamandua;
 
-void client::connect()
+void client::connect(std::string host, std::string port)
 {
+	tcp::resolver resolver(io_service_);
+	tcp::resolver::iterator endpoint_it = resolver.resolve({ host, port });
+	connect(endpoint_it);
+}
+
+void client::connect(tcp::resolver::iterator &endpoint_iterator)
+{
+	endpoint_iterator_ = endpoint_iterator;
 	boost::asio::async_connect(socket_, endpoint_iterator_,
 		[this](boost::system::error_code ec, tcp::resolver::iterator iterator)
 		{

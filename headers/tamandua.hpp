@@ -12,3 +12,6 @@
 #include "server.hpp"
 #include "client.hpp"
 #include "logger.hpp"
+#include "message_interpreter.hpp"
+#include "user_message_interpreter.hpp"
+

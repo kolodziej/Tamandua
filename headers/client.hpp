@@ -33,10 +33,16 @@ namespace tamandua
 				endpoint_iterator_(endpoint_iterator),
 				socket_(io_service)
 			{
-				connect();
+				connect(endpoint_iterator);
 			}
+
+			client(boost::asio::io_service &io_service) :
+				io_service_(io_service),
+				socket_(io_service)
+			{}
 			
-			void connect();
+			void connect(std::string, std::string);
+			void connect(tcp::resolver::iterator &);
 			id_number_t get_id();
 			void send_message(message &);
 			bool is_next_message();

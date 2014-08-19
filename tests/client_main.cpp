@@ -21,7 +21,8 @@ int main(int argc, char ** argv)
 	tcp::resolver resolver(io_service);
 	tcp::resolver::iterator endpoint_it = resolver.resolve({ argv[1], argv[2] });
 
-	client cl(io_service, endpoint_it);
+	client cl(io_service);
+	cl.connect(argv[1], argv[2]);
 
 	std::thread io_service_thread([&io_service]() { io_service.run(); });
 	std::thread display_msg_thread([&cl]() {

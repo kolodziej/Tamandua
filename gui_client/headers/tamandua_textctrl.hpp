@@ -10,6 +10,10 @@ class tamandua_textctrl :
 		tamandua_textctrl(wxWindow *win, wxWindowID id) :
 			wxTextCtrl(win, id, wxEmptyString, wxPoint(0,0), wxDefaultSize, wxTE_MULTILINE | wxTE_WORDWRAP | wxTE_READONLY | wxTE_AUTO_URL)
 		{}
+
+		void add_message(wxString, wxString);
+		void add_info(wxString);
+		void add_error(wxString);
 };
 
 #endif
