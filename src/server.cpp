@@ -3,6 +3,7 @@
 #include "root.hpp"
 #include "message.hpp"
 #include "user.hpp"
+#include "room.hpp"
 #include <sstream>
 
 using namespace tamandua;
@@ -83,7 +84,7 @@ std::shared_ptr<participant> server::get_participant(id_number_t id)
 {
 	auto it = participants_.find(id);
 	if (it != participants_.end())
-		return *it.second;
+		return (*it).second;
 
 	return nullptr;
 }
@@ -92,7 +93,7 @@ std::shared_ptr<participant> server::get_participant(std::string name)
 {
 	auto id_it = participants_ids_.find(name);
 	if (id_it != participants_ids_.end())
-		return get_participant(*id_it.second);
+		return get_participant((*id_it).second);
 
 	return nullptr;
 }
@@ -101,7 +102,7 @@ std::shared_ptr<group> server::get_group(id_number_t id)
 {
 	auto it = groups_.find(id);
 	if (it != groups_.end())
-		return *it.second;
+		return (*it).second;
 
 	return nullptr;
 }
@@ -110,10 +111,9 @@ std::shared_ptr<group> server::get_group(std::string name)
 {
 	auto id_it = groups_ids_.find(name);
 	if (id_it != groups_ids_.end())
-		return get_group(*id_it.second);
+		return get_group((*id_it).second);
 
 	return nullptr;
-}
 }
 
 id_number_t server::get_last_participant_id() const
@@ -162,7 +162,7 @@ void server::add_root_()
 
 void server::add_hall_()
 {
-	add_group(std::shared_ptr<group>(new room(*this, "Hall"));
+	add_group(std::shared_ptr<group>(new room(*this, "Hall")));
 }
 
 void server::add_new_user_()
