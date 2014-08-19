@@ -116,6 +116,16 @@ std::shared_ptr<group> server::get_group(std::string name)
 	return nullptr;
 }
 
+bool server::is_participant_name_available(std::string name)
+{
+	return (participants_ids_.find(name) == participants_ids_.end());
+}
+
+bool server::is_group_name_available(std::string name)
+{
+	return (groups_ids_.find(name) == groups_ids_.end());
+}
+
 id_number_t server::get_last_participant_id() const
 {
 	return last_participant_id_;
