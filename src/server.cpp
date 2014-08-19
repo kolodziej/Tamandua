@@ -26,7 +26,7 @@ void server::start_server()
 {
 	Log(log_, "Starting server at: ");
 	add_root_();
-	Log(log_, "Root user joined!");
+	add_hall_();
 	accept_connection_();
 }
 
@@ -79,6 +79,43 @@ void server::quit_user(id_number_t uid)
 	send_participants_list_();
 }
 
+std::shared_ptr<participant> server::get_participant(id_number_t id)
+{
+	auto it = participants_.find(id);
+	if (it != participants_.end())
+		return *it.second;
+
+	return nullptr;
+}
+
+std::shared_ptr<participant> server::get_participant(std::string name)
+{
+	auto id_it = participants_ids_.find(name);
+	if (id_it != participants_ids_.end())
+		return get_participant(*id_it.second);
+
+	return nullptr;
+}
+
+std::shared_ptr<group> server::get_group(id_number_t id)
+{
+	auto it = groups_.find(id);
+	if (it != groups_.end())
+		return *it.second;
+
+	return nullptr;
+}
+
+std::shared_ptr<group> server::get_group(std::string name)
+{
+	auto id_it = groups_ids_.find(name);
+	if (id_it != groups_ids_.end())
+		return get_group(*id_it.second);
+
+	return nullptr;
+}
+}
+
 id_number_t server::get_last_participant_id() const
 {
 	return last_participant_id_;
@@ -121,6 +158,11 @@ void server::accept_connection_()
 void server::add_root_()
 {
 	add_participant(std::shared_ptr<participant>(new root(*this, "dd"))); // test password
+}
+
+void server::add_hall_()
+{
+	add_group(std::shared_ptr<group>(new room(*this, "Hall"));
 }
 
 void server::add_new_user_()

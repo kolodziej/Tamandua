@@ -48,7 +48,22 @@ void user::cmd_id(std::string &params)
 void user::cmd_room(std::string &params)
 {
 	std::stringstream params_stream(params);
-	
+	std::string room_name;
+	params_stream >> room_name;
+	auto room_ptr = get_server().get_group(room_name);
+	if (room_ptr == nullptr || room_ptr->is_hidden() == true)
+	{
+		std::stringstream stream;
+		stream << "Room called " << room_name << " does not exist!";
+		message msg(message_type::error_message, stream.str());
+		deliver_message(msg);
+	} else
+	{
+		std::stringstream stream;
+		stream << "Your room is now: " << room_name;
+		message msg(message_type::info_message, stream.str());
+		deliver_message(msg);
+	}
 }
 
 void user::cmd_quit(std::string &params)
