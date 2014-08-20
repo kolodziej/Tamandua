@@ -42,6 +42,7 @@ void client::send_message(message &msg)
 	msg.header.author = uid_;
 	msg.header.id = 0;
 	msg.header.type = message_type::standard_message;
+	msg.header.size = msg.body.length();
 	message_buffer buf(msg.header, msg.body);
 
 	boost::asio::async_write(socket_,

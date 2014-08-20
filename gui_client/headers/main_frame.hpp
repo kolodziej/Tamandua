@@ -10,8 +10,6 @@ class main_frame :
 	public wxFrame
 {
 	private:
-		gui_client &app;
-
 		wxPanel *panel;
 		tamandua_textctrl *msgs;
 		wxTextCtrl *msg, *connect_host, *connect_port;
@@ -29,10 +27,15 @@ class main_frame :
 			CON_BTN
 		};
 
-		main_frame(gui_client &);
+		main_frame();
 
 		void send_message(wxCommandEvent &);
 		void connect(wxCommandEvent &);
+
+		tamandua_textctrl *get_msgs()
+		{
+			return msgs;
+		}
 
 	private:
 		DECLARE_EVENT_TABLE();
