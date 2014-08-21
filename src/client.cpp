@@ -9,26 +9,25 @@
 
 using namespace tamandua;
 
-void client::connect(std::string host, std::string port, void (*callback)(status))
+template <typename Callback>
+void client::connect(std::string host, std::string port, Callback f)
 {
 	tcp::resolver resolver(io_service_);
 	tcp::resolver::iterator endpoint_it = resolver.resolve({ host, port });
-	connect(endpoint_it, callback);
+	connect(endpoint_it, f);
 }
 
-void client::connect(tcp::resolver::iterator &endpoint_iterator, void (*callback)(status))
+template <typename Callback>
+void client::connect(tcp::resolver::iterator endpoint_iterator, Callback f)
 {
 	endpoint_iterator_ = endpoint_iterator;
 	boost::asio::async_connect(socket_, endpoint_iterator_,
-		[this, callback](boost::system::error_code ec, tcp::resolver::iterator iterator)
+		[this, f](boost::system::error_code ec, tcp::resolver::iterator iterator)
 		{
-			if (callback != nullptr)
-			{
-				if (ec)
-					callback(connection_failed);
-				else
-					callback(ok);
-			}
+			if (ec)
+				f(connection_failed);
+			else
+				f(ok);
 		});
 }
 
@@ -37,30 +36,24 @@ id_number_t client::get_id()
 	return uid_;
 }
 
-void client::send_message(message &msg)
+template <typename Callback>
+void client::send_message(message &msg, Callback f)
 {
 	msg.header.author = uid_;
 	msg.header.id = 0;
 	msg.header.type = message_type::standard_message;
 	msg.header.size = msg.body.length();
 	message_buffer buf(msg.header, msg.body);
-	TamanduaDebug("Async writing message ", msg.body);
 	boost::asio::async_write(socket_,
 		boost::asio::buffer(buf.get_buffer().get(), buf.get_buffer_size()),
-		[this](boost::system::error_code ec, size_t length)
+		[this, f](boost::system::error_code ec, size_t length)
 		{
-			TamanduaDebug("Async write finished!");
 			if (ec)
-			{
-				TamanduaDebug("Error while sending message!");
-				add_message_(message_type::error_message, std::string("Error while sending message!"));
-			} else
-			{
-				TamanduaDebug("Message sent!");
-			}
+				f(message_undelivered);
+			else
+				f(ok);
 		});
 
-	TamanduaDebug("send_message return!");
 }
 
 bool client::is_next_message()

@@ -28,12 +28,13 @@ namespace tamandua
 			message read_message_;
 
 		public:
-			client(boost::asio::io_service &io_service, tcp::resolver::iterator endpoint_iterator) :
+			template <typename Callback>
+			client(boost::asio::io_service &io_service, tcp::resolver::iterator endpoint_iterator, Callback f) :
 				io_service_(io_service),
 				endpoint_iterator_(endpoint_iterator),
 				socket_(io_service)
 			{
-				connect(endpoint_iterator);
+				connect(endpoint_iterator, f);
 			}
 
 			client(boost::asio::io_service &io_service) :
@@ -41,10 +42,17 @@ namespace tamandua
 				socket_(io_service)
 			{}
 			
-			void connect(std::string, std::string, void (*)(status) = nullptr);
-			void connect(tcp::resolver::iterator &, void (*)(status) = nullptr);
+			template <typename Callback>
+			void connect(std::string, std::string, Callback);
+
+			template <typename Callback>
+			void connect(tcp::resolver::iterator, Callback);
+
 			id_number_t get_id();
-			void send_message(message &);
+
+			template <typename Callback>
+			void send_message(message &, Callback);
+
 			bool is_next_message();
 			std::pair<std::string, message> get_next_message();
 
