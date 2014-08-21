@@ -1,12 +1,17 @@
 #ifndef TAMANDUA_LOG_HPP
 #define TAMANDUA_LOG_HPP
-#include <ostream> 
+#include <iostream> 
 
 #define LOG_STREAM std::clog
 #define ERROR_STREAM std::cerr
 
 #define Log(logger,...) logger.log(__VA_ARGS__)
 #define Error(logger,...) logger.error(__VA_ARGS__)
+#ifdef DEBUG
+	#define TamanduaDebug(...) logger::debug(__VA_ARGS__)
+#else
+	#define TamanduaDebug(...)
+#endif
 
 namespace tamandua
 {
@@ -38,6 +43,19 @@ namespace tamandua
 				stream_ << first;
 				error(rest...);
 			}
+#ifdef DEBUG
+			static void debug()
+			{
+				std::cerr << "\n";
+			}
+
+			template <typename F, typename... R>
+			static void debug(F f, R... r)
+			{
+				std::cerr << f;
+				debug(r...);
+			}
+#endif
 	};
 }
 #endif

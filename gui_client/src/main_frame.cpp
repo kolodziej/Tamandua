@@ -31,10 +31,9 @@ void main_frame::send_message(wxCommandEvent &event)
 {
 	wxString data = msg->GetValue();
 	msg->Clear();
-	Debug("Sending message", data.ToStdString());
+	Debug("Sending message: ", data.ToStdString());
 	tamandua::message msg(message_type::standard_message, data.ToStdString());
 	wxGetApp().get_client()->send_message(msg);
-	Debug("After sending!");
 }
 
 void main_frame::connect(wxCommandEvent &event)

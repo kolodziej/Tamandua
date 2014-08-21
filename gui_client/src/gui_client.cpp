@@ -11,13 +11,14 @@ bool gui_client::OnInit()
 	client_ = new tamandua::client(*io_service_);
 	frame = new main_frame();
 
-	std::thread reader([this]() {
+	reader_thread = new std::thread([this]() {
 		bool running = true;
 		tamandua::client &cl = *client_;
 		while (running)
 		{
 			if (cl.is_next_message())
 			{
+				Debug("adding new message!");
 				auto msg_pair = cl.get_next_message();
 				wxString author(msg_pair.first.c_str(), wxConvUTF8);
 				wxString msg_body(msg_pair.second.body.c_str(), wxConvUTF8);
@@ -48,4 +49,10 @@ bool gui_client::OnInit()
 tamandua::client * gui_client::get_client()
 {
 	return client_;
+}
+
+int gui_client::OnExit()
+{
+	reader_thread->join();
+	return 0;
 }

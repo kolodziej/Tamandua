@@ -2,6 +2,7 @@
 #include "client.hpp"
 #include "message.hpp"
 #include "message_buffer.hpp"
+#include "logger.hpp"
 #include <sstream>
 #include <utility>
 #include <iostream>
@@ -44,16 +45,23 @@ void client::send_message(message &msg)
 	msg.header.type = message_type::standard_message;
 	msg.header.size = msg.body.length();
 	message_buffer buf(msg.header, msg.body);
-
+	TamanduaDebug("Async writing message ", msg.body);
 	boost::asio::async_write(socket_,
 		boost::asio::buffer(buf.get_buffer().get(), buf.get_buffer_size()),
 		[this](boost::system::error_code ec, size_t length)
 		{
+			TamanduaDebug("Async write finished!");
 			if (ec)
 			{
+				TamanduaDebug("Error while sending message!");
 				add_message_(message_type::error_message, std::string("Error while sending message!"));
+			} else
+			{
+				TamanduaDebug("Message sent!");
 			}
 		});
+
+	TamanduaDebug("send_message return!");
 }
 
 bool client::is_next_message()

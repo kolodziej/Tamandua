@@ -1,6 +1,6 @@
 CXX=g++
 WX_VERSION=3.0
-CXXFLAGS=`wx-config --version=$(WX_VERSION) --cxxflags` -std=c++11 -I./headers -I../headers -L../lib/Debug -DDEBUG
+CXXFLAGS=`wx-config --version=$(WX_VERSION) --cxxflags` -std=c++11 -I./headers -I../headers -L../lib/Debug -DDEBUG -g
 LIBS=-ltamandua `wx-config --version=$(WX_VERSION) --libs` -lboost_system
 TARGET=bin/Debug/TamanduaGUIClient
 OBJS=src/gui_client.o src/main_frame.o src/tamandua_textctrl.o main.o
