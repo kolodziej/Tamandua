@@ -9,9 +9,9 @@
 using boost::asio::ip::tcp;
 using namespace tamandua;
 
-void client_connect_callback(bool status)
+void client_connect_callback(tamandua::status st)
 {
-	if (status)
+	if (st == ok)
 		std::cout << "\e[1;92mConnected!\e[0m\n";
 	else
 		std::cout << "\e[1;91mNot connected\e[0m\n";

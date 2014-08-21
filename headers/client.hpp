@@ -41,8 +41,8 @@ namespace tamandua
 				socket_(io_service)
 			{}
 			
-			void connect(std::string, std::string, void (*)(bool) = nullptr);
-			void connect(tcp::resolver::iterator &, void (*)(bool) = nullptr);
+			void connect(std::string, std::string, void (*)(status) = nullptr);
+			void connect(tcp::resolver::iterator &, void (*)(status) = nullptr);
 			id_number_t get_id();
 			void send_message(message &);
 			bool is_next_message();
