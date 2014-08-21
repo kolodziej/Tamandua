@@ -9,6 +9,14 @@
 using boost::asio::ip::tcp;
 using namespace tamandua;
 
+void client_connect_callback(bool status)
+{
+	if (status)
+		std::cout << "\e[1;92mConnected!\e[0m\n";
+	else
+		std::cout << "\e[1;91mNot connected\e[0m\n";
+}
+
 int main(int argc, char ** argv)
 {
 	if (argc != 3)
@@ -18,11 +26,9 @@ int main(int argc, char ** argv)
 	}
 
 	boost::asio::io_service io_service;
-//	tcp::resolver resolver(io_service);
-//	tcp::resolver::iterator endpoint_it = resolver.resolve({ argv[1], argv[2] });
 
 	client cl(io_service);
-	cl.connect(std::string(argv[1]), std::string(argv[2]));
+	cl.connect(std::string(argv[1]), std::string(argv[2]), client_connect_callback);
 
 	std::thread io_service_thread([&io_service]() { io_service.run(); });
 	std::thread display_msg_thread([&cl]() {

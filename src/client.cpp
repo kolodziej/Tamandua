@@ -9,26 +9,29 @@
 
 using namespace tamandua;
 
-void client::connect(std::string host, std::string port)
+void client::connect(std::string host, std::string port, void (*callback)(bool))
 {
 	tcp::resolver resolver(io_service_);
 	tcp::resolver::iterator endpoint_it = resolver.resolve({ host, port });
-	connect(endpoint_it);
+	connect(endpoint_it, callback);
 }
 
-void client::connect(tcp::resolver::iterator &endpoint_iterator)
+void client::connect(tcp::resolver::iterator &endpoint_iterator, void (*callback)(bool))
 {
 	endpoint_iterator_ = endpoint_iterator;
 	boost::asio::async_connect(socket_, endpoint_iterator_,
-		[this](boost::system::error_code ec, tcp::resolver::iterator iterator)
+		[this, callback](boost::system::error_code ec, tcp::resolver::iterator iterator)
 		{
 			if (!ec)
 			{
-				add_message_(message_type::info_message, std::string("Connection initialized! Waiting for init data from server..."));
+				if (callback != nullptr)
+					callback(true);
+
 				read_message_header_();
 			} else
 			{
-				add_message_(message_type::error_message, std::string("Establishing connection failed!"));
+				if (callback != nullptr)
+					callback(false);
 			}
 		});
 }
