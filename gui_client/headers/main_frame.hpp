@@ -40,6 +40,11 @@ class main_frame :
 	private:
 		DECLARE_EVENT_TABLE();
 
+		void connecting_succeeded_();
+		void connecting_failed_();
+		void message_sent_();
+		void message_undelivered_();
+
 };
 
 #endif

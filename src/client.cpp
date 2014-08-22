@@ -9,51 +9,9 @@
 
 using namespace tamandua;
 
-template <typename Callback>
-void client::connect(std::string host, std::string port, Callback f)
-{
-	tcp::resolver resolver(io_service_);
-	tcp::resolver::iterator endpoint_it = resolver.resolve({ host, port });
-	connect(endpoint_it, f);
-}
-
-template <typename Callback>
-void client::connect(tcp::resolver::iterator endpoint_iterator, Callback f)
-{
-	endpoint_iterator_ = endpoint_iterator;
-	boost::asio::async_connect(socket_, endpoint_iterator_,
-		[this, f](boost::system::error_code ec, tcp::resolver::iterator iterator)
-		{
-			if (ec)
-				f(connection_failed);
-			else
-				f(ok);
-		});
-}
-
 id_number_t client::get_id()
 {
 	return uid_;
-}
-
-template <typename Callback>
-void client::send_message(message &msg, Callback f)
-{
-	msg.header.author = uid_;
-	msg.header.id = 0;
-	msg.header.type = message_type::standard_message;
-	msg.header.size = msg.body.length();
-	message_buffer buf(msg.header, msg.body);
-	boost::asio::async_write(socket_,
-		boost::asio::buffer(buf.get_buffer().get(), buf.get_buffer_size()),
-		[this, f](boost::system::error_code ec, size_t length)
-		{
-			if (ec)
-				f(message_undelivered);
-			else
-				f(ok);
-		});
-
 }
 
 bool client::is_next_message()

@@ -2,6 +2,8 @@
 #define TAMANDUA_CLIENT_HPP
 #include "types.hpp"
 #include "message.hpp"
+#include "message_buffer.hpp"
+#include "logger.hpp"
 #include <map>
 #include <deque>
 #include <string>
@@ -43,15 +45,50 @@ namespace tamandua
 			{}
 			
 			template <typename Callback>
-			void connect(std::string, std::string, Callback);
+			void connect(std::string host, std::string port, Callback f)
+			{
+				tcp::resolver resolver(io_service_);
+				tcp::resolver::iterator endpoint_it = resolver.resolve({ host, port });
+				connect(endpoint_it, f);
+			}
 
 			template <typename Callback>
-			void connect(tcp::resolver::iterator, Callback);
+			void connect(tcp::resolver::iterator endpoint_iterator, Callback f)
+			{
+				endpoint_iterator_ = endpoint_iterator;
+				boost::asio::async_connect(socket_, endpoint_iterator_,
+					[this, f](boost::system::error_code ec, tcp::resolver::iterator iterator)
+					{
+						TamanduaDebug("Connect callback run");
+						if (ec)
+							f(connection_failed);
+						else
+							f(ok);
+
+						read_message_header_();
+					});
+			}
 
 			id_number_t get_id();
 
 			template <typename Callback>
-			void send_message(message &, Callback);
+			void send_message(message & msg, Callback f)
+			{
+				msg.header.author = uid_;
+				msg.header.id = 0;
+				msg.header.type = message_type::standard_message;
+				msg.header.size = msg.body.length();
+				message_buffer buf(msg.header, msg.body);
+				boost::asio::async_write(socket_,
+					boost::asio::buffer(buf.get_buffer().get(), buf.get_buffer_size()),
+					[this, f](boost::system::error_code ec, size_t length)
+					{
+						if (ec)
+							f(message_undelivered);
+						else
+							f(ok);
+					});
+			}
 
 			bool is_next_message();
 			std::pair<std::string, message> get_next_message();

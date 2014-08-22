@@ -17,6 +17,12 @@ void client_connect_callback(tamandua::status st)
 		std::cout << "\e[1;91mNot connected\e[0m\n";
 }
 
+void client_send_callback(tamandua::status st)
+{
+	if (st != ok)
+		std::cout << "!!! Message undelivered! !!!\n";
+}
+
 int main(int argc, char ** argv)
 {
 	if (argc != 3)
@@ -69,7 +75,7 @@ int main(int argc, char ** argv)
 		msg.header.size = body_str.length();
 		msg.body = body_str;
 
-		cl.send_message(msg);
+		cl.send_message(msg, client_send_callback);
 	}
 
 	io_service_thread.join();
