@@ -18,7 +18,7 @@ class gui_client :
 		boost::asio::io_service *io_service_;
 		tamandua::client *client_;
 		main_frame *frame;
-		std::thread *reader_thread;
+		std::thread reader_thread;
 	public:
 		virtual bool OnInit();
 		tamandua::client * get_client();

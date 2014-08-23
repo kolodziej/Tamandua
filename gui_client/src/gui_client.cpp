@@ -13,13 +13,10 @@ bool gui_client::OnInit()
 	frame = new main_frame();
 	running_ = true;
 
-	reader_thread = new std::thread([this]() {
+	reader_thread = std::thread([this]() {
 		tamandua::client &cl = *client_;
 		bool local_running = true;
 		do {
-			main_lock_->lock();
-			local_running = running_;
-			main_lock_->unlock();
 			if (cl.is_next_message())
 			{
 				auto msg_pair = cl.get_next_message();
@@ -41,6 +38,9 @@ bool gui_client::OnInit()
 						break;
 				}
 			}
+			main_lock_->lock();
+			local_running = running_;
+			main_lock_->unlock();
 		} while (local_running);
 	});
 
@@ -58,9 +58,8 @@ int gui_client::OnExit()
 	main_lock_->lock();
 	running_ = false;
 	main_lock_->unlock();
-	reader_thread->join();
+	reader_thread.join();
 	delete main_lock_;
-	delete reader_thread;
 	delete client_;
 	delete io_service_;
 	return 0;
