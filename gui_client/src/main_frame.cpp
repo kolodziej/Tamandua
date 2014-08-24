@@ -42,8 +42,8 @@ void main_frame::send_message(wxCommandEvent &event)
 
 void main_frame::connect(wxCommandEvent &event)
 {
-	std::string host = connect_host->GetValue().ToStdString();
-	std::string port = connect_port->GetValue().ToStdString();
+	std::string host(connect_host->GetValue().utf8_str());
+	std::string port(connect_port->GetValue().utf8_str());
 	wxGetApp().get_client()->connect(host, port, [this](tamandua::status s) {
 		if (s == tamandua::status::ok)
 			connecting_succeeded_();
