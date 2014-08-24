@@ -134,12 +134,13 @@ void user::cmd_msg(std::string &params)
 	std::stringstream params_stream(params);
 	std::string usr, msg_body;
 	params_stream >> usr;
-	msg_body = params_stream.str();
+	msg_body = params_stream.str().substr(usr.length() + 1);
 
 	auto rec = get_server().get_participant(usr);
 	if (rec != nullptr)
 	{
 		message msg(message_type::private_message, msg_body);
+		msg.header.author = get_id();
 		rec->deliver_message(msg);
 	} else
 	{
