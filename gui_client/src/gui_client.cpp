@@ -32,12 +32,12 @@ bool gui_client::OnInit()
 
 					case tamandua::message_type::error_message:
 						Debug("error: ", msg_body);
-						//frame->get_msgs()->add_error(msg_body);
+						frame->get_msgs()->add_error(wxString(msg_body));
 						break;
 					
 					default:
 						Debug("<", author, ">: ", msg_body); 
-						//frame->get_msgs()->add_message(author, msg_body);
+						frame->get_msgs()->add_message(wxString(author), wxString(msg_body));
 						break;
 				}
 			}
@@ -46,7 +46,7 @@ bool gui_client::OnInit()
 			main_lock_->unlock();
 		} while (local_running);
 	});
-		frame->Show();
+	frame->Show();
 	return true;
 }
 
@@ -66,6 +66,7 @@ tamandua::client * gui_client::get_client()
 
 int gui_client::OnExit()
 {
+	client_->disconnect();
 	main_lock_->lock();
 	running_ = false;
 	main_lock_->unlock();
