@@ -2,23 +2,25 @@
 
 void tamandua_textctrl::add_message(wxString author, wxString msg)
 {
-	//wxTextAttr author_attr(wxColour(0, 0, 0xff));
-	//author_attr.SetFontWeight(wxFONTWEIGHT_BOLD);
+	wxTextAttr author_attr(wxColour(0, 0, 0xff));
+	author_attr.SetFontWeight(wxFONTWEIGHT_BOLD);
+	wxString input(author + wxT(": ") + msg);
 	write_lock_.lock();
 	long int start = GetInsertionPoint(), end;
 	AppendText(author);
 	end = GetInsertionPoint();
-	wxString colon(wxT(": "), wxMBConvUTF8());
-	AppendText(colon);
+	AppendText(": ");
 	AppendText(msg);
+	AppendText("\n");
 	write_lock_.unlock();
 
-	//SetStyle(start, end, author_attr);
+	SetStyle(start, end, author_attr);
 }
 
 void tamandua_textctrl::add_info(wxString info)
 {
-	wxTextAttr attr(wxColour(0xff, 0x66, 0));
+	wxTextAttr attr(wxColour(0x00, 0x99, 0));
+	attr.SetFontWeight(wxFONTWEIGHT_BOLD);
 	info += wxString("\n", wxMBConvUTF8());
 
 	write_lock_.lock();

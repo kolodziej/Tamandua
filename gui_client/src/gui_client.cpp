@@ -4,6 +4,7 @@
 #include "main_frame.hpp"
 #include "tamandua.hpp"
 #include "debug_gui.hpp"
+#include <functional>
 
 bool gui_client::OnInit()
 {
@@ -27,17 +28,17 @@ bool gui_client::OnInit()
 				{
 					case tamandua::message_type::info_message:
 						Debug("info: ", msg_body.utf8_str());
-						frame->get_msgs()->add_info(msg_body);
+						wxTheApp->GetTopWindow()->GetEventHandler()->CallAfter(std::bind(&tamandua_textctrl::add_info, frame->get_msgs(), msg_body));
 						break;
 
 					case tamandua::message_type::error_message:
 						Debug("error: ", msg_body.utf8_str());
-						frame->get_msgs()->add_error(msg_body);
+						wxTheApp->GetTopWindow()->GetEventHandler()->CallAfter(std::bind(&tamandua_textctrl::add_error, frame->get_msgs(), msg_body));
 						break;
 					
 					default:
 						Debug("<", author, ">: ", msg_body.utf8_str()); 
-						frame->get_msgs()->add_message(author, msg_body);
+						wxTheApp->GetTopWindow()->GetEventHandler()->CallAfter(std::bind(&tamandua_textctrl::add_message, frame->get_msgs(), author, msg_body));
 						break;
 				}
 			}
