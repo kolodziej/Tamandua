@@ -59,7 +59,6 @@ namespace tamandua
 				boost::asio::async_connect(socket_, endpoint_iterator_,
 					[this, f](boost::system::error_code ec, tcp::resolver::iterator iterator)
 					{
-						TamanduaDebug("Connect callback run");
 						if (ec)
 							f(connection_failed);
 						else
