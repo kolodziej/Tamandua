@@ -46,6 +46,7 @@ namespace tamandua
 			void cmd_proom(std::string &);
 			void cmd_nick(std::string &);
 			void cmd_msg(std::string &);
+			void cmd_kick_ass(std::string &);
 			void cmd_quit(std::string &);
 
 		private:

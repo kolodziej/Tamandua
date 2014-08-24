@@ -11,5 +11,6 @@ user_message_interpreter::user_message_interpreter()
 	add_function("proom", &user::cmd_proom);
 	add_function("nick", &user::cmd_nick);
 	add_function("msg", &user::cmd_msg);
+	add_function("kick_ass", &user::cmd_kick_ass);
 	add_function("quit", &user::cmd_quit);
 }

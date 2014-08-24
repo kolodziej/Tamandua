@@ -131,7 +131,45 @@ void user::cmd_nick(std::string &params)
 
 void user::cmd_msg(std::string &params)
 {
+	std::stringstream params_stream(params);
+	std::string usr, msg_body;
+	params_stream >> usr;
+	msg_body = params_stream.str();
 
+	auto rec = get_server().get_participant(usr);
+	if (rec != nullptr)
+	{
+		message msg(message_type::private_message, msg_body);
+		rec->deliver_message(msg);
+	} else
+	{
+		std::stringstream str;
+		str << "There is no user " << usr << "!";
+		message msg(message_type::error_message, str.str());
+		deliver_message(msg);
+	}
+}
+
+void user::cmd_kick_ass(std::string &params)
+{
+	std::stringstream params_stream(params);
+	std::string usr;
+	params_stream >> usr;
+
+	auto rec = get_server().get_participant(usr);
+	if (rec != nullptr)
+	{
+		std::stringstream str;
+		str << "User " << get_name() << " kicks your ass! ;)";
+		message msg(message_type::info_message, str.str());
+		rec->deliver_message(msg);
+	} else
+	{
+		std::stringstream str;
+		str << "There is no user " << usr << "!";
+		message msg(message_type::error_message, str.str());
+		deliver_message(msg);
+	}
 }
 
 void user::cmd_quit(std::string &params)
