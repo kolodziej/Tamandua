@@ -53,6 +53,12 @@ void main_frame::connect(wxCommandEvent &event)
 	wxGetApp().io_service_run();
 }
 
+void main_frame::disconnect(wxCommandEvent &event)
+{
+	msgs->add_info("Disconnecting...");
+	wxGetApp().get_client()->disconnect();
+}
+
 void main_frame::connecting_succeeded_()
 {
 	Debug("Connected to server!");
@@ -76,8 +82,8 @@ void main_frame::message_undelivered_()
 }
 
 BEGIN_EVENT_TABLE(main_frame, wxFrame)
-	EVT_TEXT_ENTER(CON_HOST_TEXT, main_frame::connect)
-	EVT_TEXT_ENTER(CON_PORT_TEXT, main_frame::connect)
+//	EVT_TEXT_ENTER(CON_HOST_TEXT, main_frame::connect)
+//	EVT_TEXT_ENTER(CON_PORT_TEXT, main_frame::connect)
 	EVT_TEXT_ENTER(MSG_CTRL, main_frame::send_message)
 	EVT_BUTTON(CON_BTN, main_frame::connect)
 END_EVENT_TABLE()
