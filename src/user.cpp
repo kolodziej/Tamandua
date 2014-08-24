@@ -47,6 +47,14 @@ void user::cmd_id(std::string &params)
 	deliver_message(msg);
 }
 
+void user::cmd_msg_id(std::string &params)
+{
+	std::stringstream str;
+	str << "Last message id is " << get_server().get_last_message_id();
+	message msg(message_type::info_message, str.str());
+	deliver_message(msg);
+}
+
 void user::cmd_room(std::string &params)
 {
 	std::stringstream params_stream(params);

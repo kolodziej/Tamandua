@@ -41,6 +41,7 @@ namespace tamandua
 
 			// commands
 			void cmd_id(std::string &);
+			void cmd_msg_id(std::string &);
 			void cmd_room(std::string &);
 			void cmd_proom(std::string &);
 			void cmd_nick(std::string &);
