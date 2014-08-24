@@ -13,7 +13,7 @@ class main_frame :
 		wxPanel *panel;
 		tamandua_textctrl *msgs;
 		wxTextCtrl *msg, *connect_host, *connect_port;
-		wxButton *connect_button, *funny_button;
+		wxButton *connect_button;
 		wxBoxSizer *sizer;
 		wxBoxSizer *connect_sizer;
 	public:
@@ -31,7 +31,6 @@ class main_frame :
 		main_frame();
 
 		void send_message(wxCommandEvent &);
-		void funny(wxCommandEvent &);
 		void connect(wxCommandEvent &);
 		void disconnect(wxCommandEvent &);
 

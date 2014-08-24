@@ -5,6 +5,7 @@
 #include "tamandua.hpp"
 #include "debug_gui.hpp"
 #include <functional>
+#include <chrono>
 
 bool gui_client::OnInit()
 {
@@ -41,6 +42,7 @@ bool gui_client::OnInit()
 						wxTheApp->GetTopWindow()->GetEventHandler()->CallAfter(std::bind(&tamandua_textctrl::add_message, frame->get_msgs(), author, msg_body));
 						break;
 				}
+				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			}
 			main_lock_->lock();
 			local_running = running_;
