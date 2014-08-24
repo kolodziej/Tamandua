@@ -12,7 +12,7 @@ bool gui_client::OnInit()
 	client_ = new tamandua::client(*io_service_);
 	frame = new main_frame();
 	running_ = true;
-
+	
 	reader_thread = std::thread([this]() {
 		tamandua::client &cl = *client_;
 		bool local_running = true;
@@ -26,15 +26,18 @@ bool gui_client::OnInit()
 				switch (msg.header.type)
 				{
 					case tamandua::message_type::info_message:
-						frame->get_msgs()->add_info(msg_body);
+						Debug("info: ", msg_body);
+						frame->get_msgs()->add_info(wxString(msg_body));
 						break;
 
 					case tamandua::message_type::error_message:
-						frame->get_msgs()->add_error(msg_body);
+						Debug("error: ", msg_body);
+						//frame->get_msgs()->add_error(msg_body);
 						break;
 					
 					default:
-						frame->get_msgs()->add_message(author, msg_body);
+						Debug("<", author, ">: ", msg_body); 
+						//frame->get_msgs()->add_message(author, msg_body);
 						break;
 				}
 			}
@@ -43,9 +46,17 @@ bool gui_client::OnInit()
 			main_lock_->unlock();
 		} while (local_running);
 	});
-
-	frame->Show();
+		frame->Show();
 	return true;
+}
+
+void gui_client::io_service_run()
+{
+	io_service_thread = std::thread([this]() {
+		std::cout << "Running io_service::run()\n";
+		io_service_->run();
+		std::cout << "io_service::run() returned\n";
+	});
 }
 
 tamandua::client * gui_client::get_client()
@@ -59,6 +70,7 @@ int gui_client::OnExit()
 	running_ = false;
 	main_lock_->unlock();
 	reader_thread.join();
+	io_service_thread.join();
 	delete main_lock_;
 	delete client_;
 	delete io_service_;

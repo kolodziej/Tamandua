@@ -50,6 +50,7 @@ void main_frame::connect(wxCommandEvent &event)
 		else
 			connecting_failed_();
 	});
+	wxGetApp().io_service_run();
 }
 
 void main_frame::connecting_succeeded_()
@@ -66,7 +67,7 @@ void main_frame::connecting_failed_()
 
 void main_frame::message_sent_()
 {
-	msgs->add_info(wxT("Message sent!"));
+	Debug("Message sent!");
 }
 
 void main_frame::message_undelivered_()
