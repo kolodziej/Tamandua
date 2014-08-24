@@ -46,3 +46,39 @@ void tamandua_textctrl::add_error(wxString error)
 
 	SetStyle(start, end, attr);
 }
+
+void tamandua_textctrl::add_warning(wxString warning)
+{
+	wxTextAttr attr(wxColour(0xff, 0x53, 0x0d));
+	attr.SetFontWeight(wxFONTWEIGHT_BOLD);
+	wxString msg = wxT(" ! ") + warning + wxT("\n");
+
+	write_lock_.lock();
+	long int start = GetInsertionPoint(), end;
+	AppendText(msg);
+	end = GetInsertionPoint();
+	write_lock_.unlock();
+
+	SetStyle(start, end, attr);
+}
+
+void tamandua_textctrl::add_private_message(wxString author, wxString pm)
+{
+	wxTextAttr author_attr(wxColour(0x40, 0x01, 0x27));
+	author_attr.SetFontWeight(wxFONTWEIGHT_BOLD);
+	wxTextAttr pm_attr(wxColour(0x14, 0x06, 0x40));
+	pm += wxT("\n");
+
+	wxString author_text = wxT("@") + author + wxT(": ");
+	
+	write_lock_.lock();
+	long int start = GetInsertionPoint(), mid, end;
+	AppendText(author_text);
+	mid = GetInsertionPoint();
+	AppendText(pm);
+	end = GetInsertionPoint();
+	write_lock_.unlock();
+
+	SetStyle(start, mid, author_attr);
+	SetStyle(mid, end, pm_attr);
+}

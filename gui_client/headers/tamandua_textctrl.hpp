@@ -17,6 +17,8 @@ class tamandua_textctrl :
 		void add_message(wxString, wxString);
 		void add_info(wxString);
 		void add_error(wxString);
+		void add_warning(wxString);
+		void add_private_message(wxString, wxString);
 };
 
 #endif

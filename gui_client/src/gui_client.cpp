@@ -36,6 +36,17 @@ bool gui_client::OnInit()
 						Debug("error: ", msg_body.utf8_str());
 						wxTheApp->GetTopWindow()->GetEventHandler()->CallAfter(std::bind(&tamandua_textctrl::add_error, frame->get_msgs(), msg_body));
 						break;
+
+					case tamandua::message_type::warning_message:
+						Debug("warning: ", msg_body.utf8_str());
+						wxTheApp->GetTopWindow()->GetEventHandler()->CallAfter(std::bind(&tamandua_textctrl::add_warning, frame->get_msgs(), msg_body));
+						break;
+
+					case tamandua::message_type::private_message:
+						Debug("pm: ", author.utf8_str(), ": ", msg_body.utf8_str());
+						wxTheApp->GetTopWindow()->GetEventHandler()->CallAfter(std::bind(&tamandua_textctrl::add_private_message, frame->get_msgs(), author, msg_body));
+						break;
+
 					
 					default:
 						Debug("<", author, ">: ", msg_body.utf8_str()); 
