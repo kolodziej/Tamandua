@@ -14,7 +14,7 @@ main_frame::main_frame() :
 	msg = new wxTextCtrl(panel, MSG_CTRL, wxEmptyString, wxPoint(0,0), wxDefaultSize, wxTE_MULTILINE | wxTE_PROCESS_ENTER);
 	sizer = new wxBoxSizer(wxVERTICAL);
 	connect_sizer = new wxBoxSizer(wxHORIZONTAL);
-	connect_host = new wxTextCtrl(panel, CON_HOST_TEXT, wxEmptyString, wxPoint(0,0), wxDefaultSize, wxTE_PROCESS_ENTER);
+	connect_host = new wxTextCtrl(panel, CON_HOST_TEXT, wxT("localhost"), wxPoint(0,0), wxDefaultSize, wxTE_PROCESS_ENTER);
 	connect_port = new wxTextCtrl(panel, CON_PORT_TEXT, wxT("5000"), wxPoint(0,0), wxDefaultSize, wxTE_PROCESS_ENTER);
 	connect_button = new wxButton(panel, CON_BTN, wxT("Connect"));
 
@@ -31,8 +31,7 @@ void main_frame::send_message(wxCommandEvent &event)
 {
 	wxString data = msg->GetValue();
 	msg->Clear();
-
-	tamandua::message msg(tamandua::message_type::standard_message, std::string(data.ToAscii()));
+	tamandua::message msg(tamandua::message_type::standard_message, std::string(data.utf8_str()));
 	wxGetApp().get_client()->send_message(msg, [this](tamandua::status s) {
 		if (s == tamandua::status::ok)
 			message_sent_();

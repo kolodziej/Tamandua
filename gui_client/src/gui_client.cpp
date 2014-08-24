@@ -20,24 +20,24 @@ bool gui_client::OnInit()
 			if (cl.is_next_message())
 			{
 				auto msg_pair = cl.get_next_message();
-				wxString author(msg_pair.first.c_str(), wxConvUTF8);
-				wxString msg_body(msg_pair.second.body.c_str(), wxConvUTF8);
+				wxString author = wxString::FromUTF8(msg_pair.first.data());
+				wxString msg_body = wxString::FromUTF8(msg_pair.second.body.data());
 				tamandua::message &msg = msg_pair.second;
 				switch (msg.header.type)
 				{
 					case tamandua::message_type::info_message:
-						Debug("info: ", msg_body);
-						frame->get_msgs()->add_info(wxString(msg_body));
+						Debug("info: ", msg_body.utf8_str());
+						frame->get_msgs()->add_info(msg_body);
 						break;
 
 					case tamandua::message_type::error_message:
-						Debug("error: ", msg_body);
-						frame->get_msgs()->add_error(wxString(msg_body));
+						Debug("error: ", msg_body.utf8_str());
+						frame->get_msgs()->add_error(msg_body);
 						break;
 					
 					default:
-						Debug("<", author, ">: ", msg_body); 
-						frame->get_msgs()->add_message(wxString(author), wxString(msg_body));
+						Debug("<", author, ">: ", msg_body.utf8_str()); 
+						frame->get_msgs()->add_message(author, msg_body);
 						break;
 				}
 			}
@@ -53,9 +53,9 @@ bool gui_client::OnInit()
 void gui_client::io_service_run()
 {
 	io_service_thread = std::thread([this]() {
-		std::cout << "Running io_service::run()\n";
+		Debug("Running io_service::run()");
 		io_service_->run();
-		std::cout << "io_service::run() returned\n";
+		Debug("io_service::run() returned");
 	});
 }
 
