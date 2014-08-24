@@ -31,7 +31,8 @@ void main_frame::send_message(wxCommandEvent &event)
 {
 	wxString data = msg->GetValue();
 	msg->Clear();
-	tamandua::message msg(tamandua::message_type::standard_message, data.ToStdString());
+
+	tamandua::message msg(tamandua::message_type::standard_message, std::string(data.ToAscii()));
 	wxGetApp().get_client()->send_message(msg, [this](tamandua::status s) {
 		if (s == tamandua::status::ok)
 			message_sent_();
