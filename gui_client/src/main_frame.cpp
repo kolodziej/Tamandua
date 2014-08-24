@@ -17,6 +17,7 @@ main_frame::main_frame() :
 	connect_host = new wxTextCtrl(panel, CON_HOST_TEXT, wxT("localhost"), wxPoint(0,0), wxDefaultSize, wxTE_PROCESS_ENTER);
 	connect_port = new wxTextCtrl(panel, CON_PORT_TEXT, wxT("5000"), wxPoint(0,0), wxDefaultSize, wxTE_PROCESS_ENTER);
 	connect_button = new wxButton(panel, CON_BTN, wxT("Connect"));
+	funny_button = new wxButton(panel, FUNNY_BTN, wxT("Funny button"));
 
 	panel->SetSizer(sizer);
 	connect_sizer->Add(connect_host,1);
@@ -25,6 +26,7 @@ main_frame::main_frame() :
 	sizer->Add(connect_sizer, 0, wxALL | wxEXPAND, 10);
 	sizer->Add(msgs, 3, wxBOTTOM | wxLEFT | wxRIGHT | wxEXPAND, 10);
 	sizer->Add(msg, 0, wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 10);
+	sizer->Add(funny_button, 0);
 }
 
 void main_frame::send_message(wxCommandEvent &event)
@@ -38,6 +40,14 @@ void main_frame::send_message(wxCommandEvent &event)
 		else
 			message_undelivered_();
 	});
+}
+
+void main_frame::funny(wxCommandEvent &event)
+{
+	wxString data = msg->GetValue();
+	msgs->AppendText(wxT("\n"));
+	msgs->AppendText(data);
+	msg->Clear();
 }
 
 void main_frame::connect(wxCommandEvent &event)
@@ -62,13 +72,15 @@ void main_frame::disconnect(wxCommandEvent &event)
 void main_frame::connecting_succeeded_()
 {
 	Debug("Connected to server!");
-	msgs->add_info(wxT("Connected to server!"));
+	wxString info(wxT("Connected to server!"), wxMBConvUTF8());
+	msgs->add_info(info);
 }
 
 void main_frame::connecting_failed_()
 {
 	Debug("Connecting failed!");
-	msgs->add_error(wxT("Connecting failed!"));
+	wxString error(wxT("Connecting failed!"), wxMBConvUTF8());
+	msgs->add_error(error);
 }
 
 void main_frame::message_sent_()
@@ -78,7 +90,8 @@ void main_frame::message_sent_()
 
 void main_frame::message_undelivered_()
 {
-	msgs->add_error(wxT("Message undelivered!"));
+	wxString error(wxT("Message undelivered!"), wxMBConvUTF8());
+	msgs->add_error(error);
 }
 
 BEGIN_EVENT_TABLE(main_frame, wxFrame)
@@ -86,4 +99,5 @@ BEGIN_EVENT_TABLE(main_frame, wxFrame)
 //	EVT_TEXT_ENTER(CON_PORT_TEXT, main_frame::connect)
 	EVT_TEXT_ENTER(MSG_CTRL, main_frame::send_message)
 	EVT_BUTTON(CON_BTN, main_frame::connect)
+	EVT_BUTTON(FUNNY_BTN, main_frame::funny)
 END_EVENT_TABLE()
