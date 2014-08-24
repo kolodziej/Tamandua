@@ -93,6 +93,8 @@ namespace tamandua
 			bool is_next_message();
 			std::pair<std::string, message> get_next_message();
 
+			void disconnect();
+
 		private:
 			void add_message_();
 			void add_message_(message_type, std::string &);

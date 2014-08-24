@@ -34,6 +34,18 @@ std::pair<std::string, message> client::get_next_message()
 	return make_pair(author, msg);
 }
 
+void client::disconnect()
+{
+	try {
+		socket_.shutdown(tcp::socket::shutdown_type::shutdown_both);
+		socket_.close();
+	} catch (boost::system::system_error err)
+	{
+		TamanduaDebug("Socket shutdown failed!");
+		TamanduaDebug(err.what());
+	}
+}
+
 void client::add_message_()
 {
 	std::lock_guard<std::mutex> lock(messages_queue_lock_);
