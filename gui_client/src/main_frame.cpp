@@ -51,16 +51,25 @@ void main_frame::connect(wxCommandEvent &event)
 			connecting_failed_();
 	});
 	wxGetApp().io_service_run();
+	connect_button->Unbind(wxEVT_BUTTON, &main_frame::connect, this);
+	connect_button->Bind(wxEVT_BUTTON, &main_frame::disconnect, this);
+	connect_button->SetLabel(wxT("Disconnect"));
 }
 
 void main_frame::disconnect(wxCommandEvent &event)
 {
 	msgs->add_info("Disconnecting...");
 	wxGetApp().get_client()->disconnect();
+	connected = false;
+	connect_button->Unbind(wxEVT_BUTTON, &main_frame::disconnect, this);
+	connect_button->Bind(wxEVT_BUTTON, &main_frame::connect, this);
+	connect_button->SetLabel(wxString(wxT("Connect")));
 }
 
 void main_frame::connecting_succeeded_()
 {
+	connected = true;
+	connect_button->SetLabel(wxString(wxT("Disconnect")));
 	Debug("Connected to server!");
 	wxString info(wxT("Connected to server!"), wxMBConvUTF8());
 	msgs->add_info(info);

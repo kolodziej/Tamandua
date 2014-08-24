@@ -16,6 +16,8 @@ class main_frame :
 		wxButton *connect_button;
 		wxBoxSizer *sizer;
 		wxBoxSizer *connect_sizer;
+
+		bool connected;
 	public:
 		enum {
 			MSGS_CTRL = 1000,
