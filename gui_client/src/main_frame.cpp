@@ -95,9 +95,10 @@ void main_frame::connect(wxCommandEvent &event)
 						break;
 				}
 			}
-			std::this_thread::yield();
-			std::lock_guard<std::mutex> lock(tb->running_lock);
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+			tb->running_lock.lock();
 			local_running = tb->running;
+			tb->running_lock.unlock();
 		} while (local_running);
 	});
 
@@ -108,13 +109,22 @@ void main_frame::connect(wxCommandEvent &event)
 
 void main_frame::disconnect(wxCommandEvent &event)
 {
-	msgs->add_info("Disconnecting...");
-	
-
+	msgs->add_info(wxT("Disconnecting..."));
+	tb->turn_off();
+	tb->reader_thread.join();
+	tb->client.disconnect();
+	tb->io_service_thread.join();
+	msgs->add_info(wxT("Disconnected!"));
 
 	connect_button->Unbind(wxEVT_BUTTON, &main_frame::disconnect, this);
 	connect_button->Bind(wxEVT_BUTTON, &main_frame::connect, this);
 	connect_button->SetLabel(wxString(wxT("Connect")));
+}
+
+void main_frame::msgs_url(wxTextUrlEvent &event)
+{
+	if (event.GetMouseEvent().Button(wxMOUSE_BTN_LEFT))
+		wxMessageBox(wxT("You clicked URL address, but you didn't specified your web browser in Tamandua Client options.\nIt was probably because Tamandua Client has not options :D"), wxT("You clicked URL address"), wxICON_INFORMATION);
 }
 
 void main_frame::connecting_succeeded_()
@@ -148,5 +158,6 @@ BEGIN_EVENT_TABLE(main_frame, wxFrame)
 //	EVT_TEXT_ENTER(CON_HOST_TEXT, main_frame::connect)
 //	EVT_TEXT_ENTER(CON_PORT_TEXT, main_frame::connect)
 	EVT_TEXT_ENTER(MSG_CTRL, main_frame::send_message)
+	EVT_TEXT_URL(MSGS_CTRL, main_frame::msgs_url)
 	EVT_BUTTON(CON_BTN, main_frame::connect)
 END_EVENT_TABLE()

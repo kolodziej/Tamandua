@@ -37,6 +37,7 @@ class main_frame :
 		void connect(wxCommandEvent &);
 		void send_message(wxCommandEvent &);
 		void disconnect(wxCommandEvent &);
+		void msgs_url(wxTextUrlEvent &);
 
 		tamandua_textctrl *get_msgs()
 		{
