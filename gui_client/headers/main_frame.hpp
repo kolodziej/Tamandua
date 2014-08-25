@@ -4,6 +4,7 @@
 #include "wx/textctrl.h"
 #include "tamandua_textctrl.hpp"
 #include "gui_client.hpp"
+#include "tamandua_box.hpp"
 #include <initializer_list>
 
 class main_frame :
@@ -18,6 +19,7 @@ class main_frame :
 		wxBoxSizer *connect_sizer;
 
 		bool connected;
+		tamandua_box *tb;
 	public:
 		enum {
 			MSGS_CTRL = 1000,
@@ -32,8 +34,8 @@ class main_frame :
 
 		main_frame();
 
-		void send_message(wxCommandEvent &);
 		void connect(wxCommandEvent &);
+		void send_message(wxCommandEvent &);
 		void disconnect(wxCommandEvent &);
 
 		tamandua_textctrl *get_msgs()
