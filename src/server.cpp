@@ -93,6 +93,11 @@ void server::quit_user(id_number_t uid, status st)
 	if (u != participants_.end())
 		participants_.erase(u);
 
+	std::string username = (*u).second->get_name();
+	auto u_id = participants_ids_.find(username);
+	if (u_id != participants_ids_.end())
+		participants_ids_.erase(u_id);
+
 	std::stringstream stream;
 	stream << "User " << username << " is quitting server";
 	if (st == ok)
