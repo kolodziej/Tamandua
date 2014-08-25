@@ -34,6 +34,10 @@ namespace tamandua
 			}
 			
 			message & get_msg();
+			message & operator()()
+			{
+				return get_msg();
+			}
 
 		private:
 			void prepare_message_();

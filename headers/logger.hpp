@@ -8,8 +8,8 @@
 #define LOG_STREAM std::clog
 #define ERROR_STREAM std::cerr
 
-#define Log(logger,...) logger.log("[", std::setprecision(6), std::setw(10), std::fixed, logger.get_time(), "] ", __VA_ARGS__)
-#define Error(logger,...) logger.error("[", std::setprecision(6), std::setw(10), std::fixed, logger.get_time(), "] ", __VA_ARGS__)
+#define Log(logger,...) logger.log("[", std::setprecision(6), std::setw(12), std::fixed, logger.get_time(), "] ", __VA_ARGS__)
+#define Error(logger,...) logger.error("[", std::setprecision(6), std::setw(12), std::fixed, logger.get_time(), "] ", __VA_ARGS__)
 #ifdef DEBUG
 	#define TamanduaDebug(...) logger::debug(__VA_ARGS__)
 #else

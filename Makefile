@@ -1,7 +1,7 @@
 CXX=g++
 CXXFLAGS=-std=c++11 -I./headers
 LIBS=-lboost_system
-OBJS=src/group.o src/participant.o src/hidden_participant.o src/message_buffer.o src/private_room.o src/room.o src/root.o src/server.o src/user.o src/client.o src/user_message_interpreter.o
+OBJS=src/group.o src/participant.o src/hidden_participant.o src/message_buffer.o src/private_room.o src/room.o src/root.o src/server.o src/user.o src/client.o src/user_message_interpreter.o src/message_composer.o
 LIB_TARGET=libtamandua.a
 
 $(OBJS): %.o: %.cpp

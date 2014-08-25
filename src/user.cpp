@@ -1,5 +1,6 @@
 #include "user.hpp"
 #include "message_buffer.hpp"
+#include "message_composer.hpp"
 #include "room.hpp"
 #include "private_room.hpp"
 #include <utility>
@@ -45,18 +46,16 @@ void user::deliver_message(const message &message)
 // commands
 void user::cmd_id(std::string &params)
 {
-	std::stringstream str;
-	str << "Your id number is " << get_id();
-	message msg(message_type::info_message, str.str());
-	deliver_message(msg);
+	message_composer msgc(message_type::info_message);
+	msgc << "Your id number is " << get_id() << ".";
+	deliver_message(msgc());
 }
 
 void user::cmd_msg_id(std::string &params)
 {
-	std::stringstream str;
-	str << "Last message id is " << get_server().get_last_message_id();
-	message msg(message_type::info_message, str.str());
-	deliver_message(msg);
+	message_composer msgc(message_type::info_message);
+	msgc << "Last message id is " << get_server().get_last_message_id();
+	deliver_message(msgc());
 }
 
 void user::cmd_room(std::string &params)
@@ -67,18 +66,16 @@ void user::cmd_room(std::string &params)
 	auto room_ptr = get_server().get_group(room_name);
 	if (room_ptr == nullptr || room_ptr->is_hidden() == true)
 	{
-		std::stringstream stream;
-		stream << "Room called " << room_name << " does not exist!";
-		message msg(message_type::error_message, stream.str());
-		deliver_message(msg);
+		message_composer msgc(message_type::error_message);
+		msgc << "Room called " << room_name << " does not exist!";
+		deliver_message(msgc());
 	} else
 	{
 		group_ = room_ptr;
 		group_->join_participant(shared_from_this());
-		std::stringstream stream;
-		stream << "Your room is now: " << room_name;
-		message msg(message_type::info_message, stream.str());
-		deliver_message(msg);
+		message_composer msgc(message_type::info_message);
+		msgc << "Your room is now: " << room_name;
+		deliver_message(msgc());
 	}
 }
 
@@ -90,10 +87,9 @@ void user::cmd_proom(std::string &params)
 	auto room_ptr = get_server().get_group(room_name);
 	if (room_ptr == nullptr || room_ptr->is_hidden() == false)
 	{
-		std::stringstream stream;
-		stream << "Private room called " << room_name << " does not exist!";
-		message msg(message_type::error_message, stream.str());
-		deliver_message(msg);
+		message_composer msgc(message_type::error_message);
+		msgc << "Private room called " << room_name << " does not exist!";
+		deliver_message(msgc());
 	} else
 	{
 		std::shared_ptr<private_room> proom_ptr = std::dynamic_pointer_cast<private_room>(room_ptr);
@@ -101,14 +97,14 @@ void user::cmd_proom(std::string &params)
 		{
 			group_ = room_ptr;
 			room_ptr->join_participant(shared_from_this());
-			std::stringstream stream;
-			stream << "You are now in private room: " << room_name;
-			message msg(message_type::info_message, stream.str());
-			deliver_message(msg);
+			message_composer msgc(message_type::info_message);
+			msgc << "You are now in private room: " << room_name;
+			deliver_message(msgc());
 		} else
 		{
-			message msg(message_type::error_message, "Wrond password!");
-			deliver_message(msg);
+			message_composer msgc(message_type::error_message);
+			msgc << "[Private room " << room_name << "]: Wrong password!";
+			deliver_message(msgc());
 		}
 	}
 }
@@ -120,16 +116,14 @@ void user::cmd_nick(std::string &params)
 	params_stream >> newname;
 	if (get_server().change_participant_name(oldname, newname))
 	{
-		std::stringstream stream;
-		stream << "You changed your nick from '" << oldname << "' to '" << newname << "!";
-		message msg(message_type::info_message, stream.str());
-		deliver_message(msg);
+		message_composer msgc(message_type::info_message);
+		msgc << "You changed your nick from '" << oldname << "' to '" << newname << "'!";
+		deliver_message(msgc());
 	} else
 	{
-		std::stringstream stream;
-		stream << "Nick which you choose (" << newname << ") is in use. Try another one!";
-		message msg(message_type::error_message, stream.str());
-		deliver_message(msg);
+		message_composer msgc(message_type::error_message);
+		msgc << "Nick which you choose (" << newname << ") is in use. Try another one!";
+		deliver_message(msgc());
 	}
 }
 
@@ -148,10 +142,9 @@ void user::cmd_msg(std::string &params)
 		rec->deliver_message(msg);
 	} else
 	{
-		std::stringstream str;
-		str << "There is no user " << usr << "!";
-		message msg(message_type::error_message, str.str());
-		deliver_message(msg);
+		message_composer msgc(message_type::error_message);
+		msgc << "There is no user " << usr << "!";
+		deliver_message(msgc());
 	}
 }
 
@@ -164,16 +157,14 @@ void user::cmd_kick_ass(std::string &params)
 	auto rec = get_server().get_participant(usr);
 	if (rec != nullptr)
 	{
-		std::stringstream str;
-		str << "User " << get_name() << " kicks your ass! ;)";
-		message msg(message_type::info_message, str.str());
-		rec->deliver_message(msg);
+		message_composer msgc(message_type::info_message);
+		msgc << "User " << get_name() << " kicks your ass!";
+		rec->deliver_message(msgc());
 	} else
 	{
-		std::stringstream str;
-		str << "There is no user " << usr << "!";
-		message msg(message_type::error_message, str.str());
-		deliver_message(msg);
+		message_composer msgc(message_type::error_message);
+		msgc << "There is no user " << usr << "!";
+		deliver_message(msgc());
 	}
 }
 
