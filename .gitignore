@@ -3,4 +3,4 @@ tests/tamandua_server
 *.o
 *.a
 *.swp
-gui_client/bin/Debug/TamanduaGUIClient
+gui_client/bin
