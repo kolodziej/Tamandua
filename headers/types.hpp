@@ -14,8 +14,7 @@ namespace tamandua
 		error_message = 4,
 		info_message = 5,
 		warning_message = 6,
-		private_message = 7,
-		quit_message = 1000,
+		private_message = 7
 	} message_type;
 
 	typedef enum {

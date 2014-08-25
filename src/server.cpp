@@ -90,10 +90,6 @@ bool server::change_participant_name(std::string oldname, std::string newname)
 void server::quit_user(id_number_t uid, status st)
 {
 	auto u = participants_.find(uid);
-	message quit_msg(message_type::quit_message, std::string());
-	std::string username((*u).second->get_name());
-	(*u).second->deliver_message(quit_msg);
-
 	if (u != participants_.end())
 		participants_.erase(u);
 
