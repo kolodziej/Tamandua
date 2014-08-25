@@ -22,13 +22,14 @@ namespace tamandua
 			std::deque<message> messages_queue_;
 			std::shared_ptr<group> group_;
 			message read_message_;
-			bool quit_;
+			status quit_status_;
+			
 		public:
-			user(server &svr, std::string & name, tcp::socket socket) : participant(svr, name), socket_(std::move(socket)), quit_(false)
+			user(server &svr, std::string & name, tcp::socket socket) : participant(svr, name), socket_(std::move(socket)), quit_status_(ok)
 			{
 				read_message();		
 			}
-			user(server &svr, std::string && name, tcp::socket socket) : participant(svr, name), socket_(std::move(socket)), quit_(false)
+			user(server &svr, std::string && name, tcp::socket socket) : participant(svr, name), socket_(std::move(socket)), quit_status_(ok)
 			{
 				read_message();	
 			}
@@ -50,10 +51,15 @@ namespace tamandua
 			void cmd_quit(std::string &);
 
 		private:
+			void read_control_sequence_();
+			void interprete_control_sequence_(char);
 			void read_message_header_();
 			void read_message_body_();
 			void process_message_();
 			void send_messages_();
+
+			void quit_();
+			void error_quit_();
 
 	};
 }

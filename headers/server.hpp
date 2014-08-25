@@ -43,7 +43,7 @@ namespace tamandua
 			void add_group(std::shared_ptr<group>);
 
 			bool change_participant_name(std::string, std::string);
-			void quit_user(id_number_t);
+			void quit_user(id_number_t, status = ok);
 
 			std::shared_ptr<participant> get_participant(id_number_t);
 			std::shared_ptr<participant> get_participant(std::string);

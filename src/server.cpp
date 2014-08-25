@@ -5,6 +5,9 @@
 #include "user.hpp"
 #include "room.hpp"
 #include <sstream>
+#include <iomanip>
+#include <ctime>
+#include <chrono>
 
 using namespace tamandua;
 
@@ -25,7 +28,12 @@ server::~server()
 
 void server::start_server()
 {
-	Log(log_, "Starting server at: ");
+	using std::chrono::system_clock;
+	char timebuf[30];
+	time_t start_time = system_clock::to_time_t(system_clock::now());
+	tm * tm_p = localtime(&start_time);
+	strftime(timebuf, 30, "%c", tm_p);
+	Log(log_, "Starting server at: ", timebuf);
 	add_root_();
 	add_hall_();
 	accept_connection_();
@@ -79,7 +87,7 @@ bool server::change_participant_name(std::string oldname, std::string newname)
 	return false;
 }
 
-void server::quit_user(id_number_t uid)
+void server::quit_user(id_number_t uid, status st)
 {
 	auto u = participants_.find(uid);
 	message quit_msg(message_type::quit_message, std::string());
@@ -90,7 +98,13 @@ void server::quit_user(id_number_t uid)
 		participants_.erase(u);
 
 	std::stringstream stream;
-	stream << "User " << username << " is quitting server!";
+	stream << "User " << username << " is quitting server";
+	if (st == ok)
+		stream << "!";
+	else if (st == user_error_quit)
+		stream << " [due to client side error occurance]!";
+
+	Log(log_, stream.str());
 	message quit_info(message_type::info_message, stream.str());
 	for (auto part : participants_)
 		part.second->deliver_message(quit_info);

@@ -28,7 +28,9 @@ namespace tamandua
 	typedef enum {
 		ok = 0,
 		connection_failed = 1,
-		message_undelivered = 2
+		message_undelivered = 2,
+		user_quit = 3,
+		user_error_quit = 4,
 	} status;
 }
 

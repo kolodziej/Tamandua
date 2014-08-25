@@ -21,9 +21,13 @@ std::string user::get_ip_address()
 
 void user::read_message()
 {
-	if (quit_)
+	if (quit_status_ != ok)
 	{
-		get_server().quit_user(get_id());
+		if (quit_status_ == user_quit)
+			quit_();
+		else if (quit_status_ == user_error_quit)
+			error_quit_();
+
 		return;
 	}
 	
@@ -175,7 +179,7 @@ void user::cmd_kick_ass(std::string &params)
 
 void user::cmd_quit(std::string &params)
 {
-	quit_ = true;	
+	quit_status_ = user_quit;	
 }
 
 void user::read_message_header_()
@@ -187,6 +191,12 @@ void user::read_message_header_()
 			if (!ec)
 			{
 				read_message_body_();
+			} else if (ec == boost::asio::error::eof || ec == boost::asio::error::connection_reset)
+			{
+				error_quit_();
+			} else
+			{
+				TamanduaDebug("Boost error code while reading header: ", ec, " (read length: ", length, ")");
 			}
 		});
 }
@@ -203,6 +213,9 @@ void user::read_message_body_()
 				read_message_.body = std::string(buffer.get(), read_message_.header.size);
 				Log(get_server().get_logger(), "User ", get_id(), " passed a message: ", read_message_.body);
 				process_message_();
+			} else if (ec == boost::asio::error::eof || ec == boost::asio::error::connection_reset)
+			{
+				error_quit_();
 			} else
 			{
 				Error(get_server().get_logger(), "User ", get_id(), " failed receiveg a message from client!");
@@ -248,4 +261,14 @@ void user::send_messages_()
 					send_messages_();
 			}
 		});
+}
+
+void user::quit_()
+{
+	get_server().quit_user(get_id());
+}
+
+void user::error_quit_()
+{
+	get_server().quit_user(get_id(), status::user_error_quit);
 }
