@@ -194,7 +194,7 @@ std::string server::get_uptime_string()
 	ticks /= 24;
 	d = ticks;
 	std::stringstream stream;
-	stream << d << " days, " << h << ":" << m << ":" << s;
+	stream << std::setw(3) << std::setfill('0') << d << " days, " << std::setw(2) << std::setfill('0') << h << ":" << std::setw(2) << std::setfill('0') << m << ":" << std::setw(2) << std::setfill('0') << s;
 	return stream.str();
 }
 
