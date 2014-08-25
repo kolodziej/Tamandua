@@ -168,6 +168,13 @@ void user::cmd_kick_ass(std::string &params)
 	}
 }
 
+void user::cmd_server_uptime(std::string &params)
+{
+	message_composer msgc(message_type::info_message);
+	msgc << "Server works for: " << get_server().get_uptime_string();
+	deliver_message(msgc());
+}
+
 void user::cmd_quit(std::string &params)
 {
 	quit_status_ = user_quit;	

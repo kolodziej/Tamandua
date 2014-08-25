@@ -29,8 +29,9 @@ server::~server()
 void server::start_server()
 {
 	using std::chrono::system_clock;
+	start_time_ = system_clock::now();
 	char timebuf[30];
-	time_t start_time = system_clock::to_time_t(system_clock::now());
+	time_t start_time = system_clock::to_time_t(start_time_);
 	tm * tm_p = localtime(&start_time);
 	strftime(timebuf, 30, "%c", tm_p);
 	Log(log_, "Starting server at: ", timebuf);
@@ -172,6 +173,29 @@ id_number_t server::get_last_group_id() const
 id_number_t server::get_last_message_id() const
 {
 	return last_message_id_;
+}
+
+bool server::is_username_valid(std::string username)
+{
+	if (username.length() < 2)
+		return false;
+}
+
+std::string server::get_uptime_string()
+{
+	std::chrono::duration<long int> uptime_seconds = std::chrono::duration_cast<std::chrono::duration<long int>>(std::chrono::system_clock::now() - start_time_);
+	long int ticks = uptime_seconds.count();
+	int d, h, m, s;
+	s = ticks % 60;
+	ticks /= 60;
+	m = ticks % 60;
+	ticks /= 60;
+	h = ticks % 24;
+	ticks /= 24;
+	d = ticks;
+	std::stringstream stream;
+	stream << d << " days, " << h << ":" << m << ":" << s;
+	return stream.str();
 }
 
 logger & server::get_logger()

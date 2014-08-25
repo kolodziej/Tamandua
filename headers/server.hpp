@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 #include <memory>
+#include <chrono>
 #include <boost/asio.hpp>
 
 using boost::asio::ip::tcp;
@@ -33,6 +34,8 @@ namespace tamandua
 
 			id_number_t last_participant_id_, last_group_id_, last_message_id_;
 
+			std::chrono::system_clock::time_point start_time_;
+
 		public:
 			server(boost::asio::io_service &, tcp::endpoint &, logger &, user_message_interpreter &);
 			~server();
@@ -56,6 +59,9 @@ namespace tamandua
 			id_number_t get_last_participant_id() const;
 			id_number_t get_last_group_id() const;
 			id_number_t get_last_message_id() const;
+
+			bool is_username_valid(std::string);
+			std::string get_uptime_string();
 
 			logger & get_logger();
 			user_message_interpreter & get_interpreter();

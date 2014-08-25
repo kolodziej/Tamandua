@@ -48,6 +48,7 @@ namespace tamandua
 			void cmd_nick(std::string &);
 			void cmd_msg(std::string &);
 			void cmd_kick_ass(std::string &);
+			void cmd_server_uptime(std::string &);
 			void cmd_quit(std::string &);
 
 		private:
