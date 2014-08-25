@@ -61,6 +61,7 @@ namespace tamandua
 			id_number_t get_last_message_id() const;
 
 			bool is_username_valid(std::string);
+			void set_message_id(message &);
 			std::string get_uptime_string();
 
 			logger & get_logger();

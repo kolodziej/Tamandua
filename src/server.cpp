@@ -181,6 +181,11 @@ bool server::is_username_valid(std::string username)
 		return false;
 }
 
+void server::set_message_id(message &msg)
+{
+	msg.header.id = get_new_message_id_();
+}
+
 std::string server::get_uptime_string()
 {
 	std::chrono::duration<long int> uptime_seconds = std::chrono::duration_cast<std::chrono::duration<long int>>(std::chrono::system_clock::now() - start_time_);

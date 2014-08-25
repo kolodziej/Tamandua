@@ -188,6 +188,7 @@ void user::read_message_header_()
 		{
 			if (!ec)
 			{
+				get_server().set_message_id(read_message_);
 				read_message_body_();
 			} else if (ec == boost::asio::error::eof || ec == boost::asio::error::connection_reset)
 			{
