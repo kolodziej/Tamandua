@@ -188,7 +188,6 @@ void user::read_message_header_()
 		{
 			if (!ec)
 			{
-				get_server().set_message_id(read_message_);
 				read_message_body_();
 			} else if (ec == boost::asio::error::eof || ec == boost::asio::error::connection_reset)
 			{
@@ -224,6 +223,7 @@ void user::read_message_body_()
 
 void user::process_message_()
 {
+	get_server().set_message_id(read_message_);
 	switch (get_server().get_interpreter().process_message(*this, read_message_))
 	{
 		case processing_status::std_msg:
@@ -237,10 +237,9 @@ void user::process_message_()
 			break;
 
 		case processing_status::bad_cmd:
-			std::stringstream str;
-			str << "Unknown command: [" << read_message_.body << "]! Available commands: " << get_server().get_interpreter().get_commands_list();
-			message msg(message_type::error_message, str.str());
-			deliver_message(msg);
+			message_composer msgc(message_type::error_message);
+			msgc << "Unknown command: [" << read_message_.body << "]! Available commands: " << get_server().get_interpreter().get_commands_list();
+			deliver_message(msgc());
 			break;
 	}
 	read_message();
