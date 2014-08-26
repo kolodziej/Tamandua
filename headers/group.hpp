@@ -6,7 +6,7 @@
 #include "message.hpp"
 #include <string>
 #include <memory>
-#include <vector>
+#include <map>
 
 namespace tamandua
 {
@@ -15,7 +15,7 @@ namespace tamandua
 		private:
 			id_number_t id_;
 			std::string name_;
-			std::vector<std::shared_ptr<participant>> participants_;
+			std::map<id_number_t, std::shared_ptr<participant>> participants_;
 			server &server_;
 		
 		public:

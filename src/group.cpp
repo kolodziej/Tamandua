@@ -1,5 +1,6 @@
 #include "group.hpp"
 #include "message_header.hpp"
+#include <utility>
 
 using namespace tamandua;
 
@@ -13,13 +14,13 @@ std::string group::get_name()
 	return name_;
 }
 
-void group::join_participant(std::shared_ptr<participant> participant)
+void group::join_participant(std::shared_ptr<participant> p)
 {
-	participants_.push_back(participant);
+	participants_.insert(make_pair(p->get_id(), p));
 }
 
 void group::deliver_message(const message &message)
 {
-	for (auto participant : participants_)
-		participant->deliver_message(message);
+	for (auto p : participants_)
+		p.second->deliver_message(message);
 }
