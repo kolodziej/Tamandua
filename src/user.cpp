@@ -114,7 +114,12 @@ void user::cmd_nick(std::string &params)
 	std::stringstream params_stream(params);
 	std::string newname, oldname = get_name();
 	params_stream >> newname;
-	if (get_server().change_participant_name(oldname, newname))
+	if (oldname == newname)
+	{
+		message_composer msgc(message_type::warning_message);
+		msgc << oldname << " == " << oldname << " --- You kidding, right?! :/";
+		deliver_message(msgc());
+	} else if (get_server().change_participant_name(oldname, newname))
 	{
 		message_composer msgc(message_type::info_message);
 		msgc << "You changed your nick from '" << oldname << "' to '" << newname << "'!";
