@@ -9,6 +9,7 @@
 #include <string>
 #include <mutex>
 #include <utility>
+#include <functional>
 #include <boost/asio.hpp>
 
 using boost::asio::ip::tcp;
@@ -29,16 +30,17 @@ namespace tamandua
 			std::mutex messages_queue_lock_;
 			message read_message_;
 			bool connected_;
+		
+			std::map<event_type, std::function<void(status)>> events_handlers_;
 
 		public:
-			template <typename Callback>
-			client(boost::asio::io_service &io_service, tcp::resolver::iterator endpoint_iterator, Callback f) :
+			client(boost::asio::io_service &io_service, tcp::resolver::iterator endpoint_iterator) :
 				io_service_(io_service),
 				endpoint_iterator_(endpoint_iterator),
 				socket_(io_service),
 				connected_(false)
 			{
-				connect(endpoint_iterator, f);
+				connect(endpoint_iterator);
 			}
 
 			client(boost::asio::io_service &io_service) :
@@ -46,64 +48,22 @@ namespace tamandua
 				socket_(io_service),
 				connected_(false)
 			{}
-			
-			id_number_t get_id();
 
-			template <typename Callback>
-			void connect(std::string host, std::string port, Callback f)
-			{
-				tcp::resolver resolver(io_service_);
-				tcp::resolver::iterator endpoint_it = resolver.resolve({ host, port });
-				connect(endpoint_it, f);
-			}
-
-			template <typename Callback>
-			void connect(tcp::resolver::iterator endpoint_iterator, Callback f)
-			{
-				endpoint_iterator_ = endpoint_iterator;
-				boost::asio::async_connect(socket_, endpoint_iterator_,
-					[this, f](boost::system::error_code ec, tcp::resolver::iterator iterator)
-					{
-						if (ec)
-							f(connection_failed);
-						else
-						{
-							connected_ = true;
-							f(ok);
-						}
-
-						read_message_header_();
-					});
-			}
-	
+			void connect(std::string, std::string);
+			void connect(tcp::resolver::iterator);
 			void disconnect();
 			bool is_connected()
 			{
 				return connected_;
 			}
 
+			id_number_t get_id();
 
-			template <typename Callback>
-			void send_message(message & msg, Callback f)
-			{
-				msg.header.author = uid_;
-				msg.header.id = 0;
-				msg.header.type = message_type::standard_message;
-				msg.header.size = msg.body.length();
-				message_buffer buf(msg.header, msg.body);
-				boost::asio::async_write(socket_,
-					boost::asio::buffer(buf.get_buffer().get(), buf.get_buffer_size()),
-					[this, f](boost::system::error_code ec, size_t length)
-					{
-						if (ec)
-							f(message_undelivered);
-						else
-							f(ok);
-					});
-			}
-
+			void send_message(message &);
 			bool is_next_message();
 			std::pair<std::string, message> get_next_message();
+
+			void add_event_handler(event_type, std::function<void(status)>);
 
 		private:
 			void add_message_();
@@ -114,6 +74,9 @@ namespace tamandua
 			void process_message_();
 			void set_participants_list_();
 			void set_rooms_list_();
+
+			bool is_event_handler_(event_type);
+			void call_event_handler_(event_type, status);
 			void server_disconnected_();
 	};
 }

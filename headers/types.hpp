@@ -26,11 +26,20 @@ namespace tamandua
 
 	typedef enum {
 		ok = 0,
-		connection_failed = 1,
-		message_undelivered = 2,
-		user_quit = 3,
-		user_error_quit = 4,
+		connection_failed,
+		user_quit,
+		user_error_quit,
+		server_disconnecting_error
 	} status;
+
+	typedef enum {
+		connecting_succeeded = 1,
+		connecting_failed,
+		message_sent,
+		message_undelivered,
+		message_received,
+		server_disconnected
+	} event_type;
 }
 
 #endif

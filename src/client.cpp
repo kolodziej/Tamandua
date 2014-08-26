@@ -9,9 +9,26 @@
 
 using namespace tamandua;
 
-id_number_t client::get_id()
+void client::connect(std::string host, std::string port)
 {
-	return uid_;
+	tcp::resolver resolver(io_service_);
+	tcp::resolver::iterator endpoint_it = resolver.resolve({ host, port });
+	connect(endpoint_it);
+}
+
+void client::connect(tcp::resolver::iterator endpoint_iterator)
+{
+	endpoint_iterator_ = endpoint_iterator;
+	boost::asio::async_connect(socket_, endpoint_iterator_,
+		[this](boost::system::error_code ec, tcp::resolver::iterator iterator)
+		{
+			if (!ec)
+				call_event_handler_(connecting_succeeded, ok);
+			else
+				call_event_handler_(connecting_failed, connection_failed);
+
+			read_message_header_();
+		});
 }
 
 void client::disconnect()
@@ -19,12 +36,36 @@ void client::disconnect()
 	try {
 		socket_.shutdown(tcp::socket::shutdown_type::shutdown_both);
 		socket_.close();
+		call_event_handler_(server_disconnected, ok);
 	} catch (boost::system::system_error err)
 	{
-		TamanduaDebug("Socket shutdown failed!");
-		TamanduaDebug(err.what());
+		call_event_handler_(server_disconnected, server_disconnecting_error);
 	}
 	connected_ = false;
+	call_event_handler_(server_disconnected, ok);
+}
+
+id_number_t client::get_id()
+{
+	return uid_;
+}
+
+void client::send_message(message &msg)
+{
+	msg.header.author = uid_;
+	msg.header.id = 0;
+	msg.header.type = message_type::standard_message;
+	msg.header.size = msg.body.length();
+	message_buffer buf(msg.header, msg.body);
+	boost::asio::async_write(socket_,
+		boost::asio::buffer(buf.get_buffer().get(), buf.get_buffer_size()),
+		[this](boost::system::error_code ec, size_t length)
+		{
+			if (!ec)
+				call_event_handler_(message_sent, ok);
+			else
+				call_event_handler_(message_undelivered, ok);
+		});
 }
 
 bool client::is_next_message()
@@ -45,6 +86,12 @@ std::pair<std::string, message> client::get_next_message()
 		author = (*iter).second;
 
 	return make_pair(author, msg);
+}
+
+void client::add_event_handler(event_type evt, std::function<void(status)> func)
+{
+	auto handler = make_pair(evt, func);
+	events_handlers_.insert(handler);
 }
 
 void client::add_message_()
@@ -127,7 +174,7 @@ void client::process_message_()
 	{
 		add_message_();
 	}
-
+	call_event_handler_(message_received, ok);
 	read_message_header_();
 }
 
@@ -163,6 +210,15 @@ void client::set_rooms_list_()
 		name = record.substr(colon_pos + 1);
 		rooms_.insert(make_pair(stoull(id), name));
 	}
+}
+
+void client::call_event_handler_(event_type evt, status st)
+{
+	auto it = events_handlers_.find(evt);
+	if (it == events_handlers_.end())
+		return;
+
+	((*it).second)(st);
 }
 
 void client::server_disconnected_()
