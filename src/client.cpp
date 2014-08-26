@@ -80,6 +80,10 @@ void client::read_message_header_()
 			if (!ec)
 			{
 				read_message_body_();
+			} else if (ec == boost::asio::error::eof || ec == boost::asio::error::connection_reset)
+			{
+				TamanduaDebug("Server disconnected!");
+				//server_disconnected_();
 			}
 		});
 }
@@ -95,6 +99,10 @@ void client::read_message_body_()
 			{
 				read_message_.body = std::string(buffer.get(), read_message_.header.size);
 				process_message_();
+			} else if (ec == boost::asio::error::eof || ec == boost::asio::error::connection_reset)
+			{
+				TamanduaDebug("Server disconnected!");
+				//server_disconnected_();
 			}
 		});
 }

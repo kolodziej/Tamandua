@@ -4,6 +4,7 @@
 #include "message.hpp"
 #include "user.hpp"
 #include "room.hpp"
+#include "utility.hpp"
 #include <sstream>
 #include <iomanip>
 #include <ctime>
@@ -30,11 +31,7 @@ void server::start_server()
 {
 	using std::chrono::system_clock;
 	start_time_ = system_clock::now();
-	char timebuf[30];
-	time_t start_time = system_clock::to_time_t(start_time_);
-	tm * tm_p = localtime(&start_time);
-	strftime(timebuf, 30, "%c", tm_p);
-	Log(log_, "Starting server at: ", timebuf);
+	Log(log_, "Starting server at: ", format_localtime<system_clock, 30>(start_time_, "%c"));
 	add_root_();
 	add_hall_();
 	accept_connection_();
