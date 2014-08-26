@@ -28,22 +28,27 @@ namespace tamandua
 			std::deque<message> messages_;
 			std::mutex messages_queue_lock_;
 			message read_message_;
+			bool connected_;
 
 		public:
 			template <typename Callback>
 			client(boost::asio::io_service &io_service, tcp::resolver::iterator endpoint_iterator, Callback f) :
 				io_service_(io_service),
 				endpoint_iterator_(endpoint_iterator),
-				socket_(io_service)
+				socket_(io_service),
+				connected_(false)
 			{
 				connect(endpoint_iterator, f);
 			}
 
 			client(boost::asio::io_service &io_service) :
 				io_service_(io_service),
-				socket_(io_service)
+				socket_(io_service),
+				connected_(false)
 			{}
 			
+			id_number_t get_id();
+
 			template <typename Callback>
 			void connect(std::string host, std::string port, Callback f)
 			{
@@ -62,13 +67,21 @@ namespace tamandua
 						if (ec)
 							f(connection_failed);
 						else
+						{
+							connected_ = true;
 							f(ok);
+						}
 
 						read_message_header_();
 					});
 			}
+	
+			void disconnect();
+			bool is_connected()
+			{
+				return connected_;
+			}
 
-			id_number_t get_id();
 
 			template <typename Callback>
 			void send_message(message & msg, Callback f)
@@ -92,8 +105,6 @@ namespace tamandua
 			bool is_next_message();
 			std::pair<std::string, message> get_next_message();
 
-			void disconnect();
-
 		private:
 			void add_message_();
 			void add_message_(message_type, std::string &);
@@ -103,6 +114,7 @@ namespace tamandua
 			void process_message_();
 			void set_participants_list_();
 			void set_rooms_list_();
+			void server_disconnected_();
 	};
 }
 

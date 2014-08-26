@@ -14,6 +14,19 @@ id_number_t client::get_id()
 	return uid_;
 }
 
+void client::disconnect()
+{
+	try {
+		socket_.shutdown(tcp::socket::shutdown_type::shutdown_both);
+		socket_.close();
+	} catch (boost::system::system_error err)
+	{
+		TamanduaDebug("Socket shutdown failed!");
+		TamanduaDebug(err.what());
+	}
+	connected_ = false;
+}
+
 bool client::is_next_message()
 {
 	std::lock_guard<std::mutex> lock(messages_queue_lock_);
@@ -32,18 +45,6 @@ std::pair<std::string, message> client::get_next_message()
 		author = (*iter).second;
 
 	return make_pair(author, msg);
-}
-
-void client::disconnect()
-{
-	try {
-		socket_.shutdown(tcp::socket::shutdown_type::shutdown_both);
-		socket_.close();
-	} catch (boost::system::system_error err)
-	{
-		TamanduaDebug("Socket shutdown failed!");
-		TamanduaDebug(err.what());
-	}
 }
 
 void client::add_message_()
@@ -83,7 +84,7 @@ void client::read_message_header_()
 			} else if (ec == boost::asio::error::eof || ec == boost::asio::error::connection_reset)
 			{
 				TamanduaDebug("Server disconnected!");
-				//server_disconnected_();
+				server_disconnected_();
 			}
 		});
 }
@@ -102,7 +103,7 @@ void client::read_message_body_()
 			} else if (ec == boost::asio::error::eof || ec == boost::asio::error::connection_reset)
 			{
 				TamanduaDebug("Server disconnected!");
-				//server_disconnected_();
+				server_disconnected_();
 			}
 		});
 }
@@ -162,4 +163,9 @@ void client::set_rooms_list_()
 		name = record.substr(colon_pos + 1);
 		rooms_.insert(make_pair(stoull(id), name));
 	}
+}
+
+void client::server_disconnected_()
+{
+	add_message_(message_type::warning_message, std::string("You have been disconnected from server."));
 }
