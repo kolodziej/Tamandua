@@ -263,10 +263,10 @@ void user::send_messages_()
 
 void user::quit_()
 {
-	get_server().quit_user(get_id());
+	get_server().quit_participant(get_id());
 }
 
 void user::error_quit_()
 {
-	get_server().quit_user(get_id(), status::user_error_quit);
+	get_server().quit_participant(get_id(), status::user_error_quit);
 }

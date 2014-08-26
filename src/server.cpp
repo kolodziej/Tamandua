@@ -85,7 +85,7 @@ bool server::change_participant_name(std::string oldname, std::string newname)
 	return false;
 }
 
-void server::quit_user(id_number_t uid, status st)
+void server::quit_participant(id_number_t uid, status st)
 {
 	auto u = participants_.find(uid);
 	if (u != participants_.end())
