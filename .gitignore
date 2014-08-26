@@ -1,5 +1,5 @@
-tests/tamandua_client
-tests/tamandua_server
+examples/tamandua_client
+examples/tamandua_server
 *.o
 *.a
 *.swp
