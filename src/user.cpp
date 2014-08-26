@@ -199,7 +199,7 @@ void user::read_message_header_()
 				error_quit_();
 			} else
 			{
-				TamanduaDebug("Boost error code while reading header: ", ec, " (read length: ", length, ")");
+				Error(get_server().get_logger(), "Boost error code while reading header: ", ec, " (read length: ", length, ")");
 			}
 		});
 }
