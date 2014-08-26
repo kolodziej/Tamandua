@@ -4,23 +4,25 @@
 #include <cstring>
 #include <thread>
 #include <utility>
+#include <functional>
 #include <boost/asio.hpp>
 
 using boost::asio::ip::tcp;
 using namespace tamandua;
 
-void client_connect_callback(tamandua::status st)
+void connecting_succeeded_callback(status st)
 {
-	if (st == ok)
-		std::cout << "\e[1;92mConnected!\e[0m\n";
-	else
-		std::cout << "\e[1;91mNot connected\e[0m\n";
+	TamanduaDebug("Connected succesfully!");
 }
 
-void client_send_callback(tamandua::status st)
+void connecting_failed_callback(status st)
 {
-	if (st != ok)
-		std::cout << "!!! Message undelivered! !!!\n";
+	TamanduaDebug("Connecting failed");
+}
+
+void message_sent_callback(status st)
+{
+	TamanduaDebug("Message sent");
 }
 
 int main(int argc, char ** argv)
@@ -34,7 +36,10 @@ int main(int argc, char ** argv)
 	boost::asio::io_service io_service;
 
 	client cl(io_service);
-	cl.connect(std::string(argv[1]), std::string(argv[2]), client_connect_callback);
+	cl.add_event_handler(connecting_succeeded, std::bind(&connecting_succeeded_callback, std::placeholders::_1));
+	cl.add_event_handler(connecting_failed, std::bind(&connecting_failed_callback, std::placeholders::_1));
+	cl.add_event_handler(message_sent, std::bind(&message_sent_callback, std::placeholders::_1));
+	cl.connect(std::string(argv[1]), std::string(argv[2]));
 
 	std::thread io_service_thread([&io_service]() { io_service.run(); });
 	std::thread display_msg_thread([&cl]() {
@@ -75,7 +80,7 @@ int main(int argc, char ** argv)
 		msg.header.size = body_str.length();
 		msg.body = body_str;
 
-		cl.send_message(msg, client_send_callback);
+		cl.send_message(msg);
 	}
 
 	io_service_thread.join();
