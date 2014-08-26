@@ -4,6 +4,7 @@
 #include "tamandua_box.hpp"
 #include "debug_gui.hpp"
 #include <string>
+#include <functional>
 
 wxDECLARE_APP(gui_client);
 
@@ -33,12 +34,7 @@ void main_frame::send_message(wxCommandEvent &event)
 	wxString data = msg->GetValue();
 	msg->Clear();
 	tamandua::message msg(tamandua::message_type::standard_message, std::string(data.utf8_str()));
-	tb->client.send_message(msg, [this](tamandua::status s) {
-		if (s == tamandua::status::ok)
-			message_sent_();
-		else
-			message_undelivered_();
-	});
+	tb->client.send_message(msg);
 }
 
 void main_frame::connect(wxCommandEvent &event)
@@ -47,13 +43,14 @@ void main_frame::connect(wxCommandEvent &event)
 	std::string port(connect_port->GetValue().utf8_str());
 
 	tb = new tamandua_box;
-	tb->client.connect(host, port, [this](tamandua::status st)
-	{
-		if (st == tamandua::status::ok)
-			connecting_succeeded_();
-		else
-			connecting_failed_();
-	});
+	tb->client.add_event_handler(tamandua::event_type::connecting_succeeded,
+		std::bind(&main_frame::connect_callback_, this, std::placeholders::_1));
+	tb->client.add_event_handler(tamandua::event_type::connecting_failed,
+		std::bind(&main_frame::connect_callback_, this, std::placeholders::_1));
+	tb->client.add_event_handler(tamandua::event_type::message_received,
+		std::bind(&main_frame::message_received_callback_, this, std::placeholders::_1));
+
+	tb->client.connect(host, port);
 	tb->io_service_thread = std::thread([this]() {
 		tb->io_service.run();
 	});
@@ -61,64 +58,57 @@ void main_frame::connect(wxCommandEvent &event)
 		tamandua::client &cl = tb->client;
 		bool local_running = true;
 		do {
-			if (cl.is_next_message())
+			// start
+			auto msg_pair = cl.get_next_message();
+			wxString author = wxString::FromUTF8(msg_pair.first.data());
+			wxString msg_body = wxString::FromUTF8(msg_pair.second.body.data());
+			tamandua::message &msg = msg_pair.second;
+			switch (msg.header.type)
 			{
-				auto msg_pair = cl.get_next_message();
-				wxString author = wxString::FromUTF8(msg_pair.first.data());
-				wxString msg_body = wxString::FromUTF8(msg_pair.second.body.data());
-				tamandua::message &msg = msg_pair.second;
-				switch (msg.header.type)
-				{
-					case tamandua::message_type::info_message:
-						Debug("info: ", msg_body);
-						wxTheApp->GetTopWindow()->GetEventHandler()->CallAfter(std::bind(&tamandua_textctrl::add_info, msgs, msg_body));
-						break;
+				case tamandua::message_type::info_message:
+					Debug("info: ", msg_body);
+					wxTheApp->GetTopWindow()->GetEventHandler()->CallAfter(std::bind(&tamandua_textctrl::add_info, msgs, msg_body));
+					break;
 
-					case tamandua::message_type::error_message:
-						Debug("error: ", msg_body);
-						wxTheApp->GetTopWindow()->GetEventHandler()->CallAfter(std::bind(&tamandua_textctrl::add_error, msgs, msg_body));
-						break;
+				case tamandua::message_type::error_message:
+					Debug("error: ", msg_body);
+					wxTheApp->GetTopWindow()->GetEventHandler()->CallAfter(std::bind(&tamandua_textctrl::add_error, msgs, msg_body));
+					break;
 
-					case tamandua::message_type::warning_message:
-						Debug("warning: ", msg_body);
-						wxTheApp->GetTopWindow()->GetEventHandler()->CallAfter(std::bind(&tamandua_textctrl::add_warning, msgs, msg_body));
-						break;
+				case tamandua::message_type::warning_message:
+					Debug("warning: ", msg_body);
+					wxTheApp->GetTopWindow()->GetEventHandler()->CallAfter(std::bind(&tamandua_textctrl::add_warning, msgs, msg_body));
+					break;
 
-					case tamandua::message_type::private_message:
-						Debug("@", author, ": ", msg_body);
-						wxTheApp->GetTopWindow()->GetEventHandler()->CallAfter(std::bind(&tamandua_textctrl::add_private_message, msgs, author, msg_body));
-						break;
-					
-					case tamandua::message_type::standard_message:
-						Debug(author, ": ", msg_body);
-						wxTheApp->GetTopWindow()->GetEventHandler()->CallAfter(std::bind(&tamandua_textctrl::add_message, msgs, author, msg_body));
-						break;
-				}
+				case tamandua::message_type::private_message:
+					Debug("@", author, ": ", msg_body);
+					wxTheApp->GetTopWindow()->GetEventHandler()->CallAfter(std::bind(&tamandua_textctrl::add_private_message, msgs, author, msg_body));
+					break;
+				
+				case tamandua::message_type::standard_message:
+					Debug(author, ": ", msg_body);
+					wxTheApp->GetTopWindow()->GetEventHandler()->CallAfter(std::bind(&tamandua_textctrl::add_message, msgs, author, msg_body));
+					break;
 			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
 			tb->running_lock.lock();
 			local_running = tb->running;
 			tb->running_lock.unlock();
 		} while (local_running);
 	});
-
-	connect_button->Unbind(wxEVT_BUTTON, &main_frame::connect, this);
-	connect_button->Bind(wxEVT_BUTTON, &main_frame::disconnect, this);
-	connect_button->SetLabel(wxT("Disconnect"));
 }
 
 void main_frame::disconnect(wxCommandEvent &event)
 {
-	msgs->add_info(wxT("Disconnecting..."));
-	tb->turn_off();
-	tb->reader_thread.join();
-	tb->client.disconnect();
-	tb->io_service_thread.join();
-	msgs->add_info(wxT("Disconnected!"));
-
-	connect_button->Unbind(wxEVT_BUTTON, &main_frame::disconnect, this);
-	connect_button->Bind(wxEVT_BUTTON, &main_frame::connect, this);
-	connect_button->SetLabel(wxString(wxT("Connect")));
+	if (tb->client.is_connected())
+	{
+		msgs->add_info(wxT("Disconnecting..."));
+		tb->turn_off();
+		tb->reader_thread.join();
+		tb->client.disconnect();
+		tb->io_service_thread.join();
+		msgs->add_info(wxT("Disconnected!"));
+	}
 }
 
 void main_frame::msgs_url(wxTextUrlEvent &event)
@@ -130,7 +120,6 @@ void main_frame::msgs_url(wxTextUrlEvent &event)
 void main_frame::connecting_succeeded_()
 {
 	connected = true;
-	connect_button->SetLabel(wxString(wxT("Disconnect")));
 	Debug("Connected to server!");
 	wxString info(wxT("Connected to server!"), wxMBConvUTF8());
 	msgs->add_info(info);
@@ -152,6 +141,35 @@ void main_frame::message_undelivered_()
 {
 	wxString error(wxT("Message undelivered!"), wxMBConvUTF8());
 	msgs->add_error(error);
+}
+
+void main_frame::connect_callback_(tamandua::status st)
+{
+	if (st == tamandua::status::ok)
+	{
+		msgs->add_info(wxT("Connected to server!"));
+		connect_button->Unbind(wxEVT_BUTTON, &main_frame::connect, this);
+		connect_button->Bind(wxEVT_BUTTON, &main_frame::disconnect, this);
+		connect_button->SetLabel(wxT("Disconnect"));
+	} else
+	{
+		msgs->add_error(wxT("Connecting failed!"));
+	}
+}
+
+void main_frame::disconnect_callback_(tamandua::status st)
+{
+	if (st == tamandua::status::ok)
+	{
+		msgs->add_info(wxT("Disconnected"));
+		connect_button->Unbind(wxEVT_BUTTON, &main_frame::disconnect, this);
+		connect_button->Bind(wxEVT_BUTTON, &main_frame::connect, this);
+		connect_button->SetLabel(wxString(wxT("Connect")));
+	}
+}
+
+void main_frame::message_received_callback_(tamandua::status st)
+{
 }
 
 BEGIN_EVENT_TABLE(main_frame, wxFrame)

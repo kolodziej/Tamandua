@@ -39,10 +39,9 @@ class main_frame :
 		void disconnect(wxCommandEvent &);
 		void msgs_url(wxTextUrlEvent &);
 
-		tamandua_textctrl *get_msgs()
-		{
-			return msgs;
-		}
+		void connect_callback_(tamandua::status);
+		void disconnect_callback_(tamandua::status);
+		void message_received_callback_(tamandua::status);
 
 	private:
 		DECLARE_EVENT_TABLE();
