@@ -29,7 +29,7 @@ void group::deliver_message(const message &message)
 void group::notify_new_participant_(std::shared_ptr<participant> new_p)
 {
 	message_composer msgc(message_type::info_message);
-	msgc << "User " << new_p->get_name() << " joind to the " << get_name() << "!";
+	msgc << "User " << new_p->get_name() << " (#" << new_p->get_id() << ") joind to the " << get_name() << "!";
 	message msg = msgc();
 	for (auto p : participants_)
 		p.second->deliver_message(msg);
