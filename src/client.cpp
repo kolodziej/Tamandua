@@ -70,16 +70,17 @@ void client::send_message(message &msg)
 
 bool client::is_next_message()
 {
-	std::lock_guard<std::mutex> lock(messages_queue_lock_);
 	return (messages_.empty()) ? false : true;
 }
 
 std::pair<std::string, message> client::get_next_message()
 {
+	std::unique_lock<std::mutex> lock(messages_queue_lock_);
+	new_message_cv_.wait(lock, std::bind(&client::is_next_message, this));
 	message msg = messages_.front();
-	messages_queue_lock_.lock();
 	messages_.pop_front();
-	messages_queue_lock_.unlock();
+	lock.unlock();
+
 	auto iter = participants_.find(msg.header.author);
 	std::string author;
 	if (iter != participants_.end())
@@ -96,8 +97,12 @@ void client::add_event_handler(event_type evt, std::function<void(status)> func)
 
 void client::add_message_()
 {
-	std::lock_guard<std::mutex> lock(messages_queue_lock_);
+	messages_queue_lock_.lock();
 	messages_.push_back(std::move(read_message_));
+	messages_queue_lock_.unlock();
+
+	call_event_handler_(message_received, ok);
+	new_message_cv_.notify_one();
 }
 
 void client::add_message_(message_type type, std::string &body)
@@ -117,6 +122,9 @@ void client::add_message_(message_type type, std::string &&body)
 	messages_queue_lock_.lock();
 	messages_.push_back(msg);
 	messages_queue_lock_.unlock();
+
+	call_event_handler_(message_received, ok);
+	new_message_cv_.notify_one();
 }
 
 void client::read_message_header_()
@@ -174,7 +182,6 @@ void client::process_message_()
 	{
 		add_message_();
 	}
-	call_event_handler_(message_received, ok);
 	read_message_header_();
 }
 

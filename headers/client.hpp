@@ -10,6 +10,7 @@
 #include <mutex>
 #include <utility>
 #include <functional>
+#include <condition_variable>
 #include <boost/asio.hpp>
 
 using boost::asio::ip::tcp;
@@ -28,6 +29,7 @@ namespace tamandua
 			std::map<id_number_t, std::string> rooms_;
 			std::deque<message> messages_;
 			std::mutex messages_queue_lock_;
+			std::condition_variable new_message_cv_;
 			message read_message_;
 			bool connected_;
 		
