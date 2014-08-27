@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 project(Tamandua)
+set(Tamandua_VERSION_MAJOR 0)
+set(Tamandua_VERSION_MINOR 1)
+set(Tamandua_VERSION_PATCH 0)
 
 include(GNUInstallDirs)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -18,24 +21,9 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG lib/Debug)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE lib/Release)
 
 set(LIB_NAME tamandua)
+set(LIB_NAME_FULL ${LIB_NAME}-${Tamandua_VERSION_MAJOR}.${Tamandua_VERSION_MINOR}.${Tamandua_VERSION_PATCH})
 
-add_library(${LIB_NAME} STATIC
-	headers/group.hpp
-	headers/participant.hpp
-	headers/hidden_participant.hpp
-	headers/logger.hpp
-	headers/message_buffer.hpp
-	headers/message.hpp
-	headers/private_room.hpp
-	headers/room.hpp
-	headers/root.hpp
-	headers/server.hpp
-	headers/user.hpp
-	headers/client.hpp
-	headers/user_message_interpreter.hpp
-	headers/message_composer.hpp
-	headers/tamandua.hpp
-	headers/types.hpp
+set(SOURCES_FILES
 	src/group.cpp
 	src/participant.cpp
 	src/hidden_participant.cpp
@@ -51,4 +39,42 @@ add_library(${LIB_NAME} STATIC
 	src/message_composer.cpp
 )
 
+set(HEADERS_FILES
+	headers/group.hpp
+	headers/participant.hpp
+	headers/hidden_participant.hpp
+	headers/logger.hpp
+	headers/message_buffer.hpp
+	headers/message.hpp
+	headers/message_header.hpp
+	headers/private_room.hpp
+	headers/room.hpp
+	headers/root.hpp
+	headers/server.hpp
+	headers/user.hpp
+	headers/client.hpp
+	headers/message_interpreter.hpp
+	headers/user_message_interpreter.hpp
+	headers/message_composer.hpp
+	headers/tamandua.hpp
+	headers/types.hpp
+	headers/utility.hpp
+)
 
+add_library(${LIB_NAME_FULL} STATIC
+	${HEADERS_FILES}
+	${SOURCES_FILES}
+)
+
+if (UNIX)
+	install(TARGETS ${LIB_NAME_FULL}
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}
+	)
+
+	install(CODE "EXECUTE_PROCESS(COMMAND ln -sf ${CMAKE_INSTALL_FULL_LIBDIR}/lib${LIB_NAME_FULL}.a ${CMAKE_INSTALL_FULL_LIBDIR}/lib${LIB_NAME}.a)")
+
+	install(FILES
+		${HEADERS_FILES}
+		DESTINATION ${CMAKE_INSTALL_FULL_INCLUDEDIR}/tamandua)
+
+endif(UNIX)
