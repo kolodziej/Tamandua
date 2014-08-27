@@ -6,3 +6,4 @@ examples/tamandua_server
 CMakeFiles
 CMakeCache.txt
 cmake_install.cmake
+Makefile
