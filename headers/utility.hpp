@@ -35,9 +35,7 @@ namespace tamandua
 	spec_time_t get_utc_epoch()
 	{
 		time_t t = Clock::to_time_t(Clock::now());
-		tm * tm_utc = gmtime(&t);
-		time_t utc_t = mktime(tm_utc);
-		return static_cast<spec_time_t>(utc_t);
+		return static_cast<spec_time_t>(t);
 	}
 
 }

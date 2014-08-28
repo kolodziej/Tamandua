@@ -2,6 +2,7 @@
 #include "client.hpp"
 #include "message.hpp"
 #include "message_buffer.hpp"
+#include "message_composer.hpp"
 #include "logger.hpp"
 #include <sstream>
 #include <utility>
@@ -52,9 +53,9 @@ id_number_t client::get_id()
 
 void client::send_message(message &msg)
 {
-	msg.header.author = uid_;
-	msg.header.type = message_type::standard_message;
-	msg.header.size = msg.body.length();
+	message_composer msgc(message_type::standard_message, uid_);
+	msgc << msg.body;
+	msg = msgc();
 	message_buffer buf(msg.header, msg.body);
 	boost::asio::async_write(socket_,
 		boost::asio::buffer(buf.get_buffer().get(), buf.get_buffer_size()),

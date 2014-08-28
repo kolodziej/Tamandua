@@ -47,28 +47,30 @@ int main(int argc, char ** argv)
 		bool running = true;
 		while (running)
 		{
-			if (cl.is_next_message())
+			auto msg_pair = cl.get_next_message();
+			std::string &author = msg_pair.first;
+			message &msg = msg_pair.second;
+			if (msg.header.type != message_type::standard_message)
 			{
-				auto msg_pair = cl.get_next_message();
-				std::string &author = msg_pair.first;
-				message &msg = msg_pair.second;
-				if (msg.header.type != message_type::standard_message)
+				switch (msg.header.type)
 				{
-					switch (msg.header.type)
-					{
-						case message_type::info_message:
-							std::cout << "\e[1;33m";
-							break;
+					case message_type::info_message:
+						std::cout << "\e[1;33m";
+						break;
 
-						case message_type::error_message:
-							std::cout << "\e[1;91m";
-							break;
+					case message_type::error_message:
+						std::cout << "\e[1;91m";
+						break;
 
-					}
-					std::cout << msg.body << "\e[0m\n";
 				}
-				else
-					std::cout << "<" << author << ">: " << msg.body << "\n";
+				std::cout << msg.body << "\e[0m\n";
+			}
+			else
+			{
+				char time_buff[30];
+				tm *ptr = localtime(reinterpret_cast<const time_t*>(&msg.header.utc_time));
+				strftime(time_buff, 30, "%c", ptr);
+				std::cout << "[" << time_buff << "] <" << author << ">: " << msg.body << "\n";
 			}
 		}
 	});
