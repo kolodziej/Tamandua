@@ -53,9 +53,7 @@ id_number_t client::get_id()
 
 void client::send_message(message &msg)
 {
-	message_composer msgc(message_type::standard_message, uid_);
-	msgc << msg.body;
-	msg = msgc();
+	msg.header.author = uid_;
 	message_buffer buf(msg.header, msg.body);
 	boost::asio::async_write(socket_,
 		boost::asio::buffer(buf.get_buffer().get(), buf.get_buffer_size()),

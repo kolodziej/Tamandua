@@ -39,6 +39,11 @@ void server::start_server()
 
 void server::process_message(std::shared_ptr<user> pt, message &msg)
 {
+	if (msg.header.type == message_type::quit_message)
+	{
+		quit_participant(pt->get_id(), ok);
+		return;
+	}
 	// user message interpreter
 	switch (interpreter_.process_message(*(pt.get()),msg))
 	{
