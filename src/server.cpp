@@ -171,6 +171,8 @@ bool server::is_username_valid(std::string username)
 {
 	if (username.length() < 2)
 		return false;
+
+	return true;
 }
 
 std::string server::get_uptime_string()

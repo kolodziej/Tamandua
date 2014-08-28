@@ -173,11 +173,6 @@ void user::cmd_server_uptime(std::string &params)
 	deliver_message(msgc());
 }
 
-void user::cmd_quit(std::string &params)
-{
-	quit_status_ = user_quit;	
-}
-
 void user::read_message_header_()
 {
 	boost::asio::async_read(socket_,

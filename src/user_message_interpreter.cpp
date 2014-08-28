@@ -12,5 +12,4 @@ user_message_interpreter::user_message_interpreter()
 	add_function("msg", &user::cmd_msg);
 	add_function("kick_ass", &user::cmd_kick_ass);
 	add_function("server_uptime", &user::cmd_server_uptime);
-	add_function("quit", &user::cmd_quit);
 }
