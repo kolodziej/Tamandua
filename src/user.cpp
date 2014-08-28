@@ -57,7 +57,12 @@ void user::cmd_room(std::string &params)
 	std::string room_name;
 	params_stream >> room_name;
 	auto room_ptr = get_server().get_group(room_name);
-	if (room_ptr == nullptr || room_ptr->is_hidden() == true)
+	if (room_ptr == group_)
+	{
+		message_composer msgc(message_type::warning_message);
+		msgc << "You are already subscribed to the room '" << room_name << "'!";
+		deliver_message(msgc());
+	} else if (room_ptr == nullptr || room_ptr->is_hidden() == true)
 	{
 		message_composer msgc(message_type::error_message);
 		msgc << "Room called " << room_name << " does not exist!";
@@ -85,19 +90,27 @@ void user::cmd_proom(std::string &params)
 		deliver_message(msgc());
 	} else
 	{
-		std::shared_ptr<private_room> proom_ptr = std::dynamic_pointer_cast<private_room>(room_ptr);
-		if (proom_ptr->check_password(password))
+		if (room_ptr == group_)
 		{
-			group_ = room_ptr;
-			room_ptr->join_participant(shared_from_this());
-			message_composer msgc(message_type::info_message);
-			msgc << "You are now in private room: " << room_name;
+			message_composer msgc(message_type::warning_message);
+			msgc << "You are already subscribed to the private room '" << room_name << "'!";
 			deliver_message(msgc());
 		} else
 		{
-			message_composer msgc(message_type::error_message);
-			msgc << "[Private room " << room_name << "]: Wrong password!";
-			deliver_message(msgc());
+			std::shared_ptr<private_room> proom_ptr = std::dynamic_pointer_cast<private_room>(room_ptr);
+			if (proom_ptr->check_password(password))
+			{
+				group_ = room_ptr;
+				room_ptr->join_participant(shared_from_this());
+				message_composer msgc(message_type::info_message);
+				msgc << "You are now in private room: " << room_name;
+				deliver_message(msgc());
+			} else
+			{
+				message_composer msgc(message_type::error_message);
+				msgc << "[Private room " << room_name << "]: Wrong password!";
+				deliver_message(msgc());
+			}
 		}
 	}
 }
