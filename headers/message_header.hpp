@@ -7,7 +7,7 @@ namespace tamandua
 {
 	struct message_header
 	{
-		id_number_t id;
+		message_time_t utc_time;
 		id_number_t author;
 		message_type type;
 		message_size size;

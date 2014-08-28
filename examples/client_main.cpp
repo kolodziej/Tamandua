@@ -1,4 +1,4 @@
-#include "tamandua.hpp"
+#include "tamandua_local.hpp"
 #include <iostream>
 #include <string>
 #include <cstring>
@@ -27,6 +27,7 @@ void message_sent_callback(status st)
 
 int main(int argc, char ** argv)
 {
+	std::cout << "Testing Tamandua client.\nUsing Tamandua Library " << tamandua::get_version_str() << " (" << tamandua::get_release_type() << ")\n";
 	if (argc != 3)
 	{
 		std::cerr << "Usage: " << argv[0] << " <host> <port>\n";

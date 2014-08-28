@@ -12,10 +12,10 @@ message & message_composer::get_msg()
 void message_composer::prepare_message_()
 {
 	msg_.body = stream_.str();
-	msg_.header.id = msg_id_;
 	msg_.header.author = u_id_;
 	msg_.header.type = type_;
 	msg_.header.size = msg_.body.length();
+	msg_.header.utc_time = get_utc_epoch<message_time_clock_t, message_time_t>();
 }
 
 void message_composer::cleanup_()

@@ -69,6 +69,7 @@ namespace tamandua
 
 		private:
 			void add_message_();
+			void add_message_(message &&);
 			void add_message_(message_type, std::string &);
 			void add_message_(message_type, std::string &&);
 			void read_message_header_();

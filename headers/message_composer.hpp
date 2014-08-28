@@ -2,7 +2,9 @@
 #define TAMANDUA_MESSAGE_COMPOSER_HPP
 #include "types.hpp"
 #include "message.hpp"
+#include "utility.hpp"
 #include <sstream>
+#include <chrono>
 
 namespace tamandua
 {
@@ -10,12 +12,12 @@ namespace tamandua
 	{
 		private:
 			message msg_;
-			id_number_t msg_id_, u_id_;
+			id_number_t u_id_;
 			message_type type_;
 			std::stringstream stream_;
 
 		public:
-			message_composer(message_type type, id_number_t u_id = 0, id_number_t msg_id = 0) :	msg_id_(msg_id), u_id_(u_id), type_(type)
+			message_composer(message_type type, id_number_t u_id = 0) : u_id_(u_id), type_(type)
 			{}
 
 			void add() {}

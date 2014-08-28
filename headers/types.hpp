@@ -1,8 +1,12 @@
 #ifndef TYPES_HPP
 #define TYPES_HPP
+#include <chrono>
 
 namespace tamandua
 {
+	typedef unsigned char byte;
+	typedef unsigned long long int message_time_t;
+	typedef std::chrono::system_clock message_time_clock_t;
 	typedef unsigned long long int id_number_t;
 	typedef unsigned long long int message_size;
 
@@ -38,7 +42,10 @@ namespace tamandua
 		message_sent,
 		message_undelivered,
 		message_received,
-		server_disconnected
+		server_disconnected,
+		initialization_data_received,
+		participants_list_received,
+		rooms_list_received,
 	} event_type;
 }
 

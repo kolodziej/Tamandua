@@ -51,13 +51,6 @@ void user::cmd_id(std::string &params)
 	deliver_message(msgc());
 }
 
-void user::cmd_msg_id(std::string &params)
-{
-	message_composer msgc(message_type::info_message);
-	msgc << "Last message id is " << get_server().get_last_message_id();
-	deliver_message(msgc());
-}
-
 void user::cmd_room(std::string &params)
 {
 	std::stringstream params_stream(params);
@@ -228,7 +221,6 @@ void user::read_message_body_()
 
 void user::process_message_()
 {
-	get_server().set_message_id(read_message_);
 	switch (get_server().get_interpreter().process_message(*this, read_message_))
 	{
 		case processing_status::std_msg:

@@ -2,6 +2,7 @@
 #include "logger.hpp"
 #include "root.hpp"
 #include "message.hpp"
+#include "message_composer.hpp"
 #include "user.hpp"
 #include "room.hpp"
 #include "utility.hpp"
@@ -20,8 +21,7 @@ server::server(boost::asio::io_service &io_service, tcp::endpoint &endpoint, log
 	log_(log),
 	interpreter_(interp),
 	last_participant_id_(0),
-	last_group_id_(0),
-	last_message_id_(0)
+	last_group_id_(0)
 {}
 
 server::~server()
@@ -96,15 +96,15 @@ void server::quit_participant(id_number_t uid, status st)
 	if (u_id != participants_ids_.end())
 		participants_ids_.erase(u_id);
 
-	std::stringstream stream;
-	stream << "User " << username << " is quitting server";
+	message_composer msgc(message_type::info_message);
+	msgc << "User " << username << " is quitting server";
 	if (st == ok)
-		stream << "!";
+		msgc << "!";
 	else if (st == user_error_quit)
-		stream << " [due to client side error occurance]!";
+		msgc << " [due to client side error occurance]!";
 
-	Log(log_, stream.str());
-	message quit_info(message_type::info_message, stream.str());
+	message quit_info = msgc();
+	Log(log_, quit_info.body);
 	for (auto part : participants_)
 		part.second->deliver_message(quit_info);
 
@@ -167,20 +167,10 @@ id_number_t server::get_last_group_id() const
 	return last_group_id_;
 }
 
-id_number_t server::get_last_message_id() const
-{
-	return last_message_id_;
-}
-
 bool server::is_username_valid(std::string username)
 {
 	if (username.length() < 2)
 		return false;
-}
-
-void server::set_message_id(message &msg)
-{
-	msg.header.id = get_new_message_id_();
 }
 
 std::string server::get_uptime_string()
@@ -244,7 +234,6 @@ void server::add_new_user_()
 void server::send_init_message_(std::shared_ptr<participant> usr)
 {
 	message_header header;
-	header.id = get_new_message_id_();
 	header.author = usr->get_id();
 	header.type = message_type::init_message;
 	header.size = usr->get_name().length();
@@ -259,7 +248,6 @@ void server::send_init_message_(std::shared_ptr<participant> usr)
 void server::send_rooms_list_()
 {
 	message_header header;
-	header.id = get_new_message_id_();
 	header.author = 0;
 	header.type = message_type::rooms_list;
 	std::string rooms_list = generate_rooms_list_();
@@ -271,7 +259,6 @@ void server::send_rooms_list_()
 void server::send_participants_list_()
 {
 	message_header header;
-	header.id = get_new_message_id_();
 	header.author = 0;
 	header.type = message_type::participants_list;
 	std::string pt_list = generate_participants_list_();
@@ -288,11 +275,6 @@ id_number_t server::get_new_participant_id_()
 id_number_t server::get_new_group_id_()
 {
 	return last_group_id_++;
-}
-
-id_number_t server::get_new_message_id_()
-{
-	return last_message_id_++;
 }
 
 std::string server::get_default_user_name_(id_number_t id)

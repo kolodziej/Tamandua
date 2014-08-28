@@ -1,8 +1,12 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 project(Tamandua)
-set(Tamandua_VERSION_MAJOR 0)
-set(Tamandua_VERSION_MINOR 1)
-set(Tamandua_VERSION_PATCH 0)
+
+include(./tamandua_cfg.cmake)
+
+configure_file(
+	"${CMAKE_SOURCE_DIR}/version_config.hpp.cmake"
+	"${CMAKE_SOURCE_DIR}/headers/version_config.hpp"
+)
 
 include(GNUInstallDirs)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -19,9 +23,6 @@ include_directories(
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG lib/Debug)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE lib/Release)
-
-set(LIB_NAME tamandua)
-set(LIB_NAME_FULL ${LIB_NAME}-${Tamandua_VERSION_MAJOR}.${Tamandua_VERSION_MINOR}.${Tamandua_VERSION_PATCH})
 
 set(SOURCES_FILES
 	src/group.cpp
@@ -59,12 +60,15 @@ set(HEADERS_FILES
 	headers/tamandua.hpp
 	headers/types.hpp
 	headers/utility.hpp
+	headers/version.hpp
 )
 
 add_library(${LIB_NAME_FULL} STATIC
 	${HEADERS_FILES}
 	${SOURCES_FILES}
 )
+
+add_subdirectory(examples examples)
 
 if (UNIX)
 	install(TARGETS ${LIB_NAME_FULL}

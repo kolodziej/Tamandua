@@ -32,7 +32,7 @@ namespace tamandua
 			std::map<id_number_t, std::shared_ptr<group>> groups_;
 			std::map<std::string, id_number_t> groups_ids_;
 
-			id_number_t last_participant_id_, last_group_id_, last_message_id_;
+			id_number_t last_participant_id_, last_group_id_;
 
 			std::chrono::system_clock::time_point start_time_;
 
@@ -55,7 +55,6 @@ namespace tamandua
 
 			id_number_t get_last_participant_id() const;
 			id_number_t get_last_group_id() const;
-			id_number_t get_last_message_id() const;
 
 			bool is_username_valid(std::string);
 			void set_message_id(message &);
@@ -78,7 +77,6 @@ namespace tamandua
 			id_number_t get_new_participant_id_();
 			friend class group;
 			id_number_t get_new_group_id_();
-			id_number_t get_new_message_id_();
 
 			std::string get_default_user_name_(id_number_t);
 			std::string get_default_group_name_(id_number_t);

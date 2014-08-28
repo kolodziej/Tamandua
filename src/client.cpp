@@ -53,7 +53,6 @@ id_number_t client::get_id()
 void client::send_message(message &msg)
 {
 	msg.header.author = uid_;
-	msg.header.id = 0;
 	msg.header.type = message_type::standard_message;
 	msg.header.size = msg.body.length();
 	message_buffer buf(msg.header, msg.body);
@@ -97,9 +96,19 @@ void client::add_event_handler(event_type evt, std::function<void(status)> func)
 
 void client::add_message_()
 {
-	messages_queue_lock_.lock();
+	std::unique_lock<std::mutex> lk(messages_queue_lock_);
 	messages_.push_back(std::move(read_message_));
-	messages_queue_lock_.unlock();
+	lk.unlock();
+
+	call_event_handler_(message_received, ok);
+	new_message_cv_.notify_one();
+}
+
+void client::add_message_(message && msg)
+{
+	std::unique_lock<std::mutex> lk(messages_queue_lock_);
+	messages_.push_back(msg);
+	lk.unlock();
 
 	call_event_handler_(message_received, ok);
 	new_message_cv_.notify_one();
@@ -107,13 +116,14 @@ void client::add_message_()
 
 void client::add_message_(message_type type, std::string &body)
 {
+	#pragma GCC diagnostic warning "-Wformat"
 	add_message_(type, std::move(body));
 }
 
 void client::add_message_(message_type type, std::string &&body)
 {
+	#pragma GCC diagnostic warning "-Wformat"
 	message msg;
-	msg.header.id = 0;
 	msg.header.author = 0;
 	msg.header.type = type;
 	msg.header.size = body.size();
@@ -139,7 +149,7 @@ void client::read_message_header_()
 			} else if (ec == boost::asio::error::eof || ec == boost::asio::error::connection_reset)
 			{
 				TamanduaDebug("Server disconnected!");
-				server_disconnected_();
+				call_event_handler_(server_disconnected, ok);
 			}
 		});
 }
@@ -158,7 +168,7 @@ void client::read_message_body_()
 			} else if (ec == boost::asio::error::eof || ec == boost::asio::error::connection_reset)
 			{
 				TamanduaDebug("Server disconnected!");
-				server_disconnected_();
+				call_event_handler_(server_disconnected, server_disconnecting_error);
 			}
 		});
 }
@@ -169,15 +179,15 @@ void client::process_message_()
 	if (msg.header.type == message_type::init_message)
 	{
 		uid_ = msg.header.author;
-		std::stringstream stream;
-		stream << "Initialization data received! Your user id number is " << uid_ << ". Your nickname is " << msg.body << ". You can change it using /nick <new_nick> command!";
-		add_message_(message_type::info_message, stream.str());
+		call_event_handler_(initialization_data_received, ok);
 	} else if (msg.header.type == message_type::participants_list)
 	{
 		set_participants_list_();
+		call_event_handler_(participants_list_received, ok);
 	} else if (msg.header.type == message_type::rooms_list)
 	{
 		set_rooms_list_();
+		call_event_handler_(rooms_list_received, ok);
 	} else
 	{
 		add_message_();
@@ -226,9 +236,4 @@ void client::call_event_handler_(event_type evt, status st)
 		return;
 
 	((*it).second)(st);
-}
-
-void client::server_disconnected_()
-{
-	add_message_(message_type::warning_message, std::string("You have been disconnected from server."));
 }

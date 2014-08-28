@@ -1,4 +1,4 @@
-#include "tamandua.hpp"
+#include "tamandua_local.hpp"
 #include <iostream>
 #include <string>
 #include <boost/asio.hpp>

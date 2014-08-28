@@ -8,3 +8,4 @@ CMakeCache.txt
 cmake_install.cmake
 install_manifest.txt
 Makefile
+headers/version_config.hpp

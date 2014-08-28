@@ -1,5 +1,6 @@
 #ifndef TAMANDUA_UTILITY_HPP
 #define TAMANDUA_UTILITY_HPP
+#include "types.hpp"
 #include <string>
 #include <sstream>
 #include <chrono>
@@ -28,6 +29,15 @@ namespace tamandua
 	std::string format_utc_time(std::chrono::time_point<Clock> timepoint, std::string format)
 	{
 		return format_time<Clock, BufSize>(timepoint, format, &gmtime);
+	}
+
+	template <typename Clock, typename spec_time_t>
+	spec_time_t get_utc_epoch()
+	{
+		time_t t = Clock::to_time_t(Clock::now());
+		tm * tm_utc = gmtime(&t);
+		time_t utc_t = mktime(tm_utc);
+		return static_cast<spec_time_t>(utc_t);
 	}
 
 }
