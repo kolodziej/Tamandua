@@ -25,6 +25,7 @@ namespace tamandua
 			status quit_status_;
 			
 		public:
+			friend class server;
 			user(server &svr, std::string & name, tcp::socket socket) : participant(svr, name), socket_(std::move(socket)), quit_status_(ok)
 			{
 				read_message();		

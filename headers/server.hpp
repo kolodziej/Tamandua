@@ -41,6 +41,7 @@ namespace tamandua
 			~server();
 		
 			void start_server();
+			void process_message(std::shared_ptr<user>, message&);
 
 			void add_participant(std::shared_ptr<participant>);
 			void add_group(std::shared_ptr<group>);

@@ -229,24 +229,7 @@ void user::read_message_body_()
 
 void user::process_message_()
 {
-	switch (get_server().get_interpreter().process_message(*this, read_message_))
-	{
-		case processing_status::std_msg:
-			if (group_)
-				group_->deliver_message(read_message_);
-			else
-			{
-				message msg(message_type::error_message, std::string("You must select group using /room <name> or /proom <name> <password>. Your client received full list of public rooms."));
-				deliver_message(msg);
-			}
-			break;
-
-		case processing_status::bad_cmd:
-			message_composer msgc(message_type::error_message);
-			msgc << "Unknown command: [" << read_message_.body << "]! Available commands: " << get_server().get_interpreter().get_commands_list();
-			deliver_message(msgc());
-			break;
-	}
+	get_server().process_message(shared_from_this(), read_message_);
 	read_message();
 }
 
