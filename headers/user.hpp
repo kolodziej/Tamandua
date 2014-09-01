@@ -18,7 +18,7 @@ namespace tamandua
 		public std::enable_shared_from_this<user>
 	{
 		private:
-			tcp::socket socket_;
+			ssl_socket_stream socket_;
 			std::deque<message> messages_queue_;
 			std::shared_ptr<group> group_;
 			message read_message_;
@@ -26,16 +26,15 @@ namespace tamandua
 			
 		public:
 			friend class server;
-			user(server &svr, std::string & name, tcp::socket socket) : participant(svr, name), socket_(std::move(socket)), quit_status_(ok)
-			{
-				read_message();		
-			}
-			user(server &svr, std::string && name, tcp::socket socket) : participant(svr, name), socket_(std::move(socket)), quit_status_(ok)
-			{
-				read_message();	
-			}
+			user(server &svr, std::string & name, boost::asio::ssl::context &context) : participant(svr, name), socket_(svr.get_io_service(), context), quit_status_(ok)
+			{}
+			user(server &svr, std::string && name, boost::asio::ssl::context &context) : participant(svr, name), socket_(svr.get_io_service(), context), quit_status_(ok)
+			{}
+
 			~user();
 
+			void start();
+			ssl_socket_stream::lowest_layer_type &get_socket();
 			std::string get_ip_address();
 			
 			virtual void read_message();
@@ -51,13 +50,13 @@ namespace tamandua
 			void cmd_server_uptime(std::string &);
 
 		private:
-			void read_control_sequence_();
-			void interprete_control_sequence_(char);
+			void perform_handshake_();
 			void read_message_header_();
 			void read_message_body_();
 			void process_message_();
 			void send_messages_();
 
+			void deliver_quit_message_();
 			void quit_();
 			void error_quit_();
 

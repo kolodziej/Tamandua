@@ -10,14 +10,22 @@ using namespace tamandua;
 
 user::~user()
 {
-	socket_.cancel();
-	socket_.close();
 	Log(get_server().get_logger(), "User ID ", get_id(), " is leaving server!");
+}
+
+void user::start()
+{
+	perform_handshake_();
+}
+
+ssl_socket_stream::lowest_layer_type &user::get_socket()
+{
+	return socket_.lowest_layer();
 }
 
 std::string user::get_ip_address()
 {
-	return socket_.remote_endpoint().address().to_string();
+	return get_socket().remote_endpoint().address().to_string();
 }
 
 void user::read_message()
@@ -186,6 +194,22 @@ void user::cmd_server_uptime(std::string &params)
 	deliver_message(msgc());
 }
 
+void user::perform_handshake_()
+{
+	socket_.async_handshake(boost::asio::ssl::stream_base::server,
+	[this](boost::system::error_code ec)
+	{
+		if (!ec)
+		{
+			get_server().send_startup_data(shared_from_this());
+			read_message();
+		} else
+		{
+			Error(get_server().get_logger(), "Handshake failed: ", ec.message());
+		}
+	});
+}
+
 void user::read_message_header_()
 {
 	boost::asio::async_read(socket_,
@@ -195,12 +219,10 @@ void user::read_message_header_()
 			if (!ec)
 			{
 				read_message_body_();
-			} else if (ec == boost::asio::error::eof || ec == boost::asio::error::connection_reset)
-			{
-				error_quit_();
 			} else
 			{
-				Error(get_server().get_logger(), "Boost error code while reading header: ", ec, " (read length: ", length, ")");
+				Error(get_server().get_logger(), "Error while reading header: ", ec.message());
+				error_quit_();
 			}
 		});
 }
@@ -217,12 +239,10 @@ void user::read_message_body_()
 				read_message_.body = std::string(buffer.get(), read_message_.header.size);
 				Log(get_server().get_logger(), "User ", get_id(), " passed a message: ", read_message_.body);
 				process_message_();
-			} else if (ec == boost::asio::error::eof || ec == boost::asio::error::connection_reset)
-			{
-				error_quit_();
 			} else
 			{
 				Error(get_server().get_logger(), "User ", get_id(), " failed receiveg a message from client!");
+				error_quit_();
 			}
 		});
 }
@@ -253,8 +273,16 @@ void user::send_messages_()
 		});
 }
 
+void user::deliver_quit_message_()
+{
+	message_composer msgc(message_type::quit_message);
+	deliver_message(msgc());
+}
+
 void user::quit_()
 {
+	deliver_quit_message_();
+	socket_.shutdown();
 	get_server().quit_participant(get_id());
 }
 

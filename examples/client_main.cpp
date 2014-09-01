@@ -35,8 +35,11 @@ int main(int argc, char ** argv)
 	}
 
 	boost::asio::io_service io_service;
+	boost::asio::ssl::context context(boost::asio::ssl::context::sslv23);
+	context.load_verify_file("server.crt");
+	context.set_verify_mode(boost::asio::ssl::verify_peer);
 
-	client cl(io_service);
+	client cl(io_service, context);
 	cl.add_event_handler(connecting_succeeded, std::bind(&connecting_succeeded_callback, std::placeholders::_1));
 	cl.add_event_handler(connecting_failed, std::bind(&connecting_failed_callback, std::placeholders::_1));
 	cl.add_event_handler(message_sent, std::bind(&message_sent_callback, std::placeholders::_1));

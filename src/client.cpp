@@ -20,7 +20,7 @@ void client::connect(std::string host, std::string port)
 void client::connect(tcp::resolver::iterator endpoint_iterator)
 {
 	endpoint_iterator_ = endpoint_iterator;
-	boost::asio::async_connect(socket_, endpoint_iterator_,
+	boost::asio::async_connect(socket_.lowest_layer(), endpoint_iterator_,
 		[this](boost::system::error_code ec, tcp::resolver::iterator iterator)
 		{
 			if (!ec)
@@ -28,15 +28,15 @@ void client::connect(tcp::resolver::iterator endpoint_iterator)
 			else
 				call_event_handler_(connecting_failed, connection_failed);
 
-			read_message_header_();
+			perform_handshake_();
 		});
 }
 
 void client::disconnect()
 {
 	try {
-		socket_.shutdown(tcp::socket::shutdown_type::shutdown_both);
-		socket_.close();
+		socket_.lowest_layer().shutdown(tcp::socket::shutdown_type::shutdown_both);
+		socket_.lowest_layer().close();
 		call_event_handler_(server_disconnected, ok);
 	} catch (boost::system::system_error err)
 	{
@@ -149,6 +149,22 @@ void client::write_message_(message &msg)
 			else
 				call_event_handler_(message_undelivered, ok);
 		});
+}
+
+void client::perform_handshake_()
+{
+	socket_.async_handshake(boost::asio::ssl::stream_base::client,
+	[this](boost::system::error_code ec)
+	{
+		if (!ec)
+		{
+			TamanduaDebug("Handshake completed!");
+			read_message_header_();
+		} else
+		{
+			TamanduaDebug("Handshake failed: ", ec.message());
+		}
+	});
 }
 
 void client::read_message_header_()

@@ -16,6 +16,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGES_RELEASE} -DRELEASE")
 set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost 1.49 COMPONENTS system REQUIRED)
 
+find_package(OpenSSL REQUIRED)
+
 include_directories(
 	"${Boost_INCLUDE_DIR}"
 	"${PROJECT_SOURCE_DIR}/headers"

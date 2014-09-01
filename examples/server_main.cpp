@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
 
 using boost::asio::ip::tcp;
 
@@ -16,6 +17,7 @@ int main(int argc, char ** argv)
 	}
 	std::string port(argv[1]);
 	boost::asio::io_service io_service;
+	boost::asio::ssl::context context(boost::asio::ssl::context::sslv23);
 	tcp::endpoint endpoint(tcp::v4(), stoi(port));
 	logger log(std::cerr);
 	user_message_interpreter interpreter;
