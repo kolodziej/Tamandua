@@ -9,6 +9,7 @@
 #include <memory>
 #include <chrono>
 #include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
 
 using boost::asio::ip::tcp;
 
@@ -21,8 +22,8 @@ namespace tamandua
 	{
 		private:
 			boost::asio::io_service &io_service_;
+			boost::asio::ssl::context context_;
 			tcp::acceptor acceptor_;
-			tcp::socket socket_;
 			tcp::endpoint endpoint_;
 			logger &log_;
 			user_message_interpreter &interpreter_;
@@ -41,16 +42,21 @@ namespace tamandua
 			~server();
 		
 			void start_server();
+			void send_startup_data(std::shared_ptr<participant>);
+			boost::asio::io_service &get_io_service();
 			void process_message(std::shared_ptr<user>, message&);
 
 			void add_participant(std::shared_ptr<participant>);
 			void add_group(std::shared_ptr<group>);
+
 			std::shared_ptr<participant> get_participant(id_number_t);
 			std::shared_ptr<participant> get_participant(std::string);
 			std::shared_ptr<group> get_group(id_number_t);
 			std::shared_ptr<group> get_group(std::string);
+
 			bool is_participant_name_available(std::string);
 			bool is_group_name_available(std::string);
+
 			bool change_participant_name(std::string, std::string);
 			void quit_participant(id_number_t, status = ok);
 
@@ -67,9 +73,8 @@ namespace tamandua
 		private:
 			void add_root_();
 			void add_hall_();
-			void add_new_user_();
+			void add_new_user_(std::shared_ptr<user>);
 			void accept_connection_();
-			void send_init_message_(std::shared_ptr<participant>);
 			void send_rooms_list_();
 			void send_participants_list_();
 			void send_to_all_(message_type, std::string);

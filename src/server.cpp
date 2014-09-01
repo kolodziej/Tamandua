@@ -15,14 +15,22 @@ using namespace tamandua;
 
 server::server(boost::asio::io_service &io_service, tcp::endpoint &endpoint, logger &log, user_message_interpreter &interp) :
 	io_service_(io_service),
+	context_(boost::asio::ssl::context::sslv23),
 	acceptor_(io_service, endpoint),
-	socket_(io_service),
 	endpoint_(endpoint),
 	log_(log),
 	interpreter_(interp),
 	last_participant_id_(0),
 	last_group_id_(0)
-{}
+{
+	context_.set_options(
+		boost::asio::ssl::context::default_workarounds |
+		boost::asio::ssl::context::no_sslv2 |
+		boost::asio::ssl::context::single_dh_use);
+	context_.use_certificate_chain_file("server.crt");
+	context_.use_private_key_file("server.key", boost::asio::ssl::context::pem);
+	context_.use_tmp_dh_file("dh512.pem");
+}
 
 server::~server()
 {}
@@ -35,6 +43,22 @@ void server::start_server()
 	add_root_();
 	add_hall_();
 	accept_connection_();
+}
+
+void server::send_startup_data(std::shared_ptr<participant> usr)
+{
+	message_composer msgc(message_type::init_message, usr->get_id());
+	msgc << usr->get_name();
+	usr->deliver_message(msgc());
+
+	send_participants_list_();
+	send_rooms_list_();
+	accept_connection_();
+}
+
+boost::asio::io_service &server::get_io_service()
+{
+	return io_service_;
 }
 
 void server::process_message(std::shared_ptr<user> pt, message &msg)
@@ -235,13 +259,15 @@ user_message_interpreter & server::get_interpreter()
 
 void server::accept_connection_()
 {
-	acceptor_.async_accept(socket_,
-	[this](boost::system::error_code ec)
+	std::shared_ptr<user> new_user(new user(*this, std::string(), context_));
+	acceptor_.async_accept(new_user->get_socket(),
+	[this, new_user](boost::system::error_code ec)
 	{
 		if (!ec)
 		{
-			Log(log_, "Accepted connection of new user from IP: ",socket_.remote_endpoint().address().to_string());
-			add_new_user_();
+			Log(log_, "Accepted connection of new user from IP: ",new_user->get_socket().remote_endpoint().address().to_string());
+			add_participant(new_user);
+			new_user->start();
 		}
 	});
 	Log(log_, "Waiting for connection");
@@ -255,27 +281,6 @@ void server::add_root_()
 void server::add_hall_()
 {
 	add_group(std::shared_ptr<group>(new room(*this, "Hall")));
-}
-
-void server::add_new_user_()
-{
-	std::shared_ptr<participant> usr(new user(*this, std::string(), std::move(socket_)));
-	add_participant(usr);
-	send_init_message_(usr);
-}
-
-void server::send_init_message_(std::shared_ptr<participant> usr)
-{
-	message_header header;
-	header.author = usr->get_id();
-	header.type = message_type::init_message;
-	header.size = usr->get_name().length();
-	std::string body = usr->get_name();
-	usr->deliver_message(message(header, body));
-
-	send_participants_list_();
-	send_rooms_list_();
-	accept_connection_();
 }
 
 void server::send_rooms_list_()

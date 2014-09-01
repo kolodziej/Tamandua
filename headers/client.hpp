@@ -12,6 +12,7 @@
 #include <functional>
 #include <condition_variable>
 #include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
 
 using boost::asio::ip::tcp;
 
@@ -23,7 +24,8 @@ namespace tamandua
 			id_number_t uid_;
 			boost::asio::io_service &io_service_;
 			tcp::resolver::iterator endpoint_iterator_;
-			tcp::socket socket_;
+			boost::asio::ssl::context &context_;
+			ssl_socket_stream socket_;
 
 			std::map<id_number_t, std::string> participants_;
 			std::map<id_number_t, std::string> rooms_;
@@ -36,18 +38,20 @@ namespace tamandua
 			std::map<event_type, std::function<void(status)>> events_handlers_;
 
 		public:
-			client(boost::asio::io_service &io_service, tcp::resolver::iterator endpoint_iterator) :
+			client(boost::asio::io_service &io_service, tcp::resolver::iterator endpoint_iterator, boost::asio::ssl::context &context) :
 				io_service_(io_service),
 				endpoint_iterator_(endpoint_iterator),
-				socket_(io_service),
+				context_(context),
+				socket_(io_service, context),
 				connected_(false)
 			{
 				connect(endpoint_iterator);
 			}
 
-			client(boost::asio::io_service &io_service) :
+			client(boost::asio::io_service &io_service, boost::asio::ssl::context &context) :
 				io_service_(io_service),
-				socket_(io_service),
+				context_(context),
+				socket_(io_service, context),
 				connected_(false)
 			{}
 
@@ -74,6 +78,7 @@ namespace tamandua
 			void add_message_(message_type, std::string &);
 			void add_message_(message_type, std::string &&);
 			void write_message_(message &);
+			void perform_handshake_();
 			void read_message_header_();
 			void read_message_body_();
 			void process_message_();

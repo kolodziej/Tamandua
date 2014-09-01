@@ -1,6 +1,8 @@
 #ifndef TYPES_HPP
 #define TYPES_HPP
 #include <chrono>
+#include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
 
 namespace tamandua
 {
@@ -9,6 +11,8 @@ namespace tamandua
 	typedef std::chrono::system_clock message_time_clock_t;
 	typedef unsigned long long int id_number_t;
 	typedef unsigned long long int message_size;
+
+	typedef boost::asio::ssl::stream<boost::asio::ip::tcp::socket> ssl_socket_stream;
 
 	typedef enum {
 		init_message = 0,
