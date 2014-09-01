@@ -61,7 +61,8 @@ namespace tamandua
 
 			id_number_t get_id();
 
-			void send_message(message &);
+			void send_message(std::string &);
+			void send_quit_message(std::string = std::string());
 			bool is_next_message();
 			std::pair<std::string, message> get_next_message();
 
@@ -72,6 +73,7 @@ namespace tamandua
 			void add_message_(message &&);
 			void add_message_(message_type, std::string &);
 			void add_message_(message_type, std::string &&);
+			void write_message_(message &);
 			void read_message_header_();
 			void read_message_body_();
 			void process_message_();

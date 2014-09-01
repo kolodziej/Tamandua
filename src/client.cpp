@@ -51,19 +51,20 @@ id_number_t client::get_id()
 	return uid_;
 }
 
-void client::send_message(message &msg)
+void client::send_message(std::string &body)
 {
-	msg.header.author = uid_;
-	message_buffer buf(msg.header, msg.body);
-	boost::asio::async_write(socket_,
-		boost::asio::buffer(buf.get_buffer().get(), buf.get_buffer_size()),
-		[this](boost::system::error_code ec, size_t length)
-		{
-			if (!ec)
-				call_event_handler_(message_sent, ok);
-			else
-				call_event_handler_(message_undelivered, ok);
-		});
+	message_composer msgc(message_type::standard_message, uid_);
+	msgc << body;
+	message msg = msgc();
+	write_message_(msg);
+}
+
+void client::send_quit_message(std::string body)
+{
+	message_composer msgc(message_type::quit_message, uid_);
+	msgc << body;
+	message msg = msgc();
+	write_message_(msg);
 }
 
 bool client::is_next_message()
@@ -134,6 +135,20 @@ void client::add_message_(message_type type, std::string &&body)
 
 	call_event_handler_(message_received, ok);
 	new_message_cv_.notify_one();
+}
+
+void client::write_message_(message &msg)
+{
+	message_buffer buf(msg.header, msg.body);
+	boost::asio::async_write(socket_,
+		boost::asio::buffer(buf.get_buffer().get(), buf.get_buffer_size()),
+		[this](boost::system::error_code ec, size_t length)
+		{
+			if (!ec)
+				call_event_handler_(message_sent, ok);
+			else
+				call_event_handler_(message_undelivered, ok);
+		});
 }
 
 void client::read_message_header_()

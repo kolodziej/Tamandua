@@ -80,14 +80,7 @@ int main(int argc, char ** argv)
 	{
 		message msg;
 		std::string body_str(body, strlen(body));
-		msg.header.size = body_str.length();
-		msg.body = body_str;
-		if (body_str.substr(0,5) == "#quit")
-		{
-			msg.header.type = message_type::quit_message;
-		}
-
-		cl.send_message(msg);
+		cl.send_message(body_str);
 	}
 
 	io_service_thread.join();
