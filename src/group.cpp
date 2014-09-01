@@ -16,8 +16,9 @@ std::string group::get_name()
 
 void group::join_participant(std::shared_ptr<participant> p)
 {
-	participants_.insert(make_pair(p->get_id(), p));
-	notify_new_participant_(p);
+	auto insertion = participants_.insert(make_pair(p->get_id(), p));
+	if (insertion.second)
+		notify_new_participant_(p);
 }
 
 void group::deliver_message(const message &message)
