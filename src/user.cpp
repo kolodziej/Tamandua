@@ -243,8 +243,12 @@ void user::send_messages_()
 			if (!ec)
 			{
 				messages_queue_.pop_front();
+				Log(get_server().get_logger(), "Delivered message of length ", length, " to user #", get_id());
 				if (messages_queue_.empty() == false)
 					send_messages_();
+			} else
+			{
+				Error(get_server().get_logger(), "An error occurred while sending message to user ", get_name(), " (ID: ", get_id(), "): ", ec.message());
 			}
 		});
 }

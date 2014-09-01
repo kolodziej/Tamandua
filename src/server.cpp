@@ -45,24 +45,26 @@ void server::process_message(std::shared_ptr<user> pt, message &msg)
 		return;
 	}
 	// user message interpreter
-	switch (interpreter_.process_message(*(pt.get()),msg))
-	{
-		case processing_status::std_msg:
-			if (pt->group_)
-				pt->group_->deliver_message(msg);
-			else
-			{
-				message_composer msgc(message_type::error_message);
-				msgc << "You must select group using /room <name> or /proom <name> <password>. Your client received full list of public rooms.";
-				pt->deliver_message(msgc());
-			}
-			break;
+	processing_status msg_stat = interpreter_.process_message(*(pt.get()),msg);
 
-		case processing_status::bad_cmd:
+	if (msg_stat == processing_status::std_msg)
+	{
+		if (pt->group_)
+			pt->group_->deliver_message(msg);
+		else
+		{
 			message_composer msgc(message_type::error_message);
-			msgc << "Unknown command: [" << msg.body << "]! Available commands: " << get_interpreter().get_commands_list();
+			msgc << "You must select group using /room <name> or /proom <name> <password>. Your client received full list of public rooms.";
 			pt->deliver_message(msgc());
-			break;
+		}
+	} else if (msg_stat == processing_status::bad_cmd)
+	{
+		message_composer msgc(message_type::error_message);
+		msgc << "Unknown command: [" << msg.body << "]! Available commands: " << get_interpreter().get_commands_list();
+		pt->deliver_message(msgc());
+	} else
+	{
+		Error(log_, "Unknown processing_status for message: '", msg.body, "'!");
 	}
 }
 
