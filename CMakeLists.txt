@@ -68,6 +68,7 @@ set(HEADERS_FILES
 	headers/server_config.hpp
 	headers/utility.hpp
 	headers/version.hpp
+	headers/version_config.hpp
 )
 
 add_library(${LIB_NAME_FULL} STATIC
