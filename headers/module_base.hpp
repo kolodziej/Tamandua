@@ -3,6 +3,7 @@
 #include "types.hpp"
 #include "message.hpp"
 #include "command_interpreter.hpp"
+#include "server.hpp"
 #include <memory>
 #include <string>
 #include <functional>
@@ -11,7 +12,6 @@
 
 namespace tamandua
 {
-	class server;
 	class user;
 	
 	class module_base

@@ -1,5 +1,6 @@
 #include "modules/base_user_module.hpp"
 #include "message_composer.hpp"
+#include "user.hpp"
 #include <functional>
 #include <sstream>
 
@@ -15,6 +16,12 @@ base_user_module::base_user_module(server &svr, command_interpreter &interpreter
 	MODULE_REGISTER_COMMAND("msg", &base_user_module::cmd_msg);
 }
 
+void base_user_module::preprocessed(std::shared_ptr<user> u, message &msg)
+{}
+
+void base_user_module::postprocessed(std::shared_ptr<user> u, message &msg, processing_status s)
+{}
+
 void base_user_module::cmd_id(std::shared_ptr<user> u, message &msg)
 {
 	message_composer msgc(message_type::info_message);
@@ -22,7 +29,7 @@ void base_user_module::cmd_id(std::shared_ptr<user> u, message &msg)
 	if (params.size() == 2)
 	{
 		auto up = get_server().get_participant(params[1]);
-		if (user == nullptr)
+		if (up == nullptr)
 		{
 			resp_user_not_exists_(u, params[1]);
 		} else
@@ -100,10 +107,8 @@ void base_user_module::cmd_proom(std::shared_ptr<user> u, message &msg)
 
 void base_user_module::cmd_nick(std::shared_ptr<user> u, message &msg)
 {
-
-	std::stringstream params_stream(params);
-	std::string newname, oldname = get_name();
-	params_stream >> newname;
+	auto params = split_params_std(msg.body);
+	std::string newname = params[1], oldname = u->get_name();
 	if (oldname == newname)
 	{
 		message_composer msgc(message_type::warning_message);
@@ -124,22 +129,23 @@ void base_user_module::cmd_nick(std::shared_ptr<user> u, message &msg)
 
 void base_user_module::cmd_msg(std::shared_ptr<user> u, message &msg)
 {
-	std::stringstream params_stream(params);
-	std::string usr, msg_body;
-	params_stream >> usr;
-	msg_body = params_stream.str().substr(usr.length() + 1);
+	auto params = split_params_std(msg.body);
+	std::string pm;
+	if (params.size() == 3)
+		pm = params[2];
+	else
+		pm = concat_pieces(params.begin()+2, params.end(), ' ');
 
-	auto rec = get_server().get_participant(usr);
+	auto rec = get_server().get_participant(params[1]);
 	if (rec != nullptr)
 	{
-		message msg(message_type::private_message, msg_body);
-		msg.header.author = get_id();
-		rec->deliver_message(msg);
+		message_composer msgc(message_type::private_message, pm, u->get_id());
+		message &pmsg = msgc();
+		u->deliver_message(pmsg);
+		rec->deliver_message(pmsg);
 	} else
 	{
-		message_composer msgc(message_type::error_message);
-		msgc << "There is no user " << usr << "!";
-		u->deliver_message(msgc());
+		resp_user_not_exists_(u, params[1]);
 	}
 }
 
