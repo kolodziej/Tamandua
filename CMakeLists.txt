@@ -38,11 +38,11 @@ set(SOURCES_FILES
 	src/server.cpp
 	src/user.cpp
 	src/client.cpp
-	src/user_message_interpreter.cpp
 	src/command_interpreter.cpp
 	src/message_composer.cpp
 	src/module_base.cpp
 	src/modules/base_user_module.cpp
+	src/utility.cpp
 )
 
 set(HEADERS_FILES
@@ -59,8 +59,6 @@ set(HEADERS_FILES
 	headers/server.hpp
 	headers/user.hpp
 	headers/client.hpp
-	headers/message_interpreter.hpp
-	headers/user_message_interpreter.hpp
 	headers/command_interpreter.hpp
 	headers/module_base.hpp
 	headers/modules/base_user_module.hpp
