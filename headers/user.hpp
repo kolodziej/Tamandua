@@ -35,6 +35,7 @@ namespace tamandua
 			void start();
 			ssl_socket_stream::lowest_layer_type &get_socket();
 			std::string get_ip_address();
+			std::shared_ptr<group> get_group();
 			
 			virtual void read_message();
 			virtual void deliver_message(const message&);

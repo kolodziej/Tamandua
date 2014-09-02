@@ -28,6 +28,11 @@ std::string user::get_ip_address()
 	return get_socket().remote_endpoint().address().to_string();
 }
 
+std::shared_ptr<group> user::get_group()
+{
+	return group_;
+}
+
 void user::read_message()
 {
 	if (quit_status_ != ok)
