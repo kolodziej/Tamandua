@@ -19,6 +19,8 @@ namespace tamandua
 		public:
 			message_composer(message_type type, id_number_t u_id = 0) : u_id_(u_id), type_(type)
 			{}
+			message_composer(message_type type, std::string body, id_number_t u_id = 0) : u_id_(u_id), type_(type), stream_(body)
+			{}
 
 			void add() {}
 			template <typename First, typename... Rest>
