@@ -30,7 +30,6 @@ namespace tamandua
 			{}
 			user(server &svr, std::string && name, boost::asio::ssl::context &context) : participant(svr, name), socket_(svr.get_io_service(), context), quit_status_(ok)
 			{}
-
 			~user();
 
 			void start();
@@ -39,15 +38,6 @@ namespace tamandua
 			
 			virtual void read_message();
 			virtual void deliver_message(const message&);
-
-			// commands
-			void cmd_id(std::string &);
-			void cmd_room(std::string &);
-			void cmd_proom(std::string &);
-			void cmd_nick(std::string &);
-			void cmd_msg(std::string &);
-			void cmd_kick_ass(std::string &);
-			void cmd_server_uptime(std::string &);
 
 		private:
 			void perform_handshake_();

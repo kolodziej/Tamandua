@@ -5,6 +5,9 @@
 #include "command_interpreter.hpp"
 #include <memory>
 #include <string>
+#include <functional>
+
+#define MODULE_REGISTER_COMMAND(c, f) get_interpreter().register_command(c, std::bind(f, *this, std::placeholders::_1, std::placeholders::_2))
 
 namespace tamandua
 {
@@ -22,6 +25,8 @@ namespace tamandua
 			virtual bool is_hidden();
 			virtual void preprocessed(std::shared_ptr<user>, message &) = 0;
 			virtual void postprocessed(std::shared_ptr<user>, message &, processing_status) = 0;
+
+			command_interpreter &get_interpreter();
 	};
 }
 
