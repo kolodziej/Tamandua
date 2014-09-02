@@ -138,11 +138,14 @@ bool server::change_participant_name(std::string oldname, std::string newname)
 
 void server::quit_participant(id_number_t uid, status st)
 {
+	std::string username;
 	auto u = participants_.find(uid);
 	if (u != participants_.end())
+	{
+		username = (*u).second->get_name();
 		participants_.erase(u);
+	}
 
-	std::string username = (*u).second->get_name();
 	auto u_id = participants_ids_.find(username);
 	if (u_id != participants_ids_.end())
 		participants_ids_.erase(u_id);
