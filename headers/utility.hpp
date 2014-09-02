@@ -3,9 +3,11 @@
 #include "types.hpp"
 #include <string>
 #include <sstream>
+#include <vector>
 #include <chrono>
 #include <ctime>
 #include <memory>
+#include <boost/tokenizer.hpp>
 
 namespace tamandua
 {
@@ -37,7 +39,19 @@ namespace tamandua
 		time_t t = Clock::to_time_t(Clock::now());
 		return static_cast<spec_time_t>(t);
 	}
+	 
+	template <char Escape, char Separator, char Quote>
+	std::vector<std::string> split_params_base(std::string &params)
+	{
+		std::vector<std::string> pv;
+		boost::tokenizer<boost::escaped_list_separator<char>> token(params, boost::escaped_list_separator<char>(Escape, Separator, Quote));
+		for (auto tok : token)
+			pv.push_back(*tok);
 
+		return pv;
+	}
+
+	std::vector<std::string> split_params_std(std::string &);
 }
 
 #endif
