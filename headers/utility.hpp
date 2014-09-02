@@ -46,10 +46,12 @@ namespace tamandua
 		std::vector<std::string> pv;
 		boost::tokenizer<boost::escaped_list_separator<char>> token(params, boost::escaped_list_separator<char>(Escape, Separator, Quote));
 		for (auto tok : token)
-			pv.push_back(*tok);
+			pv.push_back(tok);
 
 		return pv;
 	}
+
+	std::string concat_pieces(std::vector<std::string>::iterator, std::vector<std::string>::iterator, char);
 
 	std::vector<std::string> split_params_std(std::string &);
 }
