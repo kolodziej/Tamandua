@@ -78,6 +78,9 @@ void server::process_message(std::shared_ptr<user> pt, message &msg)
 		message_composer msgc(message_type::error_message);
 		msgc << "Unknown command: [" << msg.body << "]! Available commands: " << get_interpreter().get_commands_list();
 		pt->deliver_message(msgc());
+	} else if (msg_stat == processing_status::cmd_processed)
+	{
+		Log(log_, "Command `", msg.body, "` processed!");
 	} else
 	{
 		Error(log_, "Unknown processing_status for message: '", msg.body, "'!");
