@@ -1,8 +1,12 @@
 #include "modules/base_user_module.hpp"
+#include "message_composer.hpp"
 #include <functional>
+#include <sstream>
 
-base_user_module::base_user_module(command_interpreter &interpreter) :
-				module_base("Base User Module", interpreter)
+using namespace tamandua;
+
+base_user_module::base_user_module(server &svr, command_interpreter &interpreter) :
+				module_base(svr, "Base User Module", interpreter)
 {
 	MODULE_REGISTER_COMMAND("id", &base_user_module::cmd_id);
 	MODULE_REGISTER_COMMAND("room", &base_user_module::cmd_room);
@@ -14,8 +18,8 @@ base_user_module::base_user_module(command_interpreter &interpreter) :
 void base_user_module::cmd_id(std::shared_ptr<user> u, message &msg)
 {
 	message_composer msgc(message_type::info_message);
-	msgc << "Your id number is " << get_id() << ".";
-	deliver_message(msgc());
+	msgc << "Your id number is " << u->get_id() << ".";
+	u->deliver_message(msgc());
 }
 
 void base_user_module::cmd_room(std::shared_ptr<user> u, message &msg)
@@ -28,19 +32,19 @@ void base_user_module::cmd_room(std::shared_ptr<user> u, message &msg)
 	{
 		message_composer msgc(message_type::warning_message);
 		msgc << "You are already subscribed to the room '" << room_name << "'!";
-		deliver_message(msgc());
+		u->deliver_message(msgc());
 	} else if (room_ptr == nullptr || room_ptr->is_hidden() == true)
 	{
 		message_composer msgc(message_type::error_message);
 		msgc << "Room called " << room_name << " does not exist!";
-		deliver_message(msgc());
+		u->deliver_message(msgc());
 	} else
 	{
-		group_ = room_ptr;
-		group_->join_participant(shared_from_this());
+		//u->group_ = room_ptr;
+		//group_->join_participant(shared_from_this());
 		message_composer msgc(message_type::info_message);
 		msgc << "Your room is now: " << room_name;
-		deliver_message(msgc());
+		u->deliver_message(msgc());
 	}
 }
 
@@ -54,7 +58,7 @@ void base_user_module::cmd_proom(std::shared_ptr<user> u, message &msg)
 	{
 		message_composer msgc(message_type::error_message);
 		msgc << "Private room called " << room_name << " does not exist!";
-		deliver_message(msgc());
+		u->deliver_message(msgc());
 	} else
 	{
 		if (room_ptr == group_)
@@ -71,12 +75,12 @@ void base_user_module::cmd_proom(std::shared_ptr<user> u, message &msg)
 				room_ptr->join_participant(shared_from_this());
 				message_composer msgc(message_type::info_message);
 				msgc << "You are now in private room: " << room_name;
-				deliver_message(msgc());
+				u->deliver_message(msgc());
 			} else
 			{
 				message_composer msgc(message_type::error_message);
 				msgc << "[Private room " << room_name << "]: Wrong password!";
-				deliver_message(msgc());
+				u->deliver_message(msgc());
 			}
 		}
 	}
@@ -91,17 +95,17 @@ void base_user_module::cmd_nick(std::shared_ptr<user> u, message &msg)
 	{
 		message_composer msgc(message_type::warning_message);
 		msgc << oldname << " == " << oldname << " --- You kidding, right?! :/";
-		deliver_message(msgc());
+		u->deliver_message(msgc());
 	} else if (get_server().change_participant_name(oldname, newname))
 	{
 		message_composer msgc(message_type::info_message);
 		msgc << "You changed your nick from '" << oldname << "' to '" << newname << "'!";
-		deliver_message(msgc());
+		u->deliver_message(msgc());
 	} else
 	{
 		message_composer msgc(message_type::error_message);
 		msgc << "Nick which you choose (" << newname << ") is in use. Try another one!";
-		deliver_message(msgc());
+		u->deliver_message(msgc());
 	}
 }
 
@@ -122,7 +126,7 @@ void base_user_module::cmd_msg(std::shared_ptr<user> u, message &msg)
 	{
 		message_composer msgc(message_type::error_message);
 		msgc << "There is no user " << usr << "!";
-		deliver_message(msgc());
+		u->deliver_message(msgc());
 	}
 }
 

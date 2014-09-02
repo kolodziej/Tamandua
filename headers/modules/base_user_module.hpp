@@ -8,7 +8,7 @@ namespace tamandua
 		public module_base
 	{
 		public:
-			base_user_module(command_interpreter &);
+			base_user_module(server &, command_interpreter &);
 
 			// commands
 			void cmd_id(std::shared_ptr<user>, message&);

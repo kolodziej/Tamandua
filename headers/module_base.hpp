@@ -11,21 +11,24 @@
 
 namespace tamandua
 {
+	class server;
 	class user;
-
+	
 	class module_base
 	{
-		private:
+		private:			
+			server &server_;
 			std::string module_name_;
 			command_interpreter &interpreter_;
 
 		public:
-			module_base(std::string name, command_interpreter &interpreter) : module_name_(name), interpreter_(interpreter) {}
+			module_base(server &svr, std::string name, command_interpreter &interpreter) : server_(svr), module_name_(name), interpreter_(interpreter) {}
 
 			virtual bool is_hidden();
 			virtual void preprocessed(std::shared_ptr<user>, message &) = 0;
 			virtual void postprocessed(std::shared_ptr<user>, message &, processing_status) = 0;
 
+			server &get_server();
 			command_interpreter &get_interpreter();
 	};
 }
