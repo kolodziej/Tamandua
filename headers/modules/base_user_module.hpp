@@ -9,6 +9,13 @@ namespace tamandua
 	{
 		public:
 			base_user_module(command_interpreter &);
+
+			// commands
+			void cmd_id(std::shared_ptr<user>, message&);
+			void cmd_room(std::shared_ptr<user>, message&);
+			void cmd_proom(std::shared_ptr<user>, message&);
+			void cmd_nick(std::shared_ptr<user>, message&);
+			void cmd_msg(std::shared_ptr<user>, message&);
 	};
 }
 

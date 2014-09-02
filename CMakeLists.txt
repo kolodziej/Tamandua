@@ -41,6 +41,8 @@ set(SOURCES_FILES
 	src/user_message_interpreter.cpp
 	src/command_interpreter.cpp
 	src/message_composer.cpp
+	src/module_base.cpp
+	src/modules/base_user_module.cpp
 )
 
 set(HEADERS_FILES
@@ -61,6 +63,7 @@ set(HEADERS_FILES
 	headers/user_message_interpreter.hpp
 	headers/command_interpreter.hpp
 	headers/module_base.hpp
+	headers/modules/base_user_module.hpp
 	headers/message_composer.hpp
 	headers/tamandua.hpp
 	headers/types.hpp
