@@ -14,5 +14,7 @@
 #include "../headers/logger.hpp"
 #include "../headers/message_interpreter.hpp"
 #include "../headers/user_message_interpreter.hpp"
+#include "../headers/command_interpreter.hpp"
+#include "../headers/module_base.hpp"
 #include "../headers/server_config.hpp"
 #include "../headers/version.hpp"

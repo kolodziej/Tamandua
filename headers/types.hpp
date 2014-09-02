@@ -31,7 +31,8 @@ namespace tamandua
 		bad_cmd = 0,
 		cmd_processed = 1,
 		std_msg = 2,
-		empty_msg = 3
+		empty_msg = 3,
+		empty_cmd = 4
 	} processing_status;
 
 	typedef enum {

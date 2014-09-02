@@ -1,7 +1,6 @@
 #ifndef TAMANDUA_COMMAND_INTERPRETER_HPP
 #define TAMANDUA_COMMAND_INTERPRETER_HPP
 #include "types.hpp"
-#include "user.hpp"
 #include "message.hpp"
 #include <memory>
 #include <string>
@@ -10,15 +9,22 @@
 
 namespace tamandua
 {
+	class user;
+
 	class command_interpreter
 	{
 		private:
-			std::map<std::string, std::functional<tamandua::processing_status(std::string)>> commands_map_;
+			const char start_character_;
+			std::map<std::string, std::function<void(std::shared_ptr<user>, message&)>> commands_map_;
 
-		public:	
-			void register_command(std::string, std::functional<tamandua::processing_status(std::string)>);
-			tamandua::processing_status process(std::shared_ptr<user>, message &);
-	}
+		public:
+			command_interpreter(char start_character) : start_character_(start_character) {}
+			void register_command(std::string, std::function<void(std::shared_ptr<user>, message&)>);
+			processing_status process(std::shared_ptr<user>, message &);
+
+		private:
+			processing_status process_command_(std::shared_ptr<user>, message &);
+	};
 }
 
 #endif

@@ -1,7 +1,6 @@
 #ifndef TAMANDUA_MODULE_BASE_HPP
 #define TAMANDUA_MODULE_BASE_HPP
 #include "types.hpp"
-#include "user.hpp"
 #include "message.hpp"
 #include "command_interpreter.hpp"
 #include <memory>
@@ -9,6 +8,8 @@
 
 namespace tamandua
 {
+	class user;
+
 	class module_base
 	{
 		private:

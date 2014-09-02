@@ -13,12 +13,13 @@
 
 using namespace tamandua;
 
-server::server(boost::asio::io_service &io_service, tcp::endpoint &endpoint, logger &log, boost::asio::ssl::context &context) :
+server::server(boost::asio::io_service &io_service, tcp::endpoint &endpoint, logger &log, command_interpreter &interpreter, boost::asio::ssl::context &context) :
 	io_service_(io_service),
 	context_(std::move(context)),
 	acceptor_(io_service, endpoint),
 	endpoint_(endpoint),
 	log_(log),
+	interpreter_(interpreter),
 	last_participant_id_(0),
 	last_group_id_(0)
 {
@@ -61,7 +62,7 @@ void server::process_message(std::shared_ptr<user> pt, message &msg)
 		return;
 	}
 	// user message interpreter
-	processing_status msg_stat = interpreter_.process_message(*(pt.get()),msg);
+	processing_status msg_stat = interpreter_.process(pt ,msg);
 
 	if (msg_stat == processing_status::std_msg)
 	{
@@ -76,7 +77,7 @@ void server::process_message(std::shared_ptr<user> pt, message &msg)
 	} else if (msg_stat == processing_status::bad_cmd)
 	{
 		message_composer msgc(message_type::error_message);
-		msgc << "Unknown command: [" << msg.body << "]! Available commands: " << get_interpreter().get_commands_list();
+		msgc << "Unknown command: [" << msg.body << "]!";// Available commands: " << get_interpreter().get_commands_list();
 		pt->deliver_message(msgc());
 	} else if (msg_stat == processing_status::cmd_processed)
 	{
@@ -247,7 +248,7 @@ logger & server::get_logger()
 	return log_;
 }
 
-user_message_interpreter & server::get_interpreter()
+command_interpreter & server::get_interpreter()
 {
 	return interpreter_;
 }
