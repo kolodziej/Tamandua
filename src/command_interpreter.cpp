@@ -1,4 +1,5 @@
 #include "command_interpreter.hpp"
+#include "utility.hpp"
 
 using namespace tamandua;
 
@@ -26,13 +27,12 @@ processing_status command_interpreter::process(std::shared_ptr<user> u, message 
 
 processing_status command_interpreter::process_command_(std::shared_ptr<user> u, message &msg)
 {
-	std::stringstream stream(msg.body);
-	std::string command;
-	stream >> command;
+	auto params = split_params_std(msg.body);
+	std::string &command = params[0];
 	if (command.empty())
 		return empty_cmd;
 
-	auto cmd_it = commands_map_.find(command);
+	auto cmd_it = commands_map_.find(command.substr(1));
 	if (cmd_it == commands_map_.end())
 		return bad_cmd;
 	else

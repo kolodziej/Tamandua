@@ -28,6 +28,11 @@ server::server(boost::asio::io_service &io_service, tcp::endpoint &endpoint, log
 server::~server()
 {}
 
+void server::register_module(module_base &module)
+{
+	modules_.push_back(&module);
+}
+
 void server::start_server(server_config &config)
 {
 	using std::chrono::system_clock;
@@ -61,7 +66,7 @@ void server::process_message(std::shared_ptr<user> pt, message &msg)
 		quit_participant(pt->get_id(), ok);
 		return;
 	}
-	// user message interpreter
+
 	processing_status msg_stat = interpreter_.process(pt ,msg);
 
 	if (msg_stat == processing_status::std_msg)

@@ -16,3 +16,4 @@
 #include "../headers/module_base.hpp"
 #include "../headers/server_config.hpp"
 #include "../headers/version.hpp"
+#include "../headers/version_config.hpp"

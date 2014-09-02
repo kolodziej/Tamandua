@@ -3,6 +3,7 @@
 #include <string>
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
+#include "../headers/modules/base_user_module.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -36,6 +37,8 @@ int main(int argc, char ** argv)
 	cfg.main_room_name = "HallOfFame";
 	cfg.root_password = "ghYUSa12!g?";
 	server svr(io_service, endpoint, log, interpreter, context);
+	base_user_module user_module(svr, interpreter);
+	svr.register_module(user_module);
 	svr.start_server(cfg);
 	io_service.run();
 	return 0;

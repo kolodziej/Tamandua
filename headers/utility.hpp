@@ -51,9 +51,9 @@ namespace tamandua
 		return pv;
 	}
 
-	std::string concat_pieces(std::vector<std::string>::iterator, std::vector<std::string>::iterator, char);
-
 	std::vector<std::string> split_params_std(std::string &);
+
+	std::string concat_pieces(std::vector<std::string>::iterator, std::vector<std::string>::iterator, char);
 }
 
 #endif

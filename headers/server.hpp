@@ -18,6 +18,7 @@ namespace tamandua
 {
 	class participant;
 	class group;
+	class module_base;
 
 	class server
 	{
@@ -34,6 +35,8 @@ namespace tamandua
 			std::map<id_number_t, std::shared_ptr<group>> groups_;
 			std::map<std::string, id_number_t> groups_ids_;
 
+			std::vector<module_base*> modules_;
+
 			id_number_t last_participant_id_, last_group_id_;
 
 			std::chrono::system_clock::time_point start_time_;
@@ -42,6 +45,7 @@ namespace tamandua
 			server(boost::asio::io_service &, tcp::endpoint &, logger &, command_interpreter &, boost::asio::ssl::context &);
 			~server();
 		
+			void register_module(module_base&);
 			void start_server(server_config &);
 			void send_startup_data(std::shared_ptr<participant>);
 			boost::asio::io_service &get_io_service();
