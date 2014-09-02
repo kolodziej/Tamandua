@@ -74,7 +74,6 @@ namespace tamandua
 		private:
 			void add_root_(std::string);
 			void add_hall_(std::string);
-			void add_new_user_(std::shared_ptr<user>);
 			void accept_connection_();
 			void send_rooms_list_();
 			void send_participants_list_();

@@ -253,6 +253,16 @@ command_interpreter & server::get_interpreter()
 	return interpreter_;
 }
 
+void server::add_root_(std::string password)
+{
+	add_participant(std::shared_ptr<participant>(new root(*this, password)));
+}
+
+void server::add_hall_(std::string name)
+{
+	add_group(std::shared_ptr<group>(new room(*this, name)));
+}
+
 void server::accept_connection_()
 {
 	std::shared_ptr<user> new_user(new user(*this, std::string(), context_));
@@ -269,15 +279,6 @@ void server::accept_connection_()
 	Log(log_, "Waiting for connection");
 }
 
-void server::add_root_(std::string password)
-{
-	add_participant(std::shared_ptr<participant>(new root(*this, password)));
-}
-
-void server::add_hall_(std::string name)
-{
-	add_group(std::shared_ptr<group>(new room(*this, name)));
-}
 
 void server::send_rooms_list_()
 {
