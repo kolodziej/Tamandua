@@ -3,6 +3,7 @@
 #include "types.hpp"
 #include "logger.hpp"
 #include "message.hpp"
+#include "server_config.hpp"
 #include "user_message_interpreter.hpp"
 #include <map>
 #include <string>
@@ -26,7 +27,7 @@ namespace tamandua
 			tcp::acceptor acceptor_;
 			tcp::endpoint endpoint_;
 			logger &log_;
-			user_message_interpreter &interpreter_;
+			user_message_interpreter interpreter_;
 
 			std::map<id_number_t, std::shared_ptr<participant>> participants_;
 			std::map<std::string, id_number_t> participants_ids_;
@@ -38,10 +39,10 @@ namespace tamandua
 			std::chrono::system_clock::time_point start_time_;
 
 		public:
-			server(boost::asio::io_service &, tcp::endpoint &, logger &, user_message_interpreter &);
+			server(boost::asio::io_service &, tcp::endpoint &, logger &, boost::asio::ssl::context &);
 			~server();
 		
-			void start_server();
+			void start_server(server_config &);
 			void send_startup_data(std::shared_ptr<participant>);
 			boost::asio::io_service &get_io_service();
 			void process_message(std::shared_ptr<user>, message&);
@@ -71,8 +72,8 @@ namespace tamandua
 			user_message_interpreter & get_interpreter();
 
 		private:
-			void add_root_();
-			void add_hall_();
+			void add_root_(std::string);
+			void add_hall_(std::string);
 			void add_new_user_(std::shared_ptr<user>);
 			void accept_connection_();
 			void send_rooms_list_();

@@ -61,6 +61,7 @@ set(HEADERS_FILES
 	headers/message_composer.hpp
 	headers/tamandua.hpp
 	headers/types.hpp
+	headers/server_config.hpp
 	headers/utility.hpp
 	headers/version.hpp
 )

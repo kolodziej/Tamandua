@@ -13,13 +13,12 @@
 
 using namespace tamandua;
 
-server::server(boost::asio::io_service &io_service, tcp::endpoint &endpoint, logger &log, user_message_interpreter &interp) :
+server::server(boost::asio::io_service &io_service, tcp::endpoint &endpoint, logger &log, boost::asio::ssl::context &context) :
 	io_service_(io_service),
-	context_(boost::asio::ssl::context::sslv23),
+	context_(std::move(context)),
 	acceptor_(io_service, endpoint),
 	endpoint_(endpoint),
 	log_(log),
-	interpreter_(interp),
 	last_participant_id_(0),
 	last_group_id_(0)
 {
@@ -28,13 +27,13 @@ server::server(boost::asio::io_service &io_service, tcp::endpoint &endpoint, log
 server::~server()
 {}
 
-void server::start_server()
+void server::start_server(server_config &config)
 {
 	using std::chrono::system_clock;
 	start_time_ = system_clock::now();
 	Log(log_, "Starting server at: ", format_localtime<system_clock, 30>(start_time_, "%c"));
-	add_root_();
-	add_hall_();
+	add_root_(config.root_password);
+	add_hall_(config.main_room_name);
 	accept_connection_();
 }
 
@@ -266,14 +265,14 @@ void server::accept_connection_()
 	Log(log_, "Waiting for connection");
 }
 
-void server::add_root_()
+void server::add_root_(std::string password)
 {
-	add_participant(std::shared_ptr<participant>(new root(*this, "dd"))); // test password
+	add_participant(std::shared_ptr<participant>(new root(*this, password)));
 }
 
-void server::add_hall_()
+void server::add_hall_(std::string name)
 {
-	add_group(std::shared_ptr<group>(new room(*this, "Hall")));
+	add_group(std::shared_ptr<group>(new room(*this, name)));
 }
 
 void server::send_rooms_list_()

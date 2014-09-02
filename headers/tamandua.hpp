@@ -14,4 +14,5 @@
 #include <tamandua/logger.hpp>
 #include <tamandua/message_interpreter.hpp>
 #include <tamandua/user_message_interpreter.hpp>
+#include <tamandua/server_config.hpp>
 #include <tamandua/version.hpp>

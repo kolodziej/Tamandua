@@ -29,8 +29,14 @@ int main(int argc, char ** argv)
 	tcp::endpoint endpoint(tcp::v4(), stoi(port));
 	logger log(std::cerr);
 	user_message_interpreter interpreter;
-	server svr(io_service, endpoint, log, interpreter);
-	svr.start_server();
+
+	server_config cfg;
+	cfg.server_name = "Testing tamandua server";
+	cfg.max_participants_number = 2000;
+	cfg.main_room_name = "HallOfFame";
+	cfg.root_password = "ghYUSa12!g?";
+	server svr(io_service, endpoint, log, context);
+	svr.start_server(cfg);
 	io_service.run();
 	return 0;
 }

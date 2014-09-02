@@ -6,12 +6,11 @@ namespace tamandua
 {
 	struct server_config
 	{
-		unsigned int port;
 		std::string server_name;
-		size_t max_users_number;
+		size_t max_participants_number;
+		std::string main_room_name;
 		std::string root_password;
-		
-	}
+	};
 }
 
 #endif
