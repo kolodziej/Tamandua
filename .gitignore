@@ -1,5 +1,6 @@
 examples/tamandua_client
 examples/tamandua_server
+examples/ssl/*
 *.o
 *.a
 *.swp

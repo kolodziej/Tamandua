@@ -36,7 +36,7 @@ int main(int argc, char ** argv)
 
 	boost::asio::io_service io_service;
 	boost::asio::ssl::context context(boost::asio::ssl::context::sslv23);
-	context.load_verify_file("server.crt");
+	context.load_verify_file("ssl/server.crt");
 	context.set_verify_mode(boost::asio::ssl::verify_peer);
 
 	client cl(io_service, context);

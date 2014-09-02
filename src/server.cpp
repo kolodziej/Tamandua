@@ -23,13 +23,6 @@ server::server(boost::asio::io_service &io_service, tcp::endpoint &endpoint, log
 	last_participant_id_(0),
 	last_group_id_(0)
 {
-	context_.set_options(
-		boost::asio::ssl::context::default_workarounds |
-		boost::asio::ssl::context::no_sslv2 |
-		boost::asio::ssl::context::single_dh_use);
-	context_.use_certificate_chain_file("server.crt");
-	context_.use_private_key_file("server.key", boost::asio::ssl::context::pem);
-	context_.use_tmp_dh_file("dh512.pem");
 }
 
 server::~server()

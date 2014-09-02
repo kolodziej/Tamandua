@@ -18,6 +18,14 @@ int main(int argc, char ** argv)
 	std::string port(argv[1]);
 	boost::asio::io_service io_service;
 	boost::asio::ssl::context context(boost::asio::ssl::context::sslv23);
+	context_.set_options(
+		boost::asio::ssl::context::default_workarounds |
+		boost::asio::ssl::context::no_sslv2 |
+		boost::asio::ssl::context::single_dh_use);
+	context_.use_certificate_chain_file("ssl/server.crt");
+	context_.use_private_key_file("ssl/server.key", boost::asio::ssl::context::pem);
+	context_.use_tmp_dh_file("ssl/dh512.pem");
+
 	tcp::endpoint endpoint(tcp::v4(), stoi(port));
 	logger log(std::cerr);
 	user_message_interpreter interpreter;
