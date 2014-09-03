@@ -227,6 +227,7 @@ void client::process_message_()
 
 void client::set_participants_list_()
 {
+	TamanduaDebug("Setting participants list: ", read_message_.body);
 	participants_.clear();
 	std::stringstream stream(read_message_.body);
 	std::string record, id, name;
@@ -244,6 +245,7 @@ void client::set_participants_list_()
 
 void client::set_rooms_list_()
 {
+	TamanduaDebug("Setting rooms list: ", read_message_.body);
 	rooms_.clear();
 	std::stringstream stream(read_message_.body);
 	std::string record, id, name;

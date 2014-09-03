@@ -71,12 +71,14 @@ void server::process_message(std::shared_ptr<user> pt, message &msg)
 
 	if (msg_stat == processing_status::std_msg)
 	{
-		if (pt->group_)
-			pt->group_->deliver_message(msg);
-		else
+		auto gr = get_group(msg.header.group);
+		if (gr != nullptr && pt->is_in_group(msg.header.group))
+		{
+			gr->deliver_message(msg);
+		} else
 		{
 			message_composer msgc(message_type::error_message);
-			msgc << "You must select group using /room <name> or /proom <name> <password>. Your client received full list of public rooms.";
+			msgc << "You don't participate in group with ID " << msg.header.group;
 			pt->deliver_message(msgc());
 		}
 	} else if (msg_stat == processing_status::bad_cmd)
@@ -289,7 +291,8 @@ void server::accept_connection_()
 
 
 void server::send_rooms_list_()
-{
+{	
+	Log(log_, "Distributing rooms list");
 	message_composer msgc(message_type::rooms_list);
 	msgc << generate_rooms_list_();
 	message msg = msgc();
@@ -299,6 +302,7 @@ void server::send_rooms_list_()
 
 void server::send_participants_list_()
 {
+	Log(log_, "Distributing participants list");
 	message_composer msgc(message_type::participants_list);
 	msgc << generate_participants_list_();
 	message msg = msgc();
