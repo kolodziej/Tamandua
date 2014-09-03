@@ -71,6 +71,8 @@ namespace tamandua
 			bool is_username_valid(std::string);
 			void set_message_id(message &);
 			std::string get_uptime_string();
+			
+			void send_to_all(message);
 
 			logger & get_logger();
 			command_interpreter & get_interpreter();
@@ -81,7 +83,6 @@ namespace tamandua
 			void accept_connection_();
 			void send_rooms_list_();
 			void send_participants_list_();
-			void send_to_all_(message_type, std::string);
 
 			friend class participant;
 			id_number_t get_new_participant_id_();

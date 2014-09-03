@@ -253,6 +253,12 @@ std::string server::get_uptime_string()
 	return stream.str();
 }
 
+void server::send_to_all(message msg)
+{
+	for (auto p : participants_)
+		p->deliver_message(msg);
+}
+
 logger & server::get_logger()
 {
 	return log_;
