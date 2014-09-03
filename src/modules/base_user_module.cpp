@@ -117,8 +117,8 @@ void base_user_module::cmd_nick(std::shared_ptr<user> u, message &msg)
 	} else if (get_server().change_participant_name(oldname, newname))
 	{
 		message_composer msgc(message_type::info_message);
-		msgc << "You changed your nick from '" << oldname << "' to '" << newname << "'!";
-		u->deliver_message(msgc());
+		msgc << "User `" << oldname << "` changed nick to `" << newname << "`!";
+		get_server().send_to_all(msgc());
 	} else
 	{
 		message_composer msgc(message_type::error_message);
