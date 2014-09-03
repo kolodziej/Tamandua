@@ -6,6 +6,7 @@
 #include <string>
 #include <deque>
 #include <memory>
+#include <set>
 #include <utility>
 #include <boost/asio.hpp>
 
@@ -20,6 +21,7 @@ namespace tamandua
 		private:
 			ssl_socket_stream socket_;
 			std::deque<message> messages_queue_;
+			std::set<id_number_t> groups_;
 			std::shared_ptr<group> group_;
 			message read_message_;
 			status quit_status_;
@@ -35,7 +37,9 @@ namespace tamandua
 			void start();
 			ssl_socket_stream::lowest_layer_type &get_socket();
 			std::string get_ip_address();
-			std::shared_ptr<group> get_group();
+			
+			bool add_group(id_number_t);
+			bool is_in_group(id_number_t);
 			
 			virtual void read_message();
 			virtual void deliver_message(const message&);

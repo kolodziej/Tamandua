@@ -28,9 +28,19 @@ std::string user::get_ip_address()
 	return get_socket().remote_endpoint().address().to_string();
 }
 
-std::shared_ptr<group> user::get_group()
+bool user::add_group(id_number_t id)
 {
-	return group_;
+	auto p = groups_.insert(id);
+	return p.second;
+}
+
+bool user::is_in_group(id_number_t id)
+{
+	auto it = groups_.find(id);
+	if (it == groups_.end())
+		return false;
+
+	return true;
 }
 
 void user::read_message()
