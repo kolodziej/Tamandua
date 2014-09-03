@@ -256,7 +256,7 @@ std::string server::get_uptime_string()
 void server::send_to_all(message msg)
 {
 	for (auto p : participants_)
-		p->deliver_message(msg);
+		(p.second)->deliver_message(msg);
 }
 
 logger & server::get_logger()
