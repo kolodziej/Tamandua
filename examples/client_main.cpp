@@ -65,6 +65,10 @@ int main(int argc, char ** argv)
 						std::cout << "\e[1;91m";
 						break;
 
+					case message_type::group_enter_message:
+						std::cout << "entering new group: " << msg.header.group;
+						break;
+
 				}
 				std::cout << msg.body << "\e[0m\n";
 			}
