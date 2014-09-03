@@ -12,14 +12,14 @@ namespace tamandua
 	{
 		private:
 			message msg_;
-			id_number_t u_id_;
+			id_number_t u_id_, gr_id_;
 			message_type type_;
 			std::stringstream stream_;
 
 		public:
-			message_composer(message_type type, id_number_t u_id = 0) : u_id_(u_id), type_(type)
+			message_composer(message_type type, id_number_t gr_id = 0, id_number_t u_id = 0) : u_id_(u_id), gr_id_(gr_id), type_(type)
 			{}
-			message_composer(message_type type, std::string body, id_number_t u_id = 0) : u_id_(u_id), type_(type), stream_(body)
+			message_composer(message_type type, std::string body, id_number_t gr_id = 0, id_number_t u_id = 0) : u_id_(u_id), gr_id_(gr_id), type_(type), stream_(body)
 			{}
 
 			void add() {}

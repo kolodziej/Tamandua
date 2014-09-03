@@ -9,6 +9,7 @@ namespace tamandua
 	{
 		message_time_t utc_time;
 		id_number_t author;
+		id_number_t group;
 		message_type type;
 		message_size size;
 	};
