@@ -290,24 +290,20 @@ void server::accept_connection_()
 
 void server::send_rooms_list_()
 {
-	message_header header;
-	header.author = 0;
-	header.type = message_type::rooms_list;
-	std::string rooms_list = generate_rooms_list_();
-	header.size = rooms_list.size();
+	message_composer msgc(message_type::rooms_list);
+	msgc << generate_rooms_list_();
+	message msg = msgc();
 	for (auto &part : participants_)
-		part.second->deliver_message(message(header, rooms_list));
+		part.second->deliver_message(msg);
 }
 
 void server::send_participants_list_()
 {
-	message_header header;
-	header.author = 0;
-	header.type = message_type::participants_list;
-	std::string pt_list = generate_participants_list_();
-	header.size = pt_list.size();
+	message_composer msgc(message_type::participants_list);
+	msgc << generate_participants_list_();
+	message msg = msgc();
 	for (auto &part : participants_)
-		part.second->deliver_message(message(header, pt_list));
+		part.second->deliver_message(msg);
 }
 
 id_number_t server::get_new_participant_id_()
