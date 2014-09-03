@@ -74,12 +74,19 @@ void user::perform_handshake_()
 		if (!ec)
 		{
 			get_server().send_startup_data(shared_from_this());
+			add_to_hall_();
 			read_message();
 		} else
 		{
 			Error(get_server().get_logger(), "Handshake failed: ", ec.message());
 		}
 	});
+}
+
+void user::add_to_hall_()
+{
+	get_server().get_group(0)->join_participant(shared_from_this());
+	add_group(0);
 }
 
 void user::read_message_header_()
@@ -121,6 +128,8 @@ void user::read_message_body_()
 
 void user::process_message_()
 {
+	// verifying participant id
+	read_message_.header.author = get_id();
 	get_server().process_message(shared_from_this(), read_message_);
 	read_message();
 }

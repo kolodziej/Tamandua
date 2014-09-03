@@ -46,6 +46,7 @@ namespace tamandua
 
 		private:
 			void perform_handshake_();
+			void add_to_hall_();
 			void read_message_header_();
 			void read_message_body_();
 			void process_message_();
