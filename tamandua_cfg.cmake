@@ -1,5 +1,5 @@
 set(Tamandua_VERSION_MAJOR 0)
-set(Tamandua_VERSION_MINOR 3)
+set(Tamandua_VERSION_MINOR 4)
 set(Tamandua_VERSION_PATCH 0)
 set(Tamandua_RELEASE_TYPE alpha)
 
