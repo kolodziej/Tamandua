@@ -43,6 +43,7 @@ set(SOURCES_FILES
 	src/module_base.cpp
 	src/modules/base_user_module.cpp
 	src/utility.cpp
+	src/version.cpp
 )
 
 set(HEADERS_FILES
