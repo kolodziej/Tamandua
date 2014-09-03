@@ -46,25 +46,25 @@ void base_user_module::cmd_id(std::shared_ptr<user> u, message &msg)
 void base_user_module::cmd_room(std::shared_ptr<user> u, message &msg)
 {
 	auto params = split_params_std(msg.body);
-	/*auto room_ptr = get_server().get_group(params[1]);
-	if (room_ptr == u->get_group())
-	{
-		message_composer msgc(message_type::warning_message);
-		msgc << "You are already subscribed to the room '" << room_name << "'!";
-		u->deliver_message(msgc());
-	} else if (room_ptr == nullptr || room_ptr->is_hidden() == true)
+	auto room_ptr = get_server().get_group(params[1]);
+	if (room_ptr == nullptr || room_ptr->is_hidden() == true)
 	{
 		message_composer msgc(message_type::error_message);
-		msgc << "Room called " << room_name << " does not exist!";
+		msgc << "Room called " << params[1] << " does not exist!";
+		u->deliver_message(msgc());
+	} else if (u->is_in_group(room_ptr->get_id()))
+	{
+		message_composer msgc(message_type::warning_message);
+		msgc << "You are already subscribed to the room '" << params[1] << "'!";
 		u->deliver_message(msgc());
 	} else
 	{
-		//u->group_ = room_ptr;
-		//group_->join_participant(shared_from_this());
-		message_composer msgc(message_type::info_message);
-		msgc << "Your room is now: " << room_name;
+		room_ptr->join_participant(u);
+		u->add_group(room_ptr->get_id());
+		message_composer msgc(message_type::group_enter_message, room_ptr->get_id());
+		msgc << "Your room is now: " << params[1];
 		u->deliver_message(msgc());
-	}*/
+	}
 }
 
 void base_user_module::cmd_proom(std::shared_ptr<user> u, message &msg)
@@ -139,7 +139,7 @@ void base_user_module::cmd_msg(std::shared_ptr<user> u, message &msg)
 	auto rec = get_server().get_participant(params[1]);
 	if (rec != nullptr)
 	{
-		message_composer msgc(message_type::private_message, pm, u->get_id());
+		message_composer msgc(message_type::private_message, pm, 0, u->get_id());
 		message &pmsg = msgc();
 		u->deliver_message(pmsg);
 		rec->deliver_message(pmsg);
