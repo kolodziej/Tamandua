@@ -1,8 +1,10 @@
 #include "modules/base_user_module.hpp"
 #include "message_composer.hpp"
 #include "user.hpp"
+#include "private_room.hpp"
 #include <functional>
 #include <sstream>
+#include <memory>
 
 using namespace tamandua;
 
@@ -69,40 +71,38 @@ void base_user_module::cmd_room(std::shared_ptr<user> u, message &msg)
 
 void base_user_module::cmd_proom(std::shared_ptr<user> u, message &msg)
 {
-	/*std::stringstream params_stream(params);
-	std::string room_name, password;
-	params_stream >> room_name >> password;
-	auto room_ptr = get_server().get_group(room_name);
+	auto params = split_params_std(msg.body);
+	auto room_ptr = get_server().get_group(params[1]);
 	if (room_ptr == nullptr || room_ptr->is_hidden() == false)
 	{
 		message_composer msgc(message_type::error_message);
-		msgc << "Private room called " << room_name << " does not exist!";
+		msgc << "Private room called " << params[1] << " does not exist!";
 		u->deliver_message(msgc());
 	} else
 	{
-		if (room_ptr == group_)
+		if (u->is_in_group(room_ptr->get_id()))
 		{
 			message_composer msgc(message_type::warning_message);
-			msgc << "You are already subscribed to the private room '" << room_name << "'!";
-			deliver_message(msgc());
+			msgc << "You are already subscribed to the private room '" << params[1] << "'!";
+			u->deliver_message(msgc());
 		} else
 		{
 			std::shared_ptr<private_room> proom_ptr = std::dynamic_pointer_cast<private_room>(room_ptr);
-			if (proom_ptr->check_password(password))
+			if (proom_ptr->check_password(params[2]))
 			{
-				group_ = room_ptr;
-				room_ptr->join_participant(shared_from_this());
+				u->add_group(room_ptr->get_id());
+				room_ptr->join_participant(u);
 				message_composer msgc(message_type::info_message);
-				msgc << "You are now in private room: " << room_name;
+				msgc << "You are now in private room: " << params[1];
 				u->deliver_message(msgc());
 			} else
 			{
 				message_composer msgc(message_type::error_message);
-				msgc << "[Private room " << room_name << "]: Wrong password!";
+				msgc << "[Private room " << params[1] << "]: Wrong password!";
 				u->deliver_message(msgc());
 			}
 		}
-	}*/
+	}
 }
 
 void base_user_module::cmd_nick(std::shared_ptr<user> u, message &msg)
