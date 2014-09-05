@@ -271,7 +271,10 @@ command_interpreter & server::get_interpreter()
 
 void server::add_root_(std::string password)
 {
-	add_participant(std::shared_ptr<participant>(new root(*this, password)));
+	if (participants_.empty())
+		add_participant(std::shared_ptr<participant>(new root(*this, password)));
+	else
+	{} // throw proper exception
 }
 
 void server::add_hall_(std::string name)
