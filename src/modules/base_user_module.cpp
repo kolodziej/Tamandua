@@ -2,6 +2,7 @@
 #include "message_composer.hpp"
 #include "user.hpp"
 #include "private_room.hpp"
+#include "root.hpp"
 #include <functional>
 #include <sstream>
 #include <memory>
@@ -16,6 +17,7 @@ base_user_module::base_user_module(server &svr, command_interpreter &interpreter
 	MODULE_REGISTER_COMMAND("proom", &base_user_module::cmd_proom);
 	MODULE_REGISTER_COMMAND("nick", &base_user_module::cmd_nick);
 	MODULE_REGISTER_COMMAND("msg", &base_user_module::cmd_msg);
+	MODULE_REGISTER_COMMAND("root_auth", &base_user_module::cmd_root_auth);
 }
 
 void base_user_module::preprocessed(std::shared_ptr<user> u, message &msg)
@@ -146,6 +148,21 @@ void base_user_module::cmd_msg(std::shared_ptr<user> u, message &msg)
 	} else
 	{
 		resp_user_not_exists_(u, params[1]);
+	}
+}
+
+void base_user_module::cmd_root_auth(std::shared_ptr<user> u, message &msg)
+{
+	auto params = split_params_std(msg.body);
+	auto r = get_server().get_root();
+	if (r->auth_user(u->get_id(), params[1]))
+	{
+		message_composer msgc(message_type::info_message, "You have been authorized to use root commands!");
+		u->deliver_message(msgc());
+	} else
+	{
+		message_composer msgc(message_type::error_message, "Wrong password! Server saved information about your attempt!");
+		u->deliver_message(msgc());
 	}
 }
 

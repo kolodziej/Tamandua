@@ -20,6 +20,7 @@ namespace tamandua
 			void cmd_proom(std::shared_ptr<user>, message&);
 			void cmd_nick(std::shared_ptr<user>, message&);
 			void cmd_msg(std::shared_ptr<user>, message&);
+			void cmd_root_auth(std::shared_ptr<user>, message&);
 
 		private:
 			void resp_user_not_exists_(std::shared_ptr<user>, std::string&);
