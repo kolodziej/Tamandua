@@ -1,7 +1,7 @@
 #ifndef TAMANDUA_BASE_USER_MODULE_HPP
 #define TAMANDUA_BASE_USER_MODULE_HPP
-#include "module_base.hpp"
-#include "server.hpp"
+#include "../module_base.hpp"
+#include "../server.hpp"
 
 namespace tamandua
 {
