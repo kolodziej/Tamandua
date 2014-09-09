@@ -41,6 +41,9 @@ void root::read_message()
 
 void root::deliver_message(const message &msg)
 {
+	if (msg.header.author == 0)
+		return; 
+
 	auto u = auth_users_ids_.find(msg.header.author);
 	if (u == auth_users_ids_.end())
 	{
