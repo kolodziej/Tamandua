@@ -41,6 +41,7 @@ namespace tamandua
 			id_number_t last_participant_id_, last_group_id_;
 
 			std::chrono::system_clock::time_point start_time_;
+			server_config config_;
 
 		public:
 			server(boost::asio::io_service &, tcp::endpoint &, logger &, command_interpreter &, boost::asio::ssl::context &);

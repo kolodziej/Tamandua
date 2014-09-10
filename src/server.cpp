@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <ctime>
 #include <chrono>
+#include <boost/regex.hpp>
 
 using namespace tamandua;
 
@@ -35,6 +36,7 @@ void server::register_module(module_base &module)
 
 void server::start_server(server_config &config)
 {
+	config_ = config;
 	using std::chrono::system_clock;
 	start_time_ = system_clock::now();
 	Log(log_, "Starting server at: ", format_localtime<system_clock, 30>(start_time_, "%c"));
@@ -235,10 +237,8 @@ id_number_t server::get_last_group_id() const
 
 bool server::is_username_valid(std::string username)
 {
-	if (username.length() < 2)
-		return false;
-
-	return true;
+	boost::regex exp(config_.participant_name_format);
+	return boost::regex_match(username, exp);
 }
 
 std::string server::get_uptime_string()

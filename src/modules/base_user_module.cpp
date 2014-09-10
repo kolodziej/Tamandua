@@ -129,6 +129,11 @@ void base_user_module::cmd_nick(std::shared_ptr<user> u, message &msg)
 		message_composer msgc(message_type::warning_message);
 		msgc << oldname << " == " << oldname << " --- You kidding, right?! :/";
 		u->deliver_message(msgc());
+	} else if (get_server().is_username_valid(newname) == false)
+	{
+		message_composer msgc(message_type::error_message);
+		msgc << "Invalid nickname!";
+		u->deliver_message(msgc());
 	} else if (get_server().change_participant_name(oldname, newname))
 	{
 		message_composer msgc(message_type::info_message);
