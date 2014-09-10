@@ -24,8 +24,10 @@ void client::connect(tcp::resolver::iterator endpoint_iterator)
 		[this](boost::system::error_code ec, tcp::resolver::iterator iterator)
 		{
 			if (!ec)
+			{
 				call_event_handler_(connecting_succeeded, ok);
-			else
+				connected_ = true;
+			} else
 				call_event_handler_(connecting_failed, connection_failed);
 
 			perform_handshake_();
