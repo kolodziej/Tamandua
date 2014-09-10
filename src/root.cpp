@@ -44,6 +44,9 @@ void root::process_command(std::shared_ptr<user> u, std::vector<std::string> &pa
 	if (auth_users_ids_.find(u->get_id()) == auth_users_ids_.end())
 	{
 		unauthorized_user_(u);
+	} else if (params.empty())
+	{
+		unknown_command_(u);
 	} else
 	{
 		auto cmd = commands_.find(params[0]);
@@ -67,7 +70,11 @@ void root::unauthorized_user_(std::shared_ptr<user> u)
 void root::unknown_command_(std::shared_ptr<user> u, std::string cmd)
 {
 	message_composer msgc(message_type::error_message);
-	msgc << "Unknown command: " << cmd;
+	if (cmd.empty())
+		msgc << "You must type root command!";
+	else
+		msgc << "Unknown command: " << cmd;
+
 	u->deliver_message(msgc());
 	Log(get_server().get_logger(), "User ", u->get_name(), " (ID: ", u->get_id(), ") tried to call unknown root's command: ", cmd);
 }
