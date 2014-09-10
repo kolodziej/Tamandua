@@ -31,8 +31,8 @@ namespace tamandua
 
 		private:
 			void process_message_(const message);
-			void unauthorized_user_(id_number_t);
-			void unknown_command_(id_number_t, std::string);
+			void unauthorized_user_(std::shared_ptr<user>);
+			void unknown_command_(std::shared_ptr<user>, std::string);
 
 			// commands
 			void add_room_(const message&);
