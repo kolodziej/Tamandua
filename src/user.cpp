@@ -66,6 +66,11 @@ void user::deliver_message(const message &message)
 		send_messages_();
 }
 
+void user::quit()
+{
+	quit_status_ = ok;
+}
+
 void user::perform_handshake_()
 {
 	socket_.async_handshake(boost::asio::ssl::stream_base::server,
@@ -172,3 +177,4 @@ void user::error_quit_()
 {
 	get_server().quit_participant(get_id(), status::user_error_quit);
 }
+

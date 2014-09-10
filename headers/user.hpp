@@ -43,7 +43,8 @@ namespace tamandua
 			
 			virtual void read_message();
 			virtual void deliver_message(const message&);
-
+			void quit();
+			
 		private:
 			void perform_handshake_();
 			void add_to_hall_();
@@ -55,7 +56,6 @@ namespace tamandua
 			void deliver_quit_message_();
 			void quit_();
 			void error_quit_();
-
 	};
 }
 
