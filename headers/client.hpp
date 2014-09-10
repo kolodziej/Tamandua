@@ -64,6 +64,7 @@ namespace tamandua
 			}
 
 			id_number_t get_id();
+			ssl_socket_stream &get_socket();
 
 			void send_message(std::string &);
 			void send_quit_message(std::string = std::string());

@@ -51,6 +51,11 @@ id_number_t client::get_id()
 	return uid_;
 }
 
+ssl_socket_stream &client::get_socket()
+{
+	return socket_;
+}
+
 void client::send_message(std::string &body)
 {
 	message_composer msgc(message_type::standard_message, uid_);
