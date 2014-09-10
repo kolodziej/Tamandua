@@ -35,7 +35,7 @@ int main(int argc, char ** argv)
 	cfg.server_name = "Testing tamandua server";
 	cfg.max_participants_number = 2000;
 	cfg.main_room_name = "HallOfFame";
-	cfg.root_password = "ghYUSa12!g?";
+	cfg.root_password = "testpass";
 	server svr(io_service, endpoint, log, interpreter, context);
 	base_user_module user_module(svr, interpreter);
 	svr.register_module(user_module);
