@@ -17,6 +17,7 @@ base_user_module::base_user_module(server &svr, command_interpreter &interpreter
 	MODULE_REGISTER_COMMAND("proom", &base_user_module::cmd_proom);
 	MODULE_REGISTER_COMMAND("nick", &base_user_module::cmd_nick);
 	MODULE_REGISTER_COMMAND("msg", &base_user_module::cmd_msg);
+	MODULE_REGISTER_COMMAND("root", &base_user_module::cmd_root);
 	MODULE_REGISTER_COMMAND("root_auth", &base_user_module::cmd_root_auth);
 }
 
@@ -149,6 +150,14 @@ void base_user_module::cmd_msg(std::shared_ptr<user> u, message &msg)
 	{
 		resp_user_not_exists_(u, params[1]);
 	}
+}
+
+void base_user_module::cmd_root(std::shared_ptr<user> u, message &msg)
+{
+	auto params = split_params_std(msg.body);
+	std::shared_ptr<root> r = std::dynamic_pointer_cast<root>(get_server().get_participant(0));
+	params.erase(params.begin());
+	r->process_command(u, params);
 }
 
 void base_user_module::cmd_root_auth(std::shared_ptr<user> u, message &msg)
