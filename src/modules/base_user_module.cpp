@@ -17,6 +17,7 @@ base_user_module::base_user_module(server &svr, command_interpreter &interpreter
 	MODULE_REGISTER_COMMAND("proom", &base_user_module::cmd_proom);
 	MODULE_REGISTER_COMMAND("nick", &base_user_module::cmd_nick);
 	MODULE_REGISTER_COMMAND("msg", &base_user_module::cmd_msg);
+	MODULE_REGISTER_COMMAND("server_uptime", &base_user_module::cmd_server_uptime);
 	MODULE_REGISTER_COMMAND("root", &base_user_module::cmd_root);
 	MODULE_REGISTER_COMMAND("root_auth", &base_user_module::cmd_root_auth);
 }
@@ -52,7 +53,10 @@ void base_user_module::cmd_room(std::shared_ptr<user> u, message &msg)
 {
 	auto params = split_params_std(msg.body);
 	auto room_ptr = get_server().get_group(params[1]);
-	if (room_ptr == nullptr || room_ptr->is_hidden() == true)
+	if (params.size() < 2)
+	{
+		resp_bad_cmd_format_(u, "/room <proom name>");
+	} else if (room_ptr == nullptr || room_ptr->is_hidden() == true)
 	{
 		message_composer msgc(message_type::error_message);
 		msgc << "Room called " << params[1] << " does not exist!";
@@ -76,7 +80,10 @@ void base_user_module::cmd_proom(std::shared_ptr<user> u, message &msg)
 {
 	auto params = split_params_std(msg.body);
 	auto room_ptr = get_server().get_group(params[1]);
-	if (room_ptr == nullptr || room_ptr->is_hidden() == false)
+	if (params.size() < 3)
+	{
+		resp_bad_cmd_format_(u, "/proom <proom name> <password>");
+	} else if (room_ptr == nullptr || room_ptr->is_hidden() == false)
 	{
 		message_composer msgc(message_type::error_message);
 		msgc << "Private room called " << params[1] << " does not exist!";
@@ -111,6 +118,11 @@ void base_user_module::cmd_proom(std::shared_ptr<user> u, message &msg)
 void base_user_module::cmd_nick(std::shared_ptr<user> u, message &msg)
 {
 	auto params = split_params_std(msg.body);
+	if (params.size() != 2)
+	{
+		resp_bad_cmd_format_(u, "/nick <new_nick>");
+		return;
+	}
 	std::string newname = params[1], oldname = u->get_name();
 	if (oldname == newname)
 	{
@@ -136,8 +148,13 @@ void base_user_module::cmd_msg(std::shared_ptr<user> u, message &msg)
 	std::string pm;
 	if (params.size() == 3)
 		pm = params[2];
-	else
+	else if (params.size() > 3)
 		pm = concat_pieces(params.begin()+2, params.end(), ' ');
+	else
+	{
+		resp_bad_cmd_format_(u, "/msg <recipient_nick> message...");
+		return;
+	}
 
 	auto rec = get_server().get_participant(params[1]);
 	if (rec != nullptr)
@@ -152,6 +169,13 @@ void base_user_module::cmd_msg(std::shared_ptr<user> u, message &msg)
 	}
 }
 
+void base_user_module::cmd_server_uptime(std::shared_ptr<user> u, message &msg)
+{
+	message_composer msgc(message_type::info_message);
+	msgc << "Server is running for: " << get_server().get_uptime_string();
+	u->deliver_message(msgc());
+}
+
 void base_user_module::cmd_root(std::shared_ptr<user> u, message &msg)
 {
 	auto params = split_params_std(msg.body);
@@ -163,6 +187,11 @@ void base_user_module::cmd_root(std::shared_ptr<user> u, message &msg)
 void base_user_module::cmd_root_auth(std::shared_ptr<user> u, message &msg)
 {
 	auto params = split_params_std(msg.body);
+	if (params.size() != 2)
+	{
+		resp_bad_cmd_format_(u, "/root_auth <password>");
+		return;
+	}
 	auto r = get_server().get_root();
 	if (r->auth_user(u->get_id(), params[1]))
 	{
@@ -179,5 +208,12 @@ void base_user_module::resp_user_not_exists_(std::shared_ptr<user> u, std::strin
 {
 	message_composer msgc(message_type::error_message);
 	msgc << "User `" << uname << "` doesn't exist!";
+	u->deliver_message(msgc());
+}
+
+void base_user_module::resp_bad_cmd_format_(std::shared_ptr<user> u, std::string format)
+{
+	message_composer msgc(message_type::error_message);
+	msgc << "Incorrect command params! Command format: " << format;
 	u->deliver_message(msgc());
 }
