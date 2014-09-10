@@ -38,6 +38,11 @@ int main(int argc, char ** argv)
 	boost::asio::ssl::context context(boost::asio::ssl::context::sslv23);
 	context.load_verify_file("ssl/server.crt");
 	context.set_verify_mode(boost::asio::ssl::verify_peer);
+	context.set_verify_callback([&](bool pv, boost::asio::ssl::verify_context &ctx)
+	{
+		TamanduaDebug("Verification: ", pv);
+		return true;
+	});
 
 	client cl(io_service, context);
 	cl.add_event_handler(connecting_succeeded, std::bind(&connecting_succeeded_callback, std::placeholders::_1));
