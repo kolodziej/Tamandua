@@ -5,6 +5,7 @@
 #include <string>
 #include <deque>
 #include <set>
+#include <vector>
 #include <map>
 
 #define ROOT_CMD(x,y) commands_.insert(std::make_pair(x, &root::y))
@@ -19,7 +20,7 @@ namespace tamandua
 			std::string password_;
 			std::set<id_number_t> auth_users_ids_;
 			std::deque<message> messages_;
-			std::map<std::string, void (root::*)(const message&)> commands_;
+			std::map<std::string, void (root::*)(std::shared_ptr<user>, std::vector<std::string>&)> commands_;
 
 		public:
 			root(server&, std::string);
@@ -35,7 +36,7 @@ namespace tamandua
 			void unknown_command_(std::shared_ptr<user>, std::string);
 
 			// commands
-			void add_room_(const message&);
+			void add_room_(std::shared_ptr<user>, std::vector<std::string>&);
 
 	};
 }
