@@ -51,7 +51,6 @@ void server::send_startup_data(std::shared_ptr<participant> usr)
 
 	send_participants_list_();
 	send_rooms_list_();
-	accept_connection_();
 }
 
 boost::asio::io_service &server::get_io_service()
@@ -299,7 +298,11 @@ void server::accept_connection_()
 			Log(log_, "Accepted connection of new user from IP: ",new_user->get_socket().remote_endpoint().address().to_string());
 			add_participant(new_user);
 			new_user->start();
+		} else
+		{
+			Error(log_, "Acceptation process could not be completed. Error: ", ec.message());
 		}
+		accept_connection_();
 	});
 	Log(log_, "Waiting for connection");
 }

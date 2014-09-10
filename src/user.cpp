@@ -78,7 +78,7 @@ void user::perform_handshake_()
 			read_message();
 		} else
 		{
-			Error(get_server().get_logger(), "Handshake failed: ", ec.message());
+			Error(get_server().get_logger(), "Handshake with user ID: ", get_id(), " failed. Error: ", ec.message());
 		}
 	});
 }
