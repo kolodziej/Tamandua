@@ -27,9 +27,10 @@ namespace tamandua
 			bool auth_user(id_number_t, std::string);
 			void read_message();
 			void deliver_message(const message&);
+			void process_command(std::shared_ptr<user>, std::vector<std::string>&);
 
 		private:
-			void process_message_(const message &);
+			void process_message_(const message);
 			void unauthorized_user_(id_number_t);
 			void unknown_command_(id_number_t, std::string);
 
