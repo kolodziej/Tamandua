@@ -66,8 +66,7 @@ namespace tamandua
 			id_number_t get_id();
 			ssl_socket_stream &get_socket();
 
-			void send_message(std::string &);
-			void send_quit_message(std::string = std::string());
+			void send_message(std::string &, id_number_t = 0);
 			bool is_next_message();
 			std::pair<std::string, message> get_next_message();
 
@@ -85,6 +84,7 @@ namespace tamandua
 			void process_message_();
 			void set_participants_list_();
 			void set_rooms_list_();
+			void send_quit_message_();
 
 			bool is_event_handler_(event_type);
 			void call_event_handler_(event_type, status);

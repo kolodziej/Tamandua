@@ -37,8 +37,10 @@ void client::connect(tcp::resolver::iterator endpoint_iterator)
 void client::disconnect()
 {
 	try {
+		send_quit_message_();
 		socket_.lowest_layer().shutdown(tcp::socket::shutdown_type::shutdown_both);
 		socket_.lowest_layer().close();
+		add_message_(message_type::quit_message, std::string());
 		call_event_handler_(server_disconnected, ok);
 	} catch (boost::system::system_error err)
 	{
@@ -58,17 +60,9 @@ ssl_socket_stream &client::get_socket()
 	return socket_;
 }
 
-void client::send_message(std::string &body)
+void client::send_message(std::string &body, id_number_t g_id)
 {
-	message_composer msgc(message_type::standard_message, uid_);
-	msgc << body;
-	message msg = msgc();
-	write_message_(msg);
-}
-
-void client::send_quit_message(std::string body)
-{
-	message_composer msgc(message_type::quit_message, uid_);
+	message_composer msgc(message_type::standard_message, g_id, uid_);
 	msgc << body;
 	message msg = msgc();
 	write_message_(msg);
@@ -266,6 +260,12 @@ void client::set_rooms_list_()
 		name = record.substr(colon_pos + 1);
 		rooms_.insert(make_pair(stoull(id), name));
 	}
+}
+
+void client::send_quit_message_()
+{
+	message_composer msgc(message_type::quit_message, uid_);
+	write_message_(msgc());
 }
 
 void client::call_event_handler_(event_type evt, status st)
