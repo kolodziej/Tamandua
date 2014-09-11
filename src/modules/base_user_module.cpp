@@ -70,9 +70,6 @@ void base_user_module::cmd_room(std::shared_ptr<user> u, message &msg)
 	{
 		room_ptr->join_participant(u);
 		u->add_group(room_ptr->get_id());
-		message_composer msgc(message_type::group_enter_message, room_ptr->get_id());
-		msgc << "Your room is now: " << params[1];
-		u->deliver_message(msgc());
 	}
 }
 

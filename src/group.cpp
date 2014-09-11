@@ -18,7 +18,11 @@ void group::join_participant(std::shared_ptr<participant> p)
 {
 	auto insertion = participants_.insert(make_pair(p->get_id(), p));
 	if (insertion.second)
+	{
+		message_composer msgc(message_type::group_enter_message, get_name(), get_id());
+		p->deliver_message(msgc());
 		notify_new_participant_(p);
+	}
 }
 
 void group::deliver_message(const message &message)
