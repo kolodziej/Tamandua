@@ -37,6 +37,7 @@ namespace tamandua
 
 			// commands
 			void add_room_(std::shared_ptr<user>, std::vector<std::string>&);
+			void add_private_room_(std::shared_ptr<user>, std::vector<std::string>&);
 
 	};
 }

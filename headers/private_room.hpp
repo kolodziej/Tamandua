@@ -11,8 +11,8 @@ namespace tamandua
 			std::string password_;
 
 		public:
-			private_room(server &svr, std::string & name) : room(svr, name) {}
-			private_room(server &svr, std::string && name) : room(svr, name) {}
+			private_room(server &svr, std::string & name, std::string & password) : room(svr, name), password_(password) {}
+			private_room(server &svr, std::string && name, std::string && password) : room(svr, name), password_(password) {}
 
 			virtual bool is_hidden();
 			virtual bool is_password();

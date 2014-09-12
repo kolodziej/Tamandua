@@ -18,6 +18,7 @@ root::root(server &svr, std::string pass) :
 	is_created_ = true;
 
 	ROOT_CMD("add-room", add_room_);
+	ROOT_CMD("add-proom", add_private_room_);
 }
 
 bool root::auth_user(id_number_t id, std::string password)
@@ -84,6 +85,21 @@ void root::add_room_(std::shared_ptr<user> u, std::vector<std::string> &params)
 	std::shared_ptr<group> new_room = std::make_shared<room>(get_server(), params[1]);
 	get_server().add_group(new_room);
 	Log(get_server().get_logger(), "Room called `", params[1], "` has been created by user with ID: ", u->get_id());
+
+	message_composer msgc(message_type::info_message);
+	msgc << "You have created room `" << params[1] << "`!";
+	u->deliver_message(msgc());
+}
+
+void root::add_private_room_(std::shared_ptr<user> u, std::vector<std::string> &params)
+{
+	std::shared_ptr<group> new_proom = std::make_shared<private_room>(get_server(), params[1], params[2]);
+	get_server().add_group(new_proom);
+	Log(get_server().get_logger(), "Private room called `", params[1], "` has been created by user with ID: ", u->get_id());
+
+	message_composer msgc(message_type::info_message);
+	msgc << "You have created private room `" << params[1] << "`!";
+	u->deliver_message(msgc());
 }
 
 bool root::is_created_ = false;
