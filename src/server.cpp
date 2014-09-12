@@ -122,6 +122,7 @@ void server::add_group(std::shared_ptr<group> gr) throw (group_name_exists)
 		groups_.insert(make_pair(gr->get_id(), gr));
 		groups_ids_.insert(make_pair(groupname, gr->get_id()));
 		Log(log_, "Added new group ID: ",gr->get_id());
+		send_rooms_list_();
 	} else
 	{
 		Error(log_, "Could not add new group! Name '", groupname, "' is already in use!");
