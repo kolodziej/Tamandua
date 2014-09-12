@@ -25,6 +25,25 @@ void group::join_participant(std::shared_ptr<participant> p)
 	}
 }
 
+void group::detach_participant(std::shared_ptr<participant> p)
+{
+	auto p_it = participants_.find(p->get_id());
+	if (p_it == participants_.end())
+	{
+		Error(server_.get_logger(), "User with id ", p->get_id(), " does not participate in group ", get_name(), " so he cannot be detached!");
+	} else
+	{
+		message_composer msgc_leave(message_type::group_leave_message, get_id());
+		p->deliver_message(msgc_leave());
+		participants_.erase(p_it);
+
+		message_composer msgc_info(message_type::info_message, get_id());
+		msgc_info << "User " << p->get_name() << " left group!";
+		message msg_info = msgc_info();
+		deliver_message(msg_info);
+	}
+}
+
 void group::deliver_message(const message &message)
 {
 	for (auto p : participants_)
@@ -36,7 +55,5 @@ void group::notify_new_participant_(std::shared_ptr<participant> new_p)
 	message_composer msgc(message_type::info_message, get_id());
 	msgc << "User " << new_p->get_name() << " (#" << new_p->get_id() << ") joind to the " << get_name() << "!";
 	message msg = msgc();
-	for (auto p : participants_)
-		p.second->deliver_message(msg);
-
+	deliver_message(msg);
 }

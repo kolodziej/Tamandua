@@ -39,6 +39,7 @@ namespace tamandua
 			std::string get_ip_address();
 			
 			bool add_group(id_number_t);
+			bool remove_group(id_number_t);
 			bool is_in_group(id_number_t);
 			
 			virtual void read_message();

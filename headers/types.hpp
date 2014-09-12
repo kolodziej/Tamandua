@@ -24,6 +24,7 @@ namespace tamandua
 		warning_message = 6,
 		private_message = 7,
 		group_enter_message = 8,
+		group_leave_message = 9,
 		quit_message = 1000
 	} message_type;
 

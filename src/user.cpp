@@ -34,6 +34,16 @@ bool user::add_group(id_number_t id)
 	return p.second;
 }
 
+bool user::remove_group(id_number_t id)
+{
+	auto p = groups_.find(id);
+	if (p == groups_.end())
+		return false;
+
+	groups_.erase(id);
+	return true;
+}
+
 bool user::is_in_group(id_number_t id)
 {
 	auto it = groups_.find(id);

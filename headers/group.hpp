@@ -28,6 +28,7 @@ namespace tamandua
 			id_number_t get_id();
 			std::string get_name();
 			virtual void join_participant(std::shared_ptr<participant>);
+			virtual void detach_participant(std::shared_ptr<participant>);
 			virtual void deliver_message(const message&);
 			virtual bool is_hidden() = 0;
 			virtual bool is_password() = 0;
