@@ -46,6 +46,7 @@ set(SOURCES_FILES
 )
 
 set(HEADERS_FILES
+	headers/exception.hpp
 	headers/group.hpp
 	headers/participant.hpp
 	headers/hidden_participant.hpp
