@@ -5,6 +5,7 @@
 #include "message.hpp"
 #include "server_config.hpp"
 #include "command_interpreter.hpp"
+#include "exception.hpp"
 #include <map>
 #include <string>
 #include <memory>
@@ -53,8 +54,8 @@ namespace tamandua
 			boost::asio::io_service &get_io_service();
 			void process_message(std::shared_ptr<user>, message&);
 
-			void add_participant(std::shared_ptr<participant>);
-			void add_group(std::shared_ptr<group>);
+			void add_participant(std::shared_ptr<participant>) throw(user_name_exists);
+			void add_group(std::shared_ptr<group>) throw(group_name_exists);
 
 			std::shared_ptr<participant> get_participant(id_number_t);
 			std::shared_ptr<participant> get_participant(std::string);

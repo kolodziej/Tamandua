@@ -6,6 +6,7 @@
 #include "user.hpp"
 #include "room.hpp"
 #include "utility.hpp"
+#include "exception.hpp"
 #include <sstream>
 #include <iomanip>
 #include <ctime>
@@ -96,7 +97,7 @@ void server::process_message(std::shared_ptr<user> pt, message &msg)
 	}
 }
 
-void server::add_participant(std::shared_ptr<participant> pt)
+void server::add_participant(std::shared_ptr<participant> pt) throw(user_name_exists)
 {
 	std::string username = pt->get_name();
 	auto id_it = participants_ids_.find(username);
@@ -108,10 +109,11 @@ void server::add_participant(std::shared_ptr<participant> pt)
 	} else
 	{
 		Error(log_, "Could not add new participant! Name '", username, "' is already in use!");
+		throw user_name_exists();
 	}
 }
 
-void server::add_group(std::shared_ptr<group> gr)
+void server::add_group(std::shared_ptr<group> gr) throw (group_name_exists)
 {
 	std::string groupname = gr->get_name();
 	auto id_it = groups_ids_.find(groupname);
@@ -123,6 +125,7 @@ void server::add_group(std::shared_ptr<group> gr)
 	} else
 	{
 		Error(log_, "Could not add new group! Name '", groupname, "' is already in use!");
+		throw group_name_exists();
 	}
 }
 
