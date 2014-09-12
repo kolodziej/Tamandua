@@ -69,6 +69,8 @@ namespace tamandua
 			void send_message(std::string &, id_number_t = 0);
 			bool is_next_message();
 			std::pair<std::string, message> get_next_message();
+			const std::map<id_number_t, std::string>& get_participants_list();
+			const std::map<id_number_t, std::string>& get_rooms_list();
 
 			void add_event_handler(event_type, std::function<void(status)>);
 

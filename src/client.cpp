@@ -89,6 +89,16 @@ std::pair<std::string, message> client::get_next_message()
 	return make_pair(author, msg);
 }
 
+const std::map<id_number_t, std::string> & client::get_participants_list()
+{
+	return participants_;
+}
+
+const std::map<id_number_t, std::string> & client::get_rooms_list()
+{
+	return rooms_;
+}
+
 void client::add_event_handler(event_type evt, std::function<void(status)> func)
 {
 	auto handler = make_pair(evt, func);
