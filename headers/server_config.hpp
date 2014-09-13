@@ -14,7 +14,7 @@ namespace tamandua
 		std::string participant_name_format;
 
 		server_config() :
-			participant_name_format("([a-zA-Z]{1})([a-zA-Z_]{0,15})")
+			participant_name_format("([0-9a-zA-Z_-]{0,15})")
 		{}
 	};
 }
