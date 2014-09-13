@@ -64,7 +64,7 @@ void base_user_module::cmd_room(std::shared_ptr<user> u, message &msg)
 		u->deliver_message(msgc());
 	} else if (u->is_in_group(room_ptr->get_id()))
 	{
-		message_composer msgc(message_type::warning_message);
+		message_composer msgc(message_type::warning_message, room_ptr->get_id());
 		msgc << "You are already subscribed to the room '" << params[1] << "'!";
 		u->deliver_message(msgc());
 	} else
