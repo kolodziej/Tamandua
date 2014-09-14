@@ -60,6 +60,16 @@ ssl_socket_stream &client::get_socket()
 	return socket_;
 }
 
+const std::map<id_number_t, std::string> & client::get_participants_list()
+{
+	return participants_;
+}
+
+const std::map<id_number_t, std::string> & client::get_rooms_list()
+{
+	return rooms_;
+}
+
 void client::send_message(std::string &body, id_number_t g_id)
 {
 	message_composer msgc(message_type::standard_message, g_id, uid_);
@@ -87,16 +97,6 @@ std::pair<std::string, message> client::get_next_message()
 		author = (*iter).second;
 
 	return make_pair(author, msg);
-}
-
-const std::map<id_number_t, std::string> & client::get_participants_list()
-{
-	return participants_;
-}
-
-const std::map<id_number_t, std::string> & client::get_rooms_list()
-{
-	return rooms_;
 }
 
 void client::add_event_handler(event_type evt, std::function<void(status)> func)
