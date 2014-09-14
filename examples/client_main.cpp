@@ -34,9 +34,8 @@ int main(int argc, char ** argv)
 		return 1;
 	}
 
-	boost::asio::io_service io_service;
 	boost::asio::ssl::context context(boost::asio::ssl::context::sslv23);
-	context.load_verify_file("ssl/server.crt");
+	context.load_verify_file("ssl/server.pem");
 	context.set_verify_mode(boost::asio::ssl::verify_peer);
 	context.set_verify_callback([&](bool pv, boost::asio::ssl::verify_context &ctx)
 	{
@@ -44,13 +43,12 @@ int main(int argc, char ** argv)
 		return true;
 	});
 
-	client cl(io_service, context);
+	client cl(context);
 	cl.add_event_handler(connecting_succeeded, std::bind(&connecting_succeeded_callback, std::placeholders::_1));
 	cl.add_event_handler(connecting_failed, std::bind(&connecting_failed_callback, std::placeholders::_1));
 	cl.add_event_handler(message_sent, std::bind(&message_sent_callback, std::placeholders::_1));
 	cl.connect(std::string(argv[1]), std::string(argv[2]));
 
-	std::thread io_service_thread([&io_service]() { io_service.run(); });
 	std::thread display_msg_thread([&cl]() {
 		bool running = true;
 		while (running)
@@ -95,7 +93,6 @@ int main(int argc, char ** argv)
 		cl.send_message(body_str);
 	}
 
-	io_service_thread.join();
 	display_msg_thread.join();
 
 	std::cout << "thank you!\n";
