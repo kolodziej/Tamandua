@@ -12,27 +12,18 @@ using namespace tamandua;
 
 void client::connect(std::string host, std::string port)
 {
-	tcp::resolver resolver(io_service_);
-	tcp::resolver::iterator endpoint_it = resolver.resolve({ host, port });
-	connect(endpoint_it);
+	TamanduaDebug("Resolving service name...");
+	resolver_.async_resolve(tcp::resolver::query(host, port),
+	[this](boost::system::error_code ec, tcp::resolver::iterator endpoint_it)
+	{
+		if (!ec)
+			connect_(endpoint_it);
+		else
+			TamanduaDebug("Error while resolving: ", ec.message());
+	});
+	run_io_service_thread_();
 }
 
-void client::connect(tcp::resolver::iterator endpoint_iterator)
-{
-	endpoint_iterator_ = endpoint_iterator;
-	boost::asio::async_connect(socket_.lowest_layer(), endpoint_iterator_,
-		[this](boost::system::error_code ec, tcp::resolver::iterator iterator)
-		{
-			if (!ec)
-			{
-				call_event_handler_(connecting_succeeded, ok);
-				connected_ = true;
-			} else
-				call_event_handler_(connecting_failed, connection_failed);
-
-			perform_handshake_();
-		});
-}
 
 void client::disconnect()
 {
@@ -103,6 +94,32 @@ void client::add_event_handler(event_type evt, std::function<void(status)> func)
 {
 	auto handler = make_pair(evt, func);
 	events_handlers_.insert(handler);
+}
+
+void client::connect_(tcp::resolver::iterator endpoint_iterator)
+{
+	endpoint_iterator_ = endpoint_iterator;
+	boost::asio::async_connect(socket_.lowest_layer(), endpoint_iterator_,
+		[this](boost::system::error_code ec, tcp::resolver::iterator iterator)
+		{
+			if (!ec)
+			{
+				call_event_handler_(connecting_succeeded, ok);
+				connected_ = true;
+			} else
+				call_event_handler_(connecting_failed, connection_failed);
+
+			perform_handshake_();
+		});
+}
+
+void client::run_io_service_thread_()
+{
+	io_service_thread_ = std::thread([this]() {
+		TamanduaDebug("Running io_service...");
+		io_service_.run();
+		TamanduaDebug("io_service returned!");
+	});
 }
 
 void client::add_message_()

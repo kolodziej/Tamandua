@@ -8,6 +8,7 @@
 #include <deque>
 #include <string>
 #include <mutex>
+#include <thread>
 #include <utility>
 #include <functional>
 #include <condition_variable>
@@ -22,11 +23,12 @@ namespace tamandua
 	{
 		private:
 			id_number_t uid_;
-			boost::asio::io_service &io_service_;
+			boost::asio::io_service io_service_;
+			std::thread io_service_thread_;
+			tcp::resolver resolver_;
 			tcp::resolver::iterator endpoint_iterator_;
 			boost::asio::ssl::context &context_;
 			ssl_socket_stream socket_;
-
 			std::map<id_number_t, std::string> participants_;
 			std::map<id_number_t, std::string> rooms_;
 			std::deque<message> messages_;
@@ -38,25 +40,25 @@ namespace tamandua
 			std::map<event_type, std::function<void(status)>> events_handlers_;
 
 		public:
-			client(boost::asio::io_service &io_service, tcp::resolver::iterator endpoint_iterator, boost::asio::ssl::context &context) :
-				io_service_(io_service),
+			client(tcp::resolver::iterator endpoint_iterator, boost::asio::ssl::context &context) :
+				resolver_(io_service_),
 				endpoint_iterator_(endpoint_iterator),
 				context_(context),
-				socket_(io_service, context),
+				socket_(io_service_, context),
 				connected_(false)
 			{
-				connect(endpoint_iterator);
+				connect_(endpoint_iterator);
+				run_io_service_thread_();
 			}
 
-			client(boost::asio::io_service &io_service, boost::asio::ssl::context &context) :
-				io_service_(io_service),
+			client(boost::asio::ssl::context &context) :
+				resolver_(io_service_),
 				context_(context),
-				socket_(io_service, context),
+				socket_(io_service_, context),
 				connected_(false)
 			{}
 
 			void connect(std::string, std::string);
-			void connect(tcp::resolver::iterator);
 			void disconnect();
 			bool is_connected()
 			{
@@ -75,6 +77,8 @@ namespace tamandua
 			void add_event_handler(event_type, std::function<void(status)>);
 
 		private:
+			void connect_(tcp::resolver::iterator);
+			void run_io_service_thread_();
 			void add_message_();
 			void add_message_(message &&);
 			void add_message_(message_type, std::string &);
