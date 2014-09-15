@@ -21,7 +21,8 @@ void group::join_participant(std::shared_ptr<participant> p)
 	{
 		message_composer msgc(message_type::group_enter_message, get_name(), get_id());
 		p->deliver_message(msgc());
-		notify_new_participant_(p);
+		if (p->is_hidden() == false)
+			notify_new_participant_(p);
 	}
 }
 
@@ -36,11 +37,14 @@ void group::detach_participant(std::shared_ptr<participant> p)
 		message_composer msgc_leave(message_type::group_leave_message, get_id());
 		p->deliver_message(msgc_leave());
 		participants_.erase(p_it);
-
-		message_composer msgc_info(message_type::info_message, get_id());
-		msgc_info << "User " << p->get_name() << " left group!";
-		message msg_info = msgc_info();
-		deliver_message(msg_info);
+		
+		if (p->is_hidden() == false)
+		{
+			message_composer msgc_info(message_type::info_message, get_id());
+			msgc_info << "User " << p->get_name() << " left group!";
+			message msg_info = msgc_info();
+			deliver_message(msg_info);
+		}
 	}
 }
 
