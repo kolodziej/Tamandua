@@ -44,6 +44,11 @@ void group::detach_participant(std::shared_ptr<participant> p)
 	}
 }
 
+const std::map<id_number_t, std::shared_ptr<participant>> & group::get_participants()
+{
+	return participants_;
+}
+
 void group::deliver_message(const message &message)
 {
 	for (auto p : participants_)
