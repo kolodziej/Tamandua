@@ -52,9 +52,7 @@ void server::start_server(server_config &config)
 	add_root_(config.root_password);
 	add_hall_(config.main_room_name);
 
-	// starting modules
-	for (auto mod : modules_)
-		mod.second->on_server_start();
+	CALL_MODULES(on_server_start);
 
 	accept_connection_();
 }
@@ -76,6 +74,7 @@ boost::asio::io_service &server::get_io_service()
 
 void server::process_message(std::shared_ptr<user> pt, message &msg)
 {
+	CALL_MODULES_P(message_receive, pt, msg);
 	if (msg.header.type == message_type::quit_message)
 	{
 		pt->quit();
@@ -108,6 +107,8 @@ void server::process_message(std::shared_ptr<user> pt, message &msg)
 	{
 		Error(log_, "Unknown processing_status for message: '", msg.body, "'!");
 	}
+
+	CALL_MODULES_P(message_processed, pt, msg, msg_stat);
 }
 
 void server::add_participant(std::shared_ptr<participant> pt) throw(user_name_exists)
@@ -118,6 +119,7 @@ void server::add_participant(std::shared_ptr<participant> pt) throw(user_name_ex
 	{
 		participants_.insert(make_pair(pt->get_id(), pt));
 		participants_ids_.insert(make_pair(username, pt->get_id()));
+		CALL_MODULES_P(new_participant, pt);
 		Log(log_, "Added new participant ID: ",pt->get_id());
 	} else
 	{
@@ -134,6 +136,7 @@ void server::add_group(std::shared_ptr<group> gr) throw (group_name_exists)
 	{
 		groups_.insert(make_pair(gr->get_id(), gr));
 		groups_ids_.insert(make_pair(groupname, gr->get_id()));
+		CALL_MODULES_P(new_group, gr);
 		Log(log_, "Added new group ID: ",gr->get_id());
 		send_rooms_list_();
 	} else
@@ -167,6 +170,7 @@ void server::quit_participant(id_number_t uid, status st)
 	auto u = participants_.find(uid);
 	if (u != participants_.end())
 	{
+		CALL_MODULES_P(participant_leave, u);
 		username = (*u).second->get_name();
 		participants_.erase(u);
 	}

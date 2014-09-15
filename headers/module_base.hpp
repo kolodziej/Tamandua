@@ -28,9 +28,14 @@ namespace tamandua
 
 			id_number_t get_id();
 			virtual bool is_hidden();
+
 			virtual void on_server_start() {};
-			virtual void preprocessed(std::shared_ptr<user>, message &) {};
-			virtual void postprocessed(std::shared_ptr<user>, message &, processing_status) {};
+			virtual void message_receive(std::shared_ptr<user>, message &) {};
+			virtual void message_processed(std::shared_ptr<user>, message &, processing_status) {};
+			virtual void new_participant(std::shared_ptr<participant>) {};
+			virtual void new_group(std::shared_ptr<group>) {};
+			virtual void participant_leave(std::shared_ptr<participant>) {};
+			virtual void group_close(std::shared_ptr<group>) {};
 
 			server &get_server();
 			command_interpreter &get_interpreter();

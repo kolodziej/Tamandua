@@ -13,6 +13,9 @@
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
 
+#define CALL_MODULES(x) for (auto mod : modules_) { mod.second->x(); }
+#define CALL_MODULES_P(x,...) for (auto mod : modules_) { mod.second->x(__VA_ARGS__); }
+
 using boost::asio::ip::tcp;
 
 namespace tamandua
