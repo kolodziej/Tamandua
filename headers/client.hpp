@@ -21,6 +21,19 @@ namespace tamandua
 {
 	class client
 	{
+		public:
+			typedef enum {
+				connecting_succeeded = 1,
+				connecting_failed,
+				message_sent,
+				message_undelivered,
+				message_received,
+				server_disconnected,
+				initialization_data_received,
+				participants_list_received,
+				rooms_list_received,
+			} event_type;
+
 		private:
 			id_number_t uid_;
 			boost::asio::io_service io_service_;

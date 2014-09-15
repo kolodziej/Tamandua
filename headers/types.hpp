@@ -44,17 +44,6 @@ namespace tamandua
 		server_disconnecting_error
 	} status;
 
-	typedef enum {
-		connecting_succeeded = 1,
-		connecting_failed,
-		message_sent,
-		message_undelivered,
-		message_received,
-		server_disconnected,
-		initialization_data_received,
-		participants_list_received,
-		rooms_list_received,
-	} event_type;
 }
 
 #endif

@@ -44,9 +44,9 @@ int main(int argc, char ** argv)
 	});
 
 	client cl(context);
-	cl.add_event_handler(connecting_succeeded, std::bind(&connecting_succeeded_callback, std::placeholders::_1));
-	cl.add_event_handler(connecting_failed, std::bind(&connecting_failed_callback, std::placeholders::_1));
-	cl.add_event_handler(message_sent, std::bind(&message_sent_callback, std::placeholders::_1));
+	cl.add_event_handler(client::connecting_succeeded, std::bind(&connecting_succeeded_callback, std::placeholders::_1));
+	cl.add_event_handler(client::connecting_failed, std::bind(&connecting_failed_callback, std::placeholders::_1));
+	cl.add_event_handler(client::message_sent, std::bind(&message_sent_callback, std::placeholders::_1));
 	cl.connect(std::string(argv[1]), std::string(argv[2]));
 
 	std::thread display_msg_thread([&cl]() {
