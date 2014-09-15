@@ -18,7 +18,6 @@ base_user_module::base_user_module(server &svr, command_interpreter &interpreter
 	MODULE_REGISTER_COMMAND("leave", &base_user_module::cmd_leave);
 	MODULE_REGISTER_COMMAND("users", &base_user_module::cmd_users);
 	MODULE_REGISTER_COMMAND("nick", &base_user_module::cmd_nick);
-	MODULE_REGISTER_COMMAND("msg", &base_user_module::cmd_msg);
 	MODULE_REGISTER_COMMAND("server_uptime", &base_user_module::cmd_server_uptime);
 	MODULE_REGISTER_COMMAND("root", &base_user_module::cmd_root);
 	MODULE_REGISTER_COMMAND("root_auth", &base_user_module::cmd_root_auth);
@@ -180,33 +179,6 @@ void base_user_module::cmd_nick(std::shared_ptr<user> u, message &msg)
 		message_composer msgc(message_type::error_message);
 		msgc << "Nick which you choose (" << newname << ") is in use. Try another one!";
 		u->deliver_message(msgc());
-	}
-}
-
-void base_user_module::cmd_msg(std::shared_ptr<user> u, message &msg)
-{
-	auto params = split_params_std(msg.body);
-	std::string pm;
-	if (params.size() == 3)
-		pm = params[2];
-	else if (params.size() > 3)
-		pm = concat_pieces(params.begin()+2, params.end(), ' ');
-	else
-	{
-		resp_bad_cmd_format_(u, "/msg <recipient_nick> message...");
-		return;
-	}
-
-	auto rec = get_server().get_participant(params[1]);
-	if (rec != nullptr)
-	{
-		message_composer msgc(message_type::private_message, pm, 0, u->get_id());
-		message &pmsg = msgc();
-		u->deliver_message(pmsg);
-		rec->deliver_message(pmsg);
-	} else
-	{
-		resp_user_not_exists_(u, params[1]);
 	}
 }
 

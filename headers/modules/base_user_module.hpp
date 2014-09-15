@@ -18,7 +18,6 @@ namespace tamandua
 			void cmd_leave(std::shared_ptr<user>, message&);
 			void cmd_users(std::shared_ptr<user>, message&);
 			void cmd_nick(std::shared_ptr<user>, message&);
-			void cmd_msg(std::shared_ptr<user>, message&);
 			void cmd_server_uptime(std::shared_ptr<user>, message&);
 			void cmd_root(std::shared_ptr<user>, message&);
 			void cmd_root_auth(std::shared_ptr<user>, message&);
