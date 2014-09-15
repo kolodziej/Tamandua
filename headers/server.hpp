@@ -63,6 +63,8 @@ namespace tamandua
 			std::shared_ptr<group> get_group(id_number_t);
 			std::shared_ptr<group> get_group(std::string);
 			std::shared_ptr<root> get_root();
+			std::vector<std::shared_ptr<participant>> get_all_participants();
+			std::vector<std::shared_ptr<group>> get_all_groups();
 
 			bool is_participant_name_available(std::string);
 			bool is_group_name_available(std::string);

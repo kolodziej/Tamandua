@@ -227,6 +227,24 @@ std::shared_ptr<root> server::get_root()
 	return std::dynamic_pointer_cast<root>((*it).second);
 }
 
+std::vector<std::shared_ptr<participant>> server::get_all_participants()
+{
+	std::vector<std::shared_ptr<participant>> prtcs;
+	for (auto part : participants_)
+		prtcs.push_back(part.second);
+
+	return prtcs;
+}
+
+std::vector<std::shared_ptr<group>> server::get_all_groups()
+{
+	std::vector<std::shared_ptr<group>> grps;
+	for (auto gr : groups_)
+		grps.push_back(gr.second);
+	
+	return grps;
+}
+
 bool server::is_participant_name_available(std::string name)
 {
 	return (participants_ids_.find(name) == participants_ids_.end());
