@@ -51,6 +51,11 @@ void server::start_server(server_config &config)
 	Log(log_, "Starting server at: ", format_localtime<system_clock, 30>(start_time_, "%c"));
 	add_root_(config.root_password);
 	add_hall_(config.main_room_name);
+
+	// starting modules
+	for (auto mod : modules_)
+		mod.second->on_server_start();
+
 	accept_connection_();
 }
 
