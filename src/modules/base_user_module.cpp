@@ -16,6 +16,7 @@ base_user_module::base_user_module(server &svr, command_interpreter &interpreter
 	MODULE_REGISTER_COMMAND("room", &base_user_module::cmd_room);
 	MODULE_REGISTER_COMMAND("proom", &base_user_module::cmd_proom);
 	MODULE_REGISTER_COMMAND("leave", &base_user_module::cmd_leave);
+	MODULE_REGISTER_COMMAND("users", &base_user_module::cmd_users);
 	MODULE_REGISTER_COMMAND("nick", &base_user_module::cmd_nick);
 	MODULE_REGISTER_COMMAND("msg", &base_user_module::cmd_msg);
 	MODULE_REGISTER_COMMAND("server_uptime", &base_user_module::cmd_server_uptime);
@@ -130,6 +131,29 @@ void base_user_module::cmd_leave(std::shared_ptr<user> u, message &msg)
 	} else
 	{
 		Error(get_server().get_logger(), "Leave command: User with id ", uid, " does not participate in group with id ", gid);
+	}
+}
+
+void base_user_module::cmd_users(std::shared_ptr<user> u, message &msg)
+{
+	id_number_t gid = msg.header.group;
+	if (u->is_in_group(gid))
+	{
+		auto gr_ptr = get_server().get_group(gid);
+		if (gr_ptr == nullptr)
+		{
+
+		} else
+		{
+			message_composer msgc(message_type::info_message, gid);
+			msgc << "Users in group `" << gr_ptr->get_name() << "`: ";
+	 		for (auto par : gr_ptr->get_participants())
+			{
+				if (par.second->is_hidden() == false)
+					msgc << par.second->get_name() << " ";
+			}
+			u->deliver_message(msgc());
+		}
 	}
 }
 
