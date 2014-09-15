@@ -1,5 +1,6 @@
 #include "command_interpreter.hpp"
 #include "utility.hpp"
+#include "exception.hpp"
 
 using namespace tamandua;
 
@@ -7,9 +8,16 @@ void command_interpreter::register_command(std::string cmd, std::function<void(s
 {
 	auto add_info = commands_map_.insert(make_pair(cmd, func));
 	if (add_info.second == false)
-	{
-		// throw an exception
-	}
+		throw command_already_registered(cmd);
+}
+
+std::vector<std::string> command_interpreter::get_all_commands()
+{
+	std::vector<std::string> cmds;
+	for (auto cmd : commands_map_)
+		cmds.push_back(cmd.first);
+
+	return cmds;
 }
 
 processing_status command_interpreter::process(std::shared_ptr<user> u, message &msg)

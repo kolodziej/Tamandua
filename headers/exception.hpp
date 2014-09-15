@@ -1,6 +1,7 @@
 #ifndef TAMANDUA_EXCEPTION_HPP
 #define TAMANDUA_EXCEPTION_HPP
 #include <stdexcept>
+#include <string>
 
 namespace tamandua
 {
@@ -25,6 +26,16 @@ namespace tamandua
 	{
 		explicit module_already_registered() :
 			std::logic_error("module has already been registered")
+		{}
+	};
+
+	struct command_already_registered :
+		std::logic_error
+	{
+		std::string command;
+		explicit command_already_registered(std::string cmd) :
+			std::logic_error("command has already been registered"),
+			command(cmd)
 		{}
 	};
 }
