@@ -170,7 +170,7 @@ void server::quit_participant(id_number_t uid, status st)
 	auto u = participants_.find(uid);
 	if (u != participants_.end())
 	{
-		CALL_MODULES_P(participant_leave, u);
+		CALL_MODULES_P(participant_leave, (*u).second);
 		username = (*u).second->get_name();
 		participants_.erase(u);
 	}
