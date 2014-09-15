@@ -4,6 +4,7 @@
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
 #include "../headers/modules/base_user_module.hpp"
+#include "../headers/modules/help_module.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -38,7 +39,9 @@ int main(int argc, char ** argv)
 	cfg.root_password = "testpass";
 	server svr(io_service, endpoint, log, interpreter, context);
 	base_user_module user_module(svr, interpreter);
+	help_module hm(svr, interpreter);
 	svr.register_module(user_module);
+	svr.register_module(hm);
 	svr.start_server(cfg);
 	io_service.run();
 	return 0;
