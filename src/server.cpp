@@ -6,6 +6,7 @@
 #include "user.hpp"
 #include "room.hpp"
 #include "utility.hpp"
+#include "module_base.hpp"
 #include "exception.hpp"
 #include <sstream>
 #include <iomanip>
@@ -30,9 +31,16 @@ server::server(boost::asio::io_service &io_service, tcp::endpoint &endpoint, log
 server::~server()
 {}
 
-void server::register_module(module_base &module)
+void server::register_module(module_base &module) throw(module_already_registered)
 {
-	modules_.push_back(&module);
+	register_module(&module);
+}
+
+void server::register_module(module_base *module) throw(module_already_registered)
+{
+	auto ins_p = modules_.insert(std::make_pair(module->get_id(), module));
+	if (ins_p.second == false)
+		throw module_already_registered();
 }
 
 void server::start_server(server_config &config)

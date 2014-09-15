@@ -2,6 +2,13 @@
 
 using namespace tamandua;
 
+id_number_t module_base::last_module_id_ = 0;
+
+id_number_t module_base::get_id()
+{
+	return id_;
+}
+
 bool module_base::is_hidden()
 {
 	return false;

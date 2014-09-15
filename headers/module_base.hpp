@@ -16,20 +16,24 @@ namespace tamandua
 	
 	class module_base
 	{
-		private:			
+		private:
+			static id_number_t last_module_id_;
 			server &server_;
+			id_number_t id_;
 			std::string module_name_;
 			command_interpreter &interpreter_;
 
 		public:
-			module_base(server &svr, std::string name, command_interpreter &interpreter) : server_(svr), module_name_(name), interpreter_(interpreter) {}
+			module_base(server &svr, std::string name, command_interpreter &interpreter) : server_(svr), id_(++last_module_id_), module_name_(name), interpreter_(interpreter) {}
 
+			id_number_t get_id();
 			virtual bool is_hidden();
 			virtual void preprocessed(std::shared_ptr<user>, message &) = 0;
 			virtual void postprocessed(std::shared_ptr<user>, message &, processing_status) = 0;
 
 			server &get_server();
 			command_interpreter &get_interpreter();
+
 	};
 }
 

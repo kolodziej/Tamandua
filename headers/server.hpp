@@ -37,7 +37,7 @@ namespace tamandua
 			std::map<id_number_t, std::shared_ptr<group>> groups_;
 			std::map<std::string, id_number_t> groups_ids_;
 
-			std::vector<module_base*> modules_;
+			std::map<id_number_t, module_base*> modules_;
 
 			id_number_t last_participant_id_, last_group_id_;
 
@@ -48,7 +48,8 @@ namespace tamandua
 			server(boost::asio::io_service &, tcp::endpoint &, logger &, command_interpreter &, boost::asio::ssl::context &);
 			~server();
 		
-			void register_module(module_base&);
+			void register_module(module_base&) throw(module_already_registered);
+			void register_module(module_base*) throw(module_already_registered);
 			void start_server(server_config &);
 			void send_startup_data(std::shared_ptr<participant>);
 			boost::asio::io_service &get_io_service();
