@@ -8,7 +8,7 @@
 #include <string>
 #include <functional>
 
-#define MODULE_REGISTER_COMMAND(c, f) get_interpreter().register_command(c, std::bind(f, *this, std::placeholders::_1, std::placeholders::_2))
+#define MODULE_REGISTER_COMMAND(c, f) get_interpreter().register_command(c, std::bind(f, this, std::placeholders::_1, std::placeholders::_2))
 
 namespace tamandua
 {
@@ -27,6 +27,7 @@ namespace tamandua
 			module_base(server &svr, std::string name, command_interpreter &interpreter) : server_(svr), id_(++last_module_id_), module_name_(name), interpreter_(interpreter) {}
 
 			id_number_t get_id();
+			std::string get_name();
 			virtual bool is_hidden();
 
 			virtual void on_server_start() {};
