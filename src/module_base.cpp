@@ -9,6 +9,11 @@ id_number_t module_base::get_id()
 	return id_;
 }
 
+std::string module_base::get_name()
+{
+	return module_name_;
+}
+
 bool module_base::is_hidden()
 {
 	return false;
