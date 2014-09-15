@@ -11,9 +11,6 @@ namespace tamandua
 		public:
 			help_module(server &, command_interpreter &);
 
-			virtual void preprocessed(std::shared_ptr<user>, message &) {};
-			virtual void postprocessed(std::shared_ptr<user>, message &, processing_status) {};
-
 			void cmd_commands(std::shared_ptr<user>, message&);
 	};
 }

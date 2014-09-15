@@ -24,12 +24,6 @@ base_user_module::base_user_module(server &svr, command_interpreter &interpreter
 	MODULE_REGISTER_COMMAND("root_auth", &base_user_module::cmd_root_auth);
 }
 
-void base_user_module::preprocessed(std::shared_ptr<user> u, message &msg)
-{}
-
-void base_user_module::postprocessed(std::shared_ptr<user> u, message &msg, processing_status s)
-{}
-
 void base_user_module::cmd_id(std::shared_ptr<user> u, message &msg)
 {
 	message_composer msgc(message_type::info_message);

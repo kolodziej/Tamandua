@@ -11,9 +11,6 @@ namespace tamandua
 		public:
 			base_user_module(server &, command_interpreter &);
 
-			void preprocessed(std::shared_ptr<user>, message &);
-			void postprocessed(std::shared_ptr<user>, message &, processing_status);
-
 			// commands
 			void cmd_id(std::shared_ptr<user>, message&);
 			void cmd_room(std::shared_ptr<user>, message&);
