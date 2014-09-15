@@ -5,6 +5,7 @@
 #include <boost/asio/ssl.hpp>
 #include "../headers/modules/base_user_module.hpp"
 #include "../headers/modules/help_module.hpp"
+#include "../headers/modules/history_module.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -40,8 +41,10 @@ int main(int argc, char ** argv)
 	server svr(io_service, endpoint, log, interpreter, context);
 	base_user_module user_module(svr, interpreter);
 	help_module hm(svr, interpreter);
-	svr.register_module(user_module);
-	svr.register_module(hm);
+	history_module histm(svr, interpreter, 50);
+	svr.register_module(&user_module);
+	svr.register_module(&hm);
+	svr.register_module(&histm);
 	svr.start_server(cfg);
 	io_service.run();
 	return 0;
