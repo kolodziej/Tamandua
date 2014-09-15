@@ -19,6 +19,14 @@ namespace tamandua
 			std::logic_error("choosed group name exists!")
 		{}
 	};
+
+	struct module_already_registered :
+		std::logic_error
+	{
+		explicit module_already_registered() :
+			std::logic_error("module has already been registered")
+		{}
+	};
 }
 
 #endif
