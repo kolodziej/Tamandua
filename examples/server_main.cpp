@@ -6,6 +6,7 @@
 #include "../headers/modules/base_user_module.hpp"
 #include "../headers/modules/help_module.hpp"
 #include "../headers/modules/history_module.hpp"
+#include "../headers/modules/registration_module.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -42,9 +43,11 @@ int main(int argc, char ** argv)
 	base_user_module user_module(svr, interpreter);
 	help_module hm(svr, interpreter);
 	history_module histm(svr, interpreter, 50);
+	registration_module regmod(svr, interpreter);
 	svr.register_module(&user_module);
 	svr.register_module(&hm);
 	svr.register_module(&histm);
+	svr.register_module(regmod);
 	svr.start_server(cfg);
 	io_service.run();
 	return 0;
