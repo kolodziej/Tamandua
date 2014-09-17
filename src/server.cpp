@@ -254,6 +254,22 @@ std::vector<std::shared_ptr<group>> server::get_all_groups()
 	return grps;
 }
 
+bool server::lock_username(std::string username)
+{
+	auto ins_p = locked_usernames_.insert(username);
+	return ins_p.second;
+}
+
+bool server::unlock_username(std::string username)
+{
+	return static_cast<bool>(locked_usernames_.erase(username));
+}
+
+bool server::is_username_locked(std::string username)
+{
+	return (locked_usernames_.find(username) != locked_usernames_.end());
+}
+
 bool server::is_participant_name_available(std::string name)
 {
 	return (participants_ids_.find(name) == participants_ids_.end());

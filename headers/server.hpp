@@ -7,6 +7,7 @@
 #include "command_interpreter.hpp"
 #include "exception.hpp"
 #include <map>
+#include <set>
 #include <string>
 #include <memory>
 #include <chrono>
@@ -39,6 +40,7 @@ namespace tamandua
 			std::map<std::string, id_number_t> participants_ids_;
 			std::map<id_number_t, std::shared_ptr<group>> groups_;
 			std::map<std::string, id_number_t> groups_ids_;
+			std::set<std::string> locked_usernames_;
 
 			std::map<id_number_t, module_base*> modules_;
 
@@ -68,6 +70,9 @@ namespace tamandua
 			std::shared_ptr<root> get_root();
 			std::vector<std::shared_ptr<participant>> get_all_participants();
 			std::vector<std::shared_ptr<group>> get_all_groups();
+			bool lock_username(std::string);
+			bool unlock_username(std::string);
+			bool is_username_locked(std::string);
 
 			bool is_participant_name_available(std::string);
 			bool is_group_name_available(std::string);
