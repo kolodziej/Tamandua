@@ -19,12 +19,12 @@ namespace tamandua
 			participant(server &svr, std::string & name) : id_(svr.get_new_participant_id_()), name_(std::move(name)), server_(svr)
 			{
 				if (name_.empty())
-					name_ = svr.get_default_user_name_(id_);
+					name_ = svr.get_default_user_name(id_);
 			};
 			participant(server &svr, std::string && name) : id_(svr.get_new_participant_id_()), name_(name), server_(svr)
 			{
 				if (name_.empty())
-					name_ = svr.get_default_user_name_(id_);
+					name_ = svr.get_default_user_name(id_);
 			};
 
 			id_number_t get_id() const;

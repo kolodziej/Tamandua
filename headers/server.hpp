@@ -77,6 +77,9 @@ namespace tamandua
 			bool is_participant_name_available(std::string, bool = true);
 			bool is_group_name_available(std::string);
 
+			std::string get_default_user_name(id_number_t);
+			std::string get_default_group_name(id_number_t);
+
 			bool change_participant_name(std::string, std::string, bool = true);
 			void quit_participant(id_number_t, status = ok);
 
@@ -104,8 +107,6 @@ namespace tamandua
 			friend class group;
 			id_number_t get_new_group_id_();
 
-			std::string get_default_user_name_(id_number_t);
-			std::string get_default_group_name_(id_number_t);
 			std::string generate_rooms_list_();
 			std::string generate_participants_list_();
 	};

@@ -22,7 +22,7 @@ namespace tamandua
 			group(server &svr, std::string name) : id_(svr.get_new_group_id_()), name_(name), server_(svr)
 			{
 				if (name_.empty())
-					name_ = svr.get_default_group_name_(id_);
+					name_ = svr.get_default_group_name(id_);
 			}
 
 			id_number_t get_id();

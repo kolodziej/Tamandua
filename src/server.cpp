@@ -283,6 +283,20 @@ bool server::is_group_name_available(std::string name)
 	return (groups_ids_.find(name) == groups_ids_.end());
 }
 
+std::string server::get_default_user_name(id_number_t id)
+{
+	std::stringstream username;
+	username << "User#" << id;
+	return username.str();
+}
+
+std::string server::get_default_group_name(id_number_t id)
+{
+	std::stringstream groupname;
+	groupname << "Group#" << id;
+	return groupname.str();
+}
+
 id_number_t server::get_last_participant_id() const
 {
 	return last_participant_id_;
@@ -394,20 +408,6 @@ id_number_t server::get_new_participant_id_()
 id_number_t server::get_new_group_id_()
 {
 	return last_group_id_++;
-}
-
-std::string server::get_default_user_name_(id_number_t id)
-{
-	std::stringstream username;
-	username << "User#" << id;
-	return username.str();
-}
-
-std::string server::get_default_group_name_(id_number_t id)
-{
-	std::stringstream groupname;
-	groupname << "Group#" << id;
-	return groupname.str();
 }
 
 std::string server::generate_rooms_list_()
