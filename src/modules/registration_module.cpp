@@ -63,5 +63,11 @@ void registration_module::cmd_auth(std::shared_ptr<user> u, message &msg)
 			msgc << "Wrong password!";
 			u->deliver_message(msgc());
 		}
+	} else
+	{
+		message_composer msgc(message_type::error_message, msg.header.group);
+		msgc << "Incorrect arguments! Use: " << get_interpreter().get_start_character() << "auth <username> <password> to authenticate with your registered username.";
+		u->deliver_message(msgc());
+
 	}
 }
