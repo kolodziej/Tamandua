@@ -53,8 +53,7 @@ void registration_module::cmd_auth(std::shared_ptr<user> u, message &msg)
 			u->deliver_message(msgc());
 		} else if (nick->second == password)
 		{
-			get_server().change_participant_name(u->get_name(), username);
-			u->set_name(username);
+			get_server().change_participant_name(u->get_name(), username, false);
 			message_composer msgc(info_message, msg.header.group);
 			msgc << "You have been authorized as " << username << "!";
 			u->deliver_message(msgc());
