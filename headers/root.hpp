@@ -29,6 +29,7 @@ namespace tamandua
 			void read_message();
 			void deliver_message(const message&);
 			void process_command(std::shared_ptr<user>, std::vector<std::string>&);
+			std::string get_password();
 
 		private:
 			void process_message_(const message);
@@ -38,6 +39,9 @@ namespace tamandua
 			// commands
 			void add_room_(std::shared_ptr<user>, std::vector<std::string>&);
 			void add_private_room_(std::shared_ptr<user>, std::vector<std::string>&);
+			void lock_username_(std::shared_ptr<user>, std::vector<std::string>&);
+			void unlock_username_(std::shared_ptr<user>, std::vector<std::string>&);
+			//void change_username_(std::shared_ptr<user>, std::vector<std::string>&);
 
 	};
 }

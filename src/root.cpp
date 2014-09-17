@@ -19,6 +19,8 @@ root::root(server &svr, std::string pass) :
 
 	ROOT_CMD("add-room", add_room_);
 	ROOT_CMD("add-proom", add_private_room_);
+	ROOT_CMD("lock-username", lock_username_);
+	ROOT_CMD("unlock-username", unlock_username_);
 }
 
 bool root::auth_user(id_number_t id, std::string password)
@@ -59,6 +61,11 @@ void root::process_command(std::shared_ptr<user> u, std::vector<std::string> &pa
 
 		(this->*((*cmd).second))(u, params);
 	}
+}
+
+std::string root::get_password()
+{
+	return password_;
 }
 
 void root::unauthorized_user_(std::shared_ptr<user> u)
@@ -114,6 +121,46 @@ void root::add_private_room_(std::shared_ptr<user> u, std::vector<std::string> &
 	} catch (std::runtime_error &e)
 	{
 		Error(get_server().get_logger(), "Runtime ERROR in root::add_private_room_: ", e.what());
+	}
+}
+
+void root::lock_username_(std::shared_ptr<user> u, std::vector<std::string> &params)
+{
+	try {
+		if (get_server().lock_username(params[1]))
+		{
+			message_composer msgc(info_message);
+			msgc << "Username " << params[1] << " has been locked!";
+			u->deliver_message(msgc());
+		} else
+		{
+			message_composer msgc(warning_message);
+			msgc << "Username " << params[1] << " has already been locked!";
+			u->deliver_message(msgc());
+		}
+	} catch (std::runtime_error &e)
+	{
+		Error(get_server().get_logger(), "Runtime ERROR in root::lock_username_: ", e.what());
+	}
+}
+
+void root::unlock_username_(std::shared_ptr<user> u, std::vector<std::string> &params)
+{
+	try {
+		if (get_server().unlock_username(params[1]))
+		{
+			message_composer msgc(info_message);
+			msgc << "Username " << params[1] << " has been unlocked!";
+			u->deliver_message(msgc());
+		} else
+		{
+			message_composer msgc(warning_message);
+			msgc << "Username " << params[1] << " has already been unlocked!";
+			u->deliver_message(msgc());
+		}
+	} catch (std::runtime_error &e)
+	{
+		Error(get_server().get_logger(), "Runtime ERROR in root::unlock_username_: ", e.what());
 	}
 }
 
