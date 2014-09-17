@@ -74,10 +74,10 @@ namespace tamandua
 			bool unlock_username(std::string);
 			bool is_username_locked(std::string);
 
-			bool is_participant_name_available(std::string);
+			bool is_participant_name_available(std::string, bool = true);
 			bool is_group_name_available(std::string);
 
-			bool change_participant_name(std::string, std::string);
+			bool change_participant_name(std::string, std::string, bool = true);
 			void quit_participant(id_number_t, status = ok);
 
 			id_number_t get_last_participant_id() const;

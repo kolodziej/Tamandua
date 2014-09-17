@@ -146,9 +146,9 @@ void server::add_group(std::shared_ptr<group> gr) throw (group_name_exists)
 	}
 }
 
-bool server::change_participant_name(std::string oldname, std::string newname)
+bool server::change_participant_name(std::string oldname, std::string newname, bool check_locks)
 {
-	if (is_participant_name_available(newname))
+	if (is_participant_name_available(newname, check_locks))
 	{
 		auto ptr = get_participant(oldname);
 		id_number_t id = ptr->get_id();
@@ -270,9 +270,12 @@ bool server::is_username_locked(std::string username)
 	return (locked_usernames_.find(username) != locked_usernames_.end());
 }
 
-bool server::is_participant_name_available(std::string name)
+bool server::is_participant_name_available(std::string name, bool is_locked)
 {
-	return (participants_ids_.find(name) == participants_ids_.end());
+	return (
+		participants_ids_.find(name) == participants_ids_.end() &&
+		!(is_locked & is_username_locked(name))
+	);
 }
 
 bool server::is_group_name_available(std::string name)
