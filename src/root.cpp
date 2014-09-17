@@ -21,6 +21,7 @@ root::root(server &svr, std::string pass) :
 	ROOT_CMD("add-proom", add_private_room_);
 	ROOT_CMD("lock-username", lock_username_);
 	ROOT_CMD("unlock-username", unlock_username_);
+	ROOT_CMD("reset-username", reset_username_);
 }
 
 bool root::auth_user(id_number_t id, std::string password)
@@ -161,6 +162,33 @@ void root::unlock_username_(std::shared_ptr<user> u, std::vector<std::string> &p
 	} catch (std::runtime_error &e)
 	{
 		Error(get_server().get_logger(), "Runtime ERROR in root::unlock_username_: ", e.what());
+	}
+}
+
+void root::reset_username_(std::shared_ptr<user> u, std::vector<std::string> &params)
+{
+	try {
+		auto us = get_server().get_participant(params[1]);
+		if (us == nullptr)
+		{
+			message_composer msgc(error_message);
+			msgc << "User " << params[1] << " does not exists!";
+			u->deliver_message(msgc());
+		} else
+		{
+			std::string oldname = us->get_name();
+			get_server().change_participant_name(us->get_name(), get_server().get_default_user_name(us->get_id()));
+			message_composer msgc_u(warning_message);
+			msgc_u << "Your username has been reseted by the root user!";
+			us->deliver_message(msgc_u());
+
+			message_composer msgc_r(info_message);
+			msgc_r << "Username of " << oldname << " has been reseted!";
+			u->deliver_message(msgc_r());
+		}
+	} catch (std::runtime_error &e)
+	{
+		Error(get_server().get_logger(), "Runtime ERROR in root::change_username_: ", e.what());
 	}
 }
 

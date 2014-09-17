@@ -41,7 +41,7 @@ namespace tamandua
 			void add_private_room_(std::shared_ptr<user>, std::vector<std::string>&);
 			void lock_username_(std::shared_ptr<user>, std::vector<std::string>&);
 			void unlock_username_(std::shared_ptr<user>, std::vector<std::string>&);
-			//void change_username_(std::shared_ptr<user>, std::vector<std::string>&);
+			void reset_username_(std::shared_ptr<user>, std::vector<std::string>&);
 
 	};
 }
