@@ -33,6 +33,11 @@ processing_status command_interpreter::process(std::shared_ptr<user> u, message 
 	return processing_status::std_msg;
 }
 
+char command_interpreter::get_start_character()
+{
+	return start_character_;
+}
+
 processing_status command_interpreter::process_command_(std::shared_ptr<user> u, message &msg)
 {
 	auto params = split_params_std(msg.body);

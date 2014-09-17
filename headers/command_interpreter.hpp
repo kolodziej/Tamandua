@@ -22,6 +22,7 @@ namespace tamandua
 			void register_command(std::string, std::function<void(std::shared_ptr<user>, message&)>);
 			std::vector<std::string> get_all_commands();
 			processing_status process(std::shared_ptr<user>, message &);
+			char get_start_character();
 
 		private:
 			processing_status process_command_(std::shared_ptr<user>, message &);
