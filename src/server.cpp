@@ -75,11 +75,6 @@ boost::asio::io_service &server::get_io_service()
 void server::process_message(std::shared_ptr<user> pt, message &msg)
 {
 	CALL_MODULES_P(message_receive, pt, msg);
-	if (msg.header.type == message_type::quit_message)
-	{
-		pt->quit();
-		return;
-	}
 
 	processing_status msg_stat = interpreter_.process(pt ,msg);
 
@@ -164,27 +159,23 @@ bool server::change_participant_name(std::string oldname, std::string newname, b
 	return false;
 }
 
-void server::quit_participant(id_number_t uid, status st)
+void server::quit_participant(std::shared_ptr<participant> pt, status st)
 {
-	std::string username;
-	auto u = participants_.find(uid);
-	if (u != participants_.end())
-	{
-		CALL_MODULES_P(participant_leave, (*u).second);
-		username = (*u).second->get_name();
-		participants_.erase(u);
-	}
+	if (pt == nullptr)
+		return;
 
-	auto u_id = participants_ids_.find(username);
-	if (u_id != participants_ids_.end())
-		participants_ids_.erase(u_id);
+	std::string username;
+	CALL_MODULES_P(participant_leave, pt);
+	username = pt->get_name();
+	participants_.erase(pt->get_id());
+	participants_ids_.erase(username);
 
 	message_composer msgc(message_type::info_message);
-	msgc << "User " << username << " is quitting server";
+	msgc << "User " << username << " left server";
 	if (st == ok)
 		msgc << "!";
 	else if (st == user_error_quit)
-		msgc << " [due to client side error occurance]!";
+		msgc << " [an error ocurred on client side]!";
 
 	message quit_info = msgc();
 	Log(log_, quit_info.body);

@@ -81,7 +81,7 @@ namespace tamandua
 			std::string get_default_group_name(id_number_t);
 
 			bool change_participant_name(std::string, std::string, bool = true);
-			void quit_participant(id_number_t, status = ok);
+			void quit_participant(std::shared_ptr<participant>, status = ok);
 
 			id_number_t get_last_participant_id() const;
 			id_number_t get_last_group_id() const;

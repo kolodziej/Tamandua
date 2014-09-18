@@ -29,16 +29,12 @@ void client::disconnect()
 {
 	try {
 		send_quit_message_();
-		socket_.lowest_layer().shutdown(tcp::socket::shutdown_type::shutdown_both);
-		socket_.lowest_layer().close();
-		add_message_(message_type::quit_message, std::string());
 		call_event_handler_(server_disconnected, ok);
-	} catch (boost::system::system_error err)
+	} catch (boost::system::system_error &err)
 	{
 		call_event_handler_(server_disconnected, server_disconnecting_error);
 	}
 	connected_ = false;
-	call_event_handler_(server_disconnected, ok);
 }
 
 id_number_t client::get_id()

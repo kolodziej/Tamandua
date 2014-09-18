@@ -78,7 +78,7 @@ void user::deliver_message(const message &message)
 
 void user::quit()
 {
-	quit_status_ = ok;
+	quit_status_ = user_quit;
 }
 
 void user::perform_handshake_()
@@ -144,10 +144,15 @@ void user::read_message_body_()
 
 void user::process_message_()
 {
-	// verifying participant id
-	read_message_.header.author = get_id();
-	get_server().process_message(shared_from_this(), read_message_);
-	read_message();
+	if (read_message_.header.type == quit_message)
+	{
+		quit_();
+	} else
+	{
+		read_message_.header.author = get_id();
+		get_server().process_message(shared_from_this(), read_message_);
+		read_message();
+	}
 }
 
 void user::send_messages_()
@@ -165,6 +170,7 @@ void user::send_messages_()
 			} else
 			{
 				Error(get_server().get_logger(), "An error occurred while sending message to user ", get_name(), " (ID: ", get_id(), "): ", ec.message());
+				error_quit_();
 			}
 		});
 }
@@ -177,13 +183,17 @@ void user::deliver_quit_message_()
 
 void user::quit_()
 {
-	deliver_quit_message_();
-	socket_.shutdown();
-	get_server().quit_participant(get_id());
+	try {
+		get_server().quit_participant(std::dynamic_pointer_cast<participant>(shared_from_this()), ok);
+		socket_.shutdown();
+	} catch (boost::system::system_error &err)
+	{
+		Error(get_server().get_logger(), "An error occurred while user quitting: ", err.what());
+	}
 }
 
 void user::error_quit_()
 {
-	get_server().quit_participant(get_id(), status::user_error_quit);
+	get_server().quit_participant(std::dynamic_pointer_cast<participant>(shared_from_this()), user_error_quit);
 }
 
