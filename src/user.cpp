@@ -175,12 +175,6 @@ void user::send_messages_()
 		});
 }
 
-void user::deliver_quit_message_()
-{
-	message_composer msgc(message_type::quit_message);
-	deliver_message(msgc());
-}
-
 void user::quit_()
 {
 	try {

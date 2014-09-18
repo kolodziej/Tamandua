@@ -54,7 +54,6 @@ namespace tamandua
 			void process_message_();
 			void send_messages_();
 
-			void deliver_quit_message_();
 			void quit_();
 			void error_quit_();
 	};
