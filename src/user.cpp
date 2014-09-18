@@ -70,6 +70,9 @@ void user::read_message()
 
 void user::deliver_message(const message &message)
 {
+	if (quit_status_ != ok)
+		return;
+
 	bool start_sending = messages_queue_.empty();
 	messages_queue_.push_back(message);
 	if (start_sending)
@@ -178,6 +181,7 @@ void user::send_messages_()
 void user::quit_()
 {
 	try {
+		quit_status_ = user_quit;
 		get_server().quit_participant(std::dynamic_pointer_cast<participant>(shared_from_this()), ok);
 		socket_.shutdown();
 	} catch (boost::system::system_error &err)
@@ -188,6 +192,7 @@ void user::quit_()
 
 void user::error_quit_()
 {
+	quit_status_ = user_error_quit;
 	get_server().quit_participant(std::dynamic_pointer_cast<participant>(shared_from_this()), user_error_quit);
 }
 
