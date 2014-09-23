@@ -8,12 +8,12 @@ conference_room::conference_room(server &svr, std::shared_ptr<participant> pt) :
 	group(svr, pt->get_name())
 {
 	if (pt == nullptr)
-		throw std::logic_error("you must add to conference at least one participant!");
+		throw ptr_nullptr();
 
 	join_participant(pt);
 }
 
-conference_room::conference_room(server &svr, std::initializer_list<std::shared_ptr<participant>> pts) :
+conference_room::conference_room(server &svr, std::vector<std::shared_ptr<participant>> &&pts) :
 	group(svr, std::string())
 {
 	if (pts.size() == 0)
@@ -23,6 +23,9 @@ conference_room::conference_room(server &svr, std::initializer_list<std::shared_
 	const std::string separator(", ");
 	for (auto pt : pts)
 	{
+		if (pt == nullptr)
+			throw ptr_nullptr();
+
 		join_participant(pt);
 		stream << pt->get_name() << separator;
 	}
