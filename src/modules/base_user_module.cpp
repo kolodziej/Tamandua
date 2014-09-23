@@ -114,17 +114,22 @@ void base_user_module::cmd_conference(std::shared_ptr<user> u, message &msg)
 	auto params = split_params_std(msg.body);
 	std::shared_ptr<group> conference;
 	try {
-		if (params.size() == 1)
+		if (params.size() < 2)
 		{
-			conference = std::make_shared<conference_room>(get_server(), u);
+			message_composer msgc(warning_message, gid);
+			msgc << "Incorrect format! Usage: " << params[0] << " <conference_name> [<participants_names>...]";
+			u->deliver_message(msgc());
+		} else if (params.size() == 2)
+		{
+			conference = std::make_shared<conference_room>(get_server(), params[1], u);
 		} else
 		{
 			std::vector<std::shared_ptr<participant>> pts;
 			pts.push_back(u);
-			for (auto it = params.begin() + 1; it != params.end(); ++it)
+			for (auto it = params.begin() + 2; it != params.end(); ++it)
 				pts.push_back(get_server().get_participant(*it));
 
-			conference = std::make_shared<conference_room>(get_server(), std::move(pts));
+			conference = std::make_shared<conference_room>(get_server(), params[1], std::move(pts));
 			get_server().add_group(conference);
 			message_composer msgc(info_message, gid);
 		}

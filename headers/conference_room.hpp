@@ -9,8 +9,8 @@ namespace tamandua
 		public group
 	{
 		public:
-			conference_room(server &, std::shared_ptr<participant>);
-			conference_room(server &, std::vector<std::shared_ptr<participant>>&&);
+			conference_room(server &, std::string, std::shared_ptr<participant>);
+			conference_room(server &, std::string, std::vector<std::shared_ptr<participant>>&&);
 
 			bool is_hidden();
 			bool is_password();
