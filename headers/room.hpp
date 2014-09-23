@@ -14,6 +14,7 @@ namespace tamandua
 
 			virtual bool is_hidden();
 			virtual bool is_password();
+			room_type get_type();
 	};
 }
 

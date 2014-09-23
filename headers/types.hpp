@@ -43,6 +43,11 @@ namespace tamandua
 		server_disconnecting_error
 	} status;
 
+	typedef enum {
+		gr_room = 0,
+		gr_private_room,
+		gr_conference_room
+	} room_type;
 }
 
 #endif

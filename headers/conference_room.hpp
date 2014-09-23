@@ -13,6 +13,8 @@ namespace tamandua
 			conference_room(server &, std::initializer_list<std::shared_ptr<participant>>);
 
 			bool is_hidden();
+			bool is_password();
+			room_type get_type();
 	};
 }
 

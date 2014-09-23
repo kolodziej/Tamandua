@@ -11,3 +11,8 @@ bool room::is_password()
 {
 	return false;
 }
+
+room_type room::get_type()
+{
+	return gr_room;
+}

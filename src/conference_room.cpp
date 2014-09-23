@@ -34,3 +34,13 @@ bool conference_room::is_hidden()
 {
 	return true;
 }
+
+bool conference_room::is_password()
+{
+	return false;
+}
+
+room_type conference_room::get_type()
+{
+	return gr_conference_room;
+}

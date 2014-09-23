@@ -34,6 +34,7 @@ namespace tamandua
 			virtual void deliver_message(const message&);
 			virtual bool is_hidden() = 0;
 			virtual bool is_password() = 0;
+			virtual room_type get_type() = 0;
 
 		private:
 			void notify_new_participant_(std::shared_ptr<participant>);
