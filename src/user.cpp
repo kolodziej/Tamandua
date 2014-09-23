@@ -5,6 +5,7 @@
 #include "private_room.hpp"
 #include <utility>
 #include <iostream>
+#include <cmath>
 
 using namespace tamandua;
 
@@ -63,8 +64,7 @@ void user::read_message()
 			error_quit_();
 
 		return;
-	}
-	
+	}	
 	read_message_header_();
 }
 
@@ -77,6 +77,44 @@ void user::deliver_message(const message &message)
 	messages_queue_.push_back(message);
 	if (start_sending)
 		send_messages_();
+}
+
+void user::lock(unsigned int minutes, std::string reason)
+{
+	locked_until_ = message_time_clock_t::now() + std::chrono::minutes(minutes);
+	message_composer msgc(warning_message);
+	msgc << "You have been locked for " << minutes << " minutes. ";
+	if (reason.empty() == false)
+		msgc << "(reason: " << reason << ")";
+
+	deliver_message(msgc());
+}
+
+void user::unlock(std::string reason)
+{
+	locked_until_ = message_time_clock_t::now() - std::chrono::seconds(1);
+	message_composer msgc(info_message);
+	msgc << "You have been unlocked! ";
+	if (reason.empty() == false)
+		msgc << "(reason: " << reason << ")";
+
+	deliver_message(msgc());
+}
+
+bool user::is_locked()
+{
+	return (locked_until_ < message_time_clock_t::now());
+}
+
+void user::remove(std::string reason)
+{
+	message_composer msgc(warning_message);
+	msgc << "You have been removed from server by root! ";
+	if (reason.empty() == false)
+		msgc << "(reason: " << reason << ")";
+
+	deliver_message(msgc());
+	quit();
 }
 
 void user::quit()
@@ -150,6 +188,14 @@ void user::process_message_()
 	if (read_message_.header.type == quit_message)
 	{
 		quit_();
+	} else if (message_time_clock_t::now() < locked_until_)
+	{
+		message_composer msgc(warning_message, read_message_.header.group);
+		msgc << "You have been locked! (~"
+				<< ceil(std::chrono::duration_cast<std::chrono::duration<double, std::ratio<60,1>>>(locked_until_ - message_time_clock_t::now()).count())
+				<< " minutes left)";
+		deliver_message(msgc());
+		read_message();
 	} else
 	{
 		read_message_.header.author = get_id();

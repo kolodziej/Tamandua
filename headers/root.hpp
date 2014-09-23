@@ -42,7 +42,9 @@ namespace tamandua
 			void lock_username_(std::shared_ptr<user>, std::vector<std::string>&);
 			void unlock_username_(std::shared_ptr<user>, std::vector<std::string>&);
 			void reset_username_(std::shared_ptr<user>, std::vector<std::string>&);
-
+			void lock_user_(std::shared_ptr<user>, std::vector<std::string>&);
+			void unlock_user_(std::shared_ptr<user>, std::vector<std::string>&);
+			void remove_user_(std::shared_ptr<user>, std::vector<std::string>&);
 	};
 }
 

@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <utility>
+#include <chrono>
 #include <boost/asio.hpp>
 
 using boost::asio::ip::tcp;
@@ -25,6 +26,7 @@ namespace tamandua
 			std::shared_ptr<group> group_;
 			message read_message_;
 			status quit_status_;
+			std::chrono::time_point<message_time_clock_t> locked_until_;
 			
 		public:
 			friend class server;
@@ -44,6 +46,10 @@ namespace tamandua
 			
 			virtual void read_message();
 			virtual void deliver_message(const message&);
+			void lock(unsigned int, std::string = std::string());
+			void unlock(std::string = std::string());
+			bool is_locked();
+			void remove(std::string);
 			void quit();
 			
 		private:

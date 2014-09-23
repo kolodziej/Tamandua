@@ -5,6 +5,7 @@
 #include "message_composer.hpp"
 #include "utility.hpp"
 #include <memory>
+#include <boost/regex.hpp>
 
 using namespace tamandua;
 
@@ -22,6 +23,9 @@ root::root(server &svr, std::string pass) :
 	ROOT_CMD("lock-username", lock_username_);
 	ROOT_CMD("unlock-username", unlock_username_);
 	ROOT_CMD("reset-username", reset_username_);
+	ROOT_CMD("lock-user", lock_user_);
+	ROOT_CMD("unlock-user", unlock_user_);
+	ROOT_CMD("remove-user", remove_user_);
 }
 
 bool root::auth_user(id_number_t id, std::string password)
@@ -189,6 +193,58 @@ void root::reset_username_(std::shared_ptr<user> u, std::vector<std::string> &pa
 	} catch (std::runtime_error &e)
 	{
 		Error(get_server().get_logger(), "Runtime ERROR in root::change_username_: ", e.what());
+	}
+}
+
+void root::lock_user_(std::shared_ptr<user> u, std::vector<std::string> &params)
+{
+	try {
+		auto us = std::dynamic_pointer_cast<user>(get_server().get_participant(params[1]));
+		if (us == nullptr)
+			throw std::runtime_error("user does not exists!");
+
+		unsigned int minutes = static_cast<unsigned int>(std::stoi(params[2]));
+		us->lock(minutes, (params.size() == 4) ? params[3] : std::string());
+	} catch (std::runtime_error &e)
+	{
+		Error(get_server().get_logger(), "Runtime ERROR in root::lock_user_: ", e.what());
+	} catch (std::logic_error &e)
+	{
+		Error(get_server().get_logger(), "Logic ERROR in root::lock_user_: ", e.what());
+	}
+}
+
+void root::unlock_user_(std::shared_ptr<user> u, std::vector<std::string> &params)
+{
+	try {
+		auto us = std::dynamic_pointer_cast<user>(get_server().get_participant(params[1]));
+		if (us == nullptr)
+			throw std::runtime_error("user does not exist!");
+
+		us->unlock((params.size() == 3) ? params[2] : std::string());
+	} catch (std::runtime_error &e)
+	{
+		Error(get_server().get_logger(), "Runtime ERROR in root::unlock_user_: ", e.what());
+	} catch (std::logic_error &e)
+	{
+		Error(get_server().get_logger(), "Logic ERROR in root::unlock_user_: ", e.what());
+	}
+}
+
+void root::remove_user_(std::shared_ptr<user> u, std::vector<std::string> &params)
+{
+	try {
+		auto us = std::dynamic_pointer_cast<user>(get_server().get_participant(params[1]));
+		if (us == nullptr)
+			throw std::runtime_error("user does not exist!");
+
+		us->remove((params.size() == 3) ? params[2] : std::string());
+	} catch (std::runtime_error &e)
+	{
+		Error(get_server().get_logger(), "Runtime ERROR in root::remove_user_: ", e.what());
+	} catch (std::logic_error &e)
+	{
+		Error(get_server().get_logger(), "Logic ERROR in root::remove_user_: ", e.what());
 	}
 }
 
