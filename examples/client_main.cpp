@@ -72,6 +72,8 @@ int main(int argc, char ** argv)
 						std::cout << "entering new group: " << msg.header.group;
 						break;
 
+					default:
+						break;
 				}
 				std::cout << msg.body << "\e[0m\n";
 			}
