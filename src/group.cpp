@@ -24,6 +24,7 @@ void group::join_participant(std::shared_ptr<participant> p)
 	auto insertion = participants_.insert(make_pair(p->get_id(), p));
 	if (insertion.second)
 	{
+		p->add_group(get_id());
 		message_composer msgc(message_type::group_enter_message, get_name(), get_id());
 		p->deliver_message(msgc());
 		if (p->is_hidden() == false)

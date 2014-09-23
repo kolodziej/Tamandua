@@ -67,7 +67,6 @@ void base_user_module::cmd_room(std::shared_ptr<user> u, message &msg)
 	} else
 	{
 		room_ptr->join_participant(u);
-		u->add_group(room_ptr->get_id());
 	}
 }
 
@@ -95,7 +94,6 @@ void base_user_module::cmd_proom(std::shared_ptr<user> u, message &msg)
 			std::shared_ptr<private_room> proom_ptr = std::dynamic_pointer_cast<private_room>(room_ptr);
 			if (proom_ptr->check_password(params[2]))
 			{
-				u->add_group(room_ptr->get_id());
 				room_ptr->join_participant(u);
 				message_composer msgc(message_type::info_message);
 				msgc << "You are now in private room: " << params[1];
