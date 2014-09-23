@@ -2,6 +2,7 @@
 #include "message_composer.hpp"
 #include "user.hpp"
 #include "private_room.hpp"
+#include "conference_room.hpp"
 #include "root.hpp"
 #include <functional>
 #include <sstream>
@@ -15,6 +16,8 @@ base_user_module::base_user_module(server &svr, command_interpreter &interpreter
 	MODULE_REGISTER_COMMAND("id", &base_user_module::cmd_id);
 	MODULE_REGISTER_COMMAND("room", &base_user_module::cmd_room);
 	MODULE_REGISTER_COMMAND("proom", &base_user_module::cmd_proom);
+	MODULE_REGISTER_COMMAND("conference", &base_user_module::cmd_conference);
+	MODULE_REGISTER_COMMAND("add", &base_user_module::cmd_add);
 	MODULE_REGISTER_COMMAND("leave", &base_user_module::cmd_leave);
 	MODULE_REGISTER_COMMAND("users", &base_user_module::cmd_users);
 	MODULE_REGISTER_COMMAND("nick", &base_user_module::cmd_nick);
@@ -105,6 +108,42 @@ void base_user_module::cmd_proom(std::shared_ptr<user> u, message &msg)
 			}
 		}
 	}
+}
+
+void base_user_module::cmd_conference(std::shared_ptr<user> u, message &msg)
+{
+	id_number_t gid = msg.header.group;
+	auto params = split_params_std(msg.body);
+	std::shared_ptr<group> conference;
+	try {
+		if (params.size() == 1)
+		{
+			conference = std::make_shared<conference_room>(get_server(), u);
+		} else
+		{
+			std::vector<std::shared_ptr<participant>> pts;
+			pts.push_back(u);
+			for (auto it = params.begin() + 1; it != params.end(); ++it)
+				pts.push_back(get_server().get_participant(*it));
+
+			conference = std::make_shared<conference_room>(get_server(), std::move(pts));
+			get_server().add_group(conference);
+			message_composer msgc(info_message, gid);
+		}
+	} catch (ptr_nullptr &e) // @todo: change exception to more proper
+	{
+		message_composer msgc(error_message, gid);
+		msgc << "One or more users does not exist!";
+		u->deliver_message(msgc());
+	} catch (std::logic_error &e)
+	{
+		Error(get_server().get_logger(), "Logic ERROR in base_user_module::cmd_conference: ", e.what());
+	}
+}
+
+void base_user_module::cmd_add(std::shared_ptr<user> u, message &msg)
+{
+
 }
 
 void base_user_module::cmd_leave(std::shared_ptr<user> u, message &msg)
