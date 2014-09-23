@@ -32,3 +32,29 @@ bool participant::is_hidden()
 {
 	return false;
 }
+
+bool participant::add_group(id_number_t id)
+{
+	auto p = groups_.insert(id);
+	return p.second;
+}
+
+bool participant::remove_group(id_number_t id)
+{
+	auto p = groups_.find(id);
+	if (p == groups_.end())
+		return false;
+
+	groups_.erase(id);
+	return true;
+}
+
+bool participant::is_in_group(id_number_t id)
+{
+	auto it = groups_.find(id);
+	if (it == groups_.end())
+		return false;
+
+	return true;
+}
+

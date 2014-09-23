@@ -29,31 +29,6 @@ std::string user::get_ip_address()
 	return get_socket().remote_endpoint().address().to_string();
 }
 
-bool user::add_group(id_number_t id)
-{
-	auto p = groups_.insert(id);
-	return p.second;
-}
-
-bool user::remove_group(id_number_t id)
-{
-	auto p = groups_.find(id);
-	if (p == groups_.end())
-		return false;
-
-	groups_.erase(id);
-	return true;
-}
-
-bool user::is_in_group(id_number_t id)
-{
-	auto it = groups_.find(id);
-	if (it == groups_.end())
-		return false;
-
-	return true;
-}
-
 void user::read_message()
 {
 	if (quit_status_ != ok)

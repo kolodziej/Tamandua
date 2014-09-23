@@ -22,7 +22,6 @@ namespace tamandua
 		private:
 			ssl_socket_stream socket_;
 			std::deque<message> messages_queue_;
-			std::set<id_number_t> groups_;
 			message read_message_;
 			status quit_status_;
 			std::chrono::time_point<message_time_clock_t> locked_until_;
@@ -38,10 +37,6 @@ namespace tamandua
 			void start();
 			ssl_socket_stream::lowest_layer_type &get_socket();
 			std::string get_ip_address();
-			
-			bool add_group(id_number_t);
-			bool remove_group(id_number_t);
-			bool is_in_group(id_number_t);
 			
 			virtual void read_message();
 			virtual void deliver_message(const message&);

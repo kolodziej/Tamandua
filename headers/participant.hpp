@@ -14,6 +14,7 @@ namespace tamandua
 			id_number_t id_;
 			std::string name_;
 			server &server_;
+			std::set<id_number_t> groups_;
 
 		public:
 			participant(server &svr, std::string & name) : id_(svr.get_new_participant_id_()), name_(std::move(name)), server_(svr)
@@ -35,7 +36,9 @@ namespace tamandua
 			virtual void read_message() = 0;
 			virtual void deliver_message(const message&) = 0;
 			virtual bool is_hidden();
-
+			bool add_group(id_number_t);
+			bool remove_group(id_number_t);
+			bool is_in_group(id_number_t);
 	};
 }
 
