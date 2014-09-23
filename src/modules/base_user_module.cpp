@@ -122,6 +122,7 @@ void base_user_module::cmd_conference(std::shared_ptr<user> u, message &msg)
 		} else if (params.size() == 2)
 		{
 			conference = std::make_shared<conference_room>(get_server(), params[1], u);
+			get_server().add_group(conference);
 		} else
 		{
 			std::vector<std::shared_ptr<participant>> pts;
@@ -131,7 +132,6 @@ void base_user_module::cmd_conference(std::shared_ptr<user> u, message &msg)
 
 			conference = std::make_shared<conference_room>(get_server(), params[1], std::move(pts));
 			get_server().add_group(conference);
-			message_composer msgc(info_message, gid);
 		}
 	} catch (ptr_nullptr &e) // @todo: change exception to more proper
 	{
