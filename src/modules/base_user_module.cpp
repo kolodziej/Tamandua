@@ -146,7 +146,30 @@ void base_user_module::cmd_conference(std::shared_ptr<user> u, message &msg)
 
 void base_user_module::cmd_add(std::shared_ptr<user> u, message &msg)
 {
+	id_number_t gid = msg.header.group;
+	auto params = split_params_std(msg.body);
+	try {
+		if (params.size() < 2)
+		{
+			message_composer msgc(error_message, gid);
+			msgc << "Incorrect format! Usage: " << params[0] << " <participants_names>...";
+			u->deliver_message(msgc());
+		} else
+		{
+			auto gr = get_server().get_group(gid);
+			for (auto it = params.begin() + 1; it != params.end(); ++it)
+			{
+				auto us = get_server().get_participant(*it);
+				if (us == nullptr)
+					throw std::logic_error("user does not exist!");
 
+				gr->join_participant(us);
+			}
+		}
+	} catch (std::logic_error &e)
+	{
+		Error(get_server().get_logger(), "Logic ERROR in base_user_module::cmd_add: ", e.what());
+	}
 }
 
 void base_user_module::cmd_leave(std::shared_ptr<user> u, message &msg)
