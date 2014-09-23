@@ -1,6 +1,6 @@
 set(Tamandua_VERSION_MAJOR 0)
-set(Tamandua_VERSION_MINOR 6)
-set(Tamandua_VERSION_PATCH 3)
+set(Tamandua_VERSION_MINOR 7)
+set(Tamandua_VERSION_PATCH 0)
 set(Tamandua_RELEASE_TYPE alpha)
 
 set(LIB_NAME tamandua)
