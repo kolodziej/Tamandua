@@ -114,7 +114,7 @@ void user::remove(std::string reason)
 		msgc << "(reason: " << reason << ")";
 
 	deliver_message(msgc());
-	quit();
+	quit_();
 }
 
 void user::quit()
@@ -152,6 +152,9 @@ void user::read_message_header_()
 		boost::asio::buffer(reinterpret_cast<char*>(&(read_message_.header)), sizeof(message_header)),
 		[this](boost::system::error_code ec, size_t length)
 		{
+			if (ec == boost::system::errc::operation_canceled)
+				return;
+
 			if (!ec)
 			{
 				read_message_body_();
@@ -170,6 +173,9 @@ void user::read_message_body_()
 		boost::asio::buffer(buffer.get(), read_message_.header.size),
 		[this, buffer](boost::system::error_code ec, size_t length)
 		{
+			if (ec == boost::system::errc::operation_canceled)
+				return;
+
 			if (!ec)
 			{
 				read_message_.body = std::string(buffer.get(), read_message_.header.size);
@@ -211,6 +217,9 @@ void user::send_messages_()
 		boost::asio::buffer(buffer.get_buffer().get(), buffer.get_buffer_size()),
 		[this](boost::system::error_code ec, size_t length)
 		{
+			if (ec == boost::system::errc::operation_canceled)
+				return;
+
 			if (!ec)
 			{
 				messages_queue_.pop_front();
@@ -228,8 +237,10 @@ void user::quit_()
 {
 	try {
 		quit_status_ = user_quit;
-		get_server().quit_participant(std::dynamic_pointer_cast<participant>(shared_from_this()), ok);
+		socket_.lowest_layer().cancel();
+		socket_.lowest_layer().shutdown(boost::asio::ip::tcp::socket::shutdown_both);
 		socket_.shutdown();
+		get_server().quit_participant(std::dynamic_pointer_cast<participant>(shared_from_this()), ok);
 	} catch (boost::system::system_error &err)
 	{
 		Error(get_server().get_logger(), "An error occurred while user quitting: ", err.what());
