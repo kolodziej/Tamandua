@@ -14,6 +14,11 @@ std::string group::get_name()
 	return name_;
 }
 
+void group::set_name(std::string name)
+{
+	name_ = name;
+}
+
 void group::join_participant(std::shared_ptr<participant> p)
 {
 	auto insertion = participants_.insert(make_pair(p->get_id(), p));
