@@ -38,6 +38,14 @@ namespace tamandua
 			command(cmd)
 		{}
 	};
+
+	struct ptr_nullptr :
+		std::logic_error
+	{
+		explicit ptr_nullptr() :
+			std::logic_error("nullptr is forbidden here")
+		{}
+	};
 }
 
 #endif
