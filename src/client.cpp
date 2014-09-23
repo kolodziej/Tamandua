@@ -62,6 +62,9 @@ void client::send_message(std::string &body, id_number_t g_id)
 	message_composer msgc(message_type::standard_message, g_id, uid_);
 	msgc << body;
 	message msg = msgc();
+	if (msg.header.type == standard_message && msg.body.empty())
+		return;
+
 	write_message_(msg);
 }
 
