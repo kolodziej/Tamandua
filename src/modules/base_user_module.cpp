@@ -154,6 +154,9 @@ void base_user_module::cmd_add(std::shared_ptr<user> u, message &msg)
 			message_composer msgc(error_message, gid);
 			msgc << "Incorrect format! Usage: " << params[0] << " <participants_names>...";
 			u->deliver_message(msgc());
+		} else if (u->is_in_group(gid) == false)
+		{
+			Error(get_server().get_logger(), "User ", u->get_id(), " tried to add user to conference which he does not participate in!");
 		} else
 		{
 			auto gr = get_server().get_group(gid);
