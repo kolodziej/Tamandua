@@ -34,7 +34,6 @@ void history_module::history_user::deliver_message(const message &msg)
 			while (history_.size() == history_size_)
 				history_.pop_front();
 		}
-		Log(get_server().get_logger(), get_name(), " received new message from ", msg.header.author, " to group ", msg.header.group);
 	}
 }
 
