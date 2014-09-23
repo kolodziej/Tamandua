@@ -23,7 +23,6 @@ namespace tamandua
 			ssl_socket_stream socket_;
 			std::deque<message> messages_queue_;
 			std::set<id_number_t> groups_;
-			std::shared_ptr<group> group_;
 			message read_message_;
 			status quit_status_;
 			std::chrono::time_point<message_time_clock_t> locked_until_;
