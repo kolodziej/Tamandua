@@ -19,6 +19,8 @@ using boost::asio::ip::tcp;
 
 namespace tamandua
 {
+	typedef boost::asio::ssl::stream<boost::asio::ip::tcp::socket> ssl_socket_stream;
+
 	class client
 	{
 		public:

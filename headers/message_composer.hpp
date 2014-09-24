@@ -2,7 +2,6 @@
 #define TAMANDUA_MESSAGE_COMPOSER_HPP
 #include "types.hpp"
 #include "message.hpp"
-#include "utility.hpp"
 #include <sstream>
 #include <chrono>
 

@@ -16,7 +16,7 @@ void message_composer::prepare_message_()
 	msg_.header.group = gr_id_;
 	msg_.header.type = type_;
 	msg_.header.size = msg_.body.length();
-	msg_.header.utc_time = get_utc_epoch<message_time_clock_t, message_time_t>();
+	msg_.header.utc_time = message_time_clock_t::to_time_t(message_time_clock_t::now());
 }
 
 void message_composer::cleanup_()

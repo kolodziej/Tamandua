@@ -4,6 +4,7 @@
 #include "private_room.hpp"
 #include "conference_room.hpp"
 #include "root.hpp"
+#include "utility.hpp"
 #include <functional>
 #include <sstream>
 #include <memory>

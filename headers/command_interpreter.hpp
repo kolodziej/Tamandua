@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <map>
+#include <vector>
 #include <functional>
 
 namespace tamandua

@@ -14,7 +14,6 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG -g -Wall")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGES_RELEASE} -DRELEASE")
 
 find_package(Boost 1.49 COMPONENTS regex system REQUIRED)
-
 find_package(OpenSSL REQUIRED)
 
 include_directories(
@@ -82,15 +81,38 @@ set(HEADERS_FILES
 	headers/version_config.hpp
 )
 
+set(MSG_SOURCE_FILES
+	src/message_buffer.cpp
+	src/message_composer.cpp
+	src/version.cpp
+)
+
+set(MSG_HEADERS_FILES
+	headers/exception.hpp
+	headers/message_buffer.hpp
+	headers/message.hpp
+	headers/message_header.hpp
+	headers/message_composer.hpp
+	headers/types.hpp
+	headers/server_config.hpp
+	headers/version.hpp
+	headers/version_config.hpp
+)
+
 add_library(${LIB_NAME_FULL} STATIC
 	${HEADERS_FILES}
 	${SOURCES_FILES}
 )
 
+add_library(${LIB_MSG_NAME_FULL} STATIC
+	${MSG_HEADERS_FILES}
+	${MSG_SOURCE_FILES}
+)
+
 add_subdirectory(examples examples)
 
 if (UNIX)
-	install(TARGETS ${LIB_NAME_FULL}
+	install(TARGETS ${LIB_NAME_FULL} ${LIB_MSG_NAME_FULL}
 		ARCHIVE DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}
 	)
 
@@ -98,6 +120,7 @@ if (UNIX)
 		DESTINATION ${CMAKE_INSTALL_FULL_INCLUDEDIR}/tamandua)
 
 	install(CODE "EXECUTE_PROCESS(COMMAND ln -sf ${CMAKE_INSTALL_FULL_LIBDIR}/lib${LIB_NAME_FULL}.a ${CMAKE_INSTALL_FULL_LIBDIR}/lib${LIB_NAME}.a)")
+	install(CODE "EXECUTE_PROCESS(COMMAND ln -sf ${CMAKE_INSTALL_FULL_LIBDIR}/lib${LIB_MSG_NAME_FULL}.a ${CMAKE_INSTALL_FULL_LIBDIR}/lib${LIB_MSG_NAME}.a)")
 	install(CODE "EXECUTE_PROCESS(COMMAND ln -sf ${CMAKE_INSTALL_FULL_INCLUDEDIR}/tamandua/tamandua.hpp ${CMAKE_INSTALL_FULL_INCLUDEDIR}/tamandua.hpp)")
 
 endif(UNIX)
