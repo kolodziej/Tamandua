@@ -8,6 +8,14 @@ message_buffer::message_buffer(message_header header, std::string message) : buf
 	compose_(header, message);
 }
 
+message_buffer::message_buffer(message_composer &msgc) :
+	buffer_(nullptr),
+	buffer_size_(0)
+{
+	message msg = msgc();
+	compose_(msg.header, msg.body);
+}
+
 std::shared_ptr<char> message_buffer::get_buffer()
 {
 	return buffer_;
