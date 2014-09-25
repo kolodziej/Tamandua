@@ -10,6 +10,11 @@ namespace tamandua
 	{
 		message_header header;
 		std::string body;
+
+		size_t size()
+		{
+			return header.size + body.length();
+		}
 	};
 }
 
