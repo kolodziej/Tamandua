@@ -60,7 +60,7 @@ void server::start_server(server_config &config)
 void server::send_startup_data(std::shared_ptr<participant> usr)
 {
 	message_composer msgc(message_type::init_message, usr->get_id());
-	msgc << usr->get_name();
+	msgc << get_interpreter().get_start_character();
 	usr->deliver_message(msgc());
 
 	send_participants_list_();
