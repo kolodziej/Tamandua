@@ -154,7 +154,6 @@ void user::read_message_body_()
 			if (!ec)
 			{
 				read_message_.body = std::string(buffer.get(), read_message_.header.size);
-				Log(get_server().get_logger(), "User ", get_id(), " passed a message: ", read_message_.body);
 				process_message_();
 			} else
 			{
