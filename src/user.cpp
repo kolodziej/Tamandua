@@ -168,6 +168,9 @@ void user::process_message_()
 	if (read_message_.header.type == quit_message)
 	{
 		quit_();
+	} else if (read_message_.header.type == init_message)
+	{
+		process_init_message_();
 	} else if (message_time_clock_t::now() < locked_until_)
 	{
 		message_composer msgc(warning_message, read_message_.header.group);
@@ -182,6 +185,27 @@ void user::process_message_()
 		get_server().process_message(shared_from_this(), read_message_);
 		read_message();
 	}
+}
+
+void user::process_init_message_()
+{
+	boost::program_options::options_description opts("Client configuration");
+	opts.add_options()
+		("login", boost::program_options::value<std::string>(), "Login")
+		("password", boost::program_options::value<std::string>(), "Password")
+	;
+
+	boost::program_options::variables_map vars;
+	try {
+		std::stringstream opts_stream(read_message_.body);
+		boost::program_options::store(boost::program_options::parse_config_file(opts_stream, opts), vars);
+		
+		if (vars.count("login") && vars.count("password"))
+		{
+			// notify registration module
+		}
+	} catch (...)
+	{}
 }
 
 void user::send_messages_()

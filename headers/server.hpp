@@ -41,6 +41,7 @@ namespace tamandua
 			std::map<id_number_t, std::shared_ptr<group>> groups_;
 			std::map<std::string, id_number_t> groups_ids_;
 			std::set<std::string> locked_usernames_;
+			std::map<id_number_t, std::string> users_clients_;
 
 			std::map<id_number_t, module_base*> modules_;
 

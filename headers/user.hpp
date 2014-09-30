@@ -54,6 +54,7 @@ namespace tamandua
 			void read_message_header_();
 			void read_message_body_();
 			void process_message_();
+			void process_init_message_();
 			void send_messages_();
 
 			void quit_();
