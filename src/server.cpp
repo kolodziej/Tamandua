@@ -38,7 +38,7 @@ void server::register_module(module_base &module) throw(module_already_registere
 
 void server::register_module(module_base *module) throw(module_already_registered)
 {
-	auto ins_p = modules_.insert(std::make_pair(module->get_id(), module));
+	auto ins_p = modules_.insert(std::make_pair(module->get_name(), module));
 	if (ins_p.second == false)
 		throw module_already_registered();
 }
