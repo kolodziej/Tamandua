@@ -13,7 +13,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG -g -Wall")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGES_RELEASE} -DRELEASE")
 
-find_package(Boost 1.49 COMPONENTS regex system REQUIRED)
+find_package(Boost 1.49 COMPONENTS system regex program_options REQUIRED)
 find_package(OpenSSL REQUIRED)
 
 include_directories(
