@@ -1,7 +1,7 @@
 #ifndef TAMANDUA_SESSION_HPP
 #define TAMANDUA_SESSION_HPP
 #include "message.hpp"
-#include <function>
+#include <functional>
 #include <boost/asio.hpp>
 
 namespace tamandua
@@ -19,7 +19,9 @@ namespace tamandua
 
 		public:
 			session(server&, boost::asio::ssl::context&);
-			void start(std::function<void()>, std::function<void(message&)>);
+			session(session &&);
+			void start(std::function<void()>, std::function<void(message&&)>);
+			void stop();
 			ssl_socket_stream& get_ssl_stream();
 			ssl_socket_stream::lowest_layer_type& get_socket();
 			std::string get_ip_address();
@@ -28,7 +30,7 @@ namespace tamandua
 			server& get_server();
 
 		private:
-			void perform_handshake_();
+			void perform_handshake_(std::function<void()>);
 			void read_message_header_();
 			void read_message_body_();
 	};

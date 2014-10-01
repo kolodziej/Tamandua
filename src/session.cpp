@@ -7,9 +7,20 @@ session::session(server &svr, boost::asio::ssl::context &ctx) :
 	ssl_stream_(svr.get_io_stream(), ctx)
 {}
 
-void session::start(std::function<void()> handshake_callback, std::function<void(message&)> message_received)
+session::session(session &&sess) :
+	server_(sess.get_server()),
+	ssl_stream_(std::move(sess.get_ssl_stream()))
+{}
+
+void session::start(std::function<void()> handshake_callback, std::function<void(message&&)> message_received)
 {
+	message_received_callback_ = message_received;
 	perform_handshake_(handshake_callback);
+}
+
+void session::stop()
+{
+
 }
 
 ssl_socket_stream& session::get_ssl_stream()

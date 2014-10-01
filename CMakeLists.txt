@@ -45,6 +45,7 @@ set(SOURCES_FILES
 	src/modules/registration_module.cpp
 	src/modules/stat_module.cpp
 	src/conference_room.cpp
+	src/session.cpp
 	src/utility.cpp
 	src/version.cpp
 )
@@ -72,6 +73,7 @@ set(HEADERS_FILES
 	headers/modules/registration_module.hpp
 	headers/modules/stat_module.hpp
 	headers/conference_room.hpp
+	headers/session.hpp
 	headers/message_composer.hpp
 	headers/tamandua.hpp
 	headers/types.hpp
