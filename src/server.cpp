@@ -352,9 +352,9 @@ void server::add_hall_(std::string name)
 
 void server::accept_connection_()
 {
-	std::shared_ptr<user> new_user(new user(*this, std::string(), context_));
-	acceptor_.async_accept(new_user->get_socket(),
-	[this, new_user](boost::system::error_code ec)
+	std::shared_ptr<session> new_session(new session(*this, context_));
+	acceptor_.async_accept(new_session->get_socket(),
+	[this, new_session](boost::system::error_code ec)
 	{
 		if (!ec)
 		{
