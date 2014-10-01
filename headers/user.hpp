@@ -3,6 +3,7 @@
 #include "group.hpp"
 #include "participant.hpp"
 #include "message.hpp"
+#include "session.hpp"
 #include <string>
 #include <deque>
 #include <memory>
@@ -20,7 +21,7 @@ namespace tamandua
 		public std::enable_shared_from_this<user>
 	{
 		private:
-			ssl_socket_stream socket_;
+			// session
 			std::deque<message> messages_queue_;
 			message read_message_;
 			status quit_status_;
@@ -28,16 +29,12 @@ namespace tamandua
 			
 		public:
 			friend class server;
-			user(server &svr, std::string & name, boost::asio::ssl::context &context) : participant(svr, name), socket_(svr.get_io_service(), context), quit_status_(ok)
+			user(server &svr, std::string & name, boost::asio::ssl::context &context) : participant(svr, name), quit_status_(ok)
 			{}
-			user(server &svr, std::string && name, boost::asio::ssl::context &context) : participant(svr, name), socket_(svr.get_io_service(), context), quit_status_(ok)
+			user(server &svr, std::string && name, boost::asio::ssl::context &context) : participant(svr, name), quit_status_(ok)
 			{}
 			~user();
 
-			void start();
-			ssl_socket_stream::lowest_layer_type &get_socket();
-			std::string get_ip_address();
-			
 			virtual void read_message();
 			virtual void deliver_message(const message&);
 			void lock(unsigned int, std::string = std::string());
@@ -47,10 +44,7 @@ namespace tamandua
 			void quit();
 			
 		private:
-			void perform_handshake_();
 			void add_to_hall_();
-			void read_message_header_();
-			void read_message_body_();
 			void process_message_();
 			void process_init_message_();
 			void send_messages_();
