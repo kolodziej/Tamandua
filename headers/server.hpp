@@ -21,6 +21,7 @@ using boost::asio::ip::tcp;
 
 namespace tamandua
 {
+	class session;
 	class participant;
 	class group;
 	class module_base;
@@ -36,6 +37,7 @@ namespace tamandua
 			logger &log_;
 			command_interpreter &interpreter_;
 
+			std::vector<std::shared_ptr<session>> sessions_;
 			std::map<id_number_t, std::shared_ptr<participant>> participants_;
 			std::map<std::string, id_number_t> participants_ids_;
 			std::map<id_number_t, std::shared_ptr<group>> groups_;
@@ -60,6 +62,7 @@ namespace tamandua
 			boost::asio::io_service &get_io_service();
 			void process_message(std::shared_ptr<user>, message&);
 
+			void add_session(std::shared_ptr<session>);
 			void add_participant(std::shared_ptr<participant>) throw(user_name_exists);
 			void add_group(std::shared_ptr<group>) throw(group_name_exists);
 
@@ -75,7 +78,7 @@ namespace tamandua
 			bool is_username_locked(std::string);
 
 			bool is_participant_name_available(std::string, bool = true);
-			bool is_group_name_available(std::string);
+			bool is_group_name_ava`ilable(std::string);
 
 			std::string get_default_user_name(id_number_t);
 			std::string get_default_group_name(id_number_t);

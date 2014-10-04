@@ -38,7 +38,7 @@ std::string session::get_ip_address()
 	return get_socket().remote_endpoint().address().to_string();
 }
 
-message& session::read_message()
+message session::read_message()
 {
 	read_message_header_();
 }
@@ -81,8 +81,10 @@ void session::read_message_body_()
 		[this](boost::system::error_code ec, size_t length)
 		{
 			if (!ec)
-				message_received_callback_();
-			else
+			{
+				get_server().process_message(read_message_);
+				read_message_header_();
+			} else
 				Error(get_server().get_logger(), "Error while receiving message: ", ec.message());
 		});
 }

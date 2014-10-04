@@ -25,7 +25,7 @@ namespace tamandua
 			ssl_socket_stream& get_ssl_stream();
 			ssl_socket_stream::lowest_layer_type& get_socket();
 			std::string get_ip_address();
-			void read_message();
+			message read_message();
 
 			server& get_server();
 
@@ -33,6 +33,7 @@ namespace tamandua
 			void perform_handshake_(std::function<void()>);
 			void read_message_header_();
 			void read_message_body_();
+			void process_message_();
 	};
 }
 
