@@ -119,9 +119,9 @@ add_library(${LIB_MSG_NAME_FULL} STATIC
 	${MSG_SOURCE_FILES}
 )
 
-if(NOT ${ONLY_MSG_LIB} AND NOT ${NOMAKE_EXAMPLES})
+if(NOT ${NOMAKE_EXAMPLES})
 	add_subdirectory(examples examples)
-endif(NOT ${ONLY_MSG_LIB} AND NOT ${NOMAKE_EXAMPLES})
+endif(NOT ${NOMAKE_EXAMPLES})
 
 if (UNIX)
 	install(TARGETS ${INSTALL_LIBS}
