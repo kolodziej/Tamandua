@@ -78,7 +78,7 @@ namespace tamandua
 			bool is_username_locked(std::string);
 
 			bool is_participant_name_available(std::string, bool = true);
-			bool is_group_name_ava`ilable(std::string);
+			bool is_group_name_available(std::string);
 
 			std::string get_default_user_name(id_number_t);
 			std::string get_default_group_name(id_number_t);
