@@ -15,12 +15,11 @@ namespace tamandua
 			server &server_;
 			ssl_socket_stream ssl_stream_;
 			message read_message_;
-			std::function<void(message&)> message_received_callback_;
 
 		public:
 			session(server&, boost::asio::ssl::context&);
 			session(session &&);
-			void start(std::function<void()>, std::function<void(message&&)>);
+			void start();
 			void stop();
 			ssl_socket_stream& get_ssl_stream();
 			ssl_socket_stream::lowest_layer_type& get_socket();
@@ -30,9 +29,10 @@ namespace tamandua
 			server& get_server();
 
 		private:
-			void perform_handshake_(std::function<void()>);
+			void perform_handshake_();
 			void read_message_header_();
 			void read_message_body_();
+			void process_session_message_();
 			void process_message_();
 	};
 }
