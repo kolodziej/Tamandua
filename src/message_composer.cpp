@@ -2,6 +2,11 @@
 
 using namespace tamandua;
 
+void message_composer::clear()
+{
+	stream_.str(std::string());
+}
+
 message & message_composer::get_msg()
 {
 	prepare_message_();
