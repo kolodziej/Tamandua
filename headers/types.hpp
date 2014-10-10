@@ -11,7 +11,7 @@ namespace tamandua
 	typedef uint64_t id_number_t;
 	typedef uint64_t message_size;
 
-	typedef enum class message_type : uint64_t {
+	typedef enum : uint64_t {
 		init_message = 0,
 		participants_list,
 		rooms_list,
@@ -22,7 +22,7 @@ namespace tamandua
 		group_enter_message,
 		group_leave_message,
 		quit_message = 1000
-	};
+	} message_type;
 
 	typedef enum {
 		bad_cmd = 0,
