@@ -359,7 +359,6 @@ void server::accept_connection_()
 		if (!ec)
 		{
 			Log(log_, "Accepted connection of new user from IP: ", new_session->get_socket().remote_endpoint().address().to_string());
-			//add_participant(new_user);
 			new_session->start();
 		} else
 		{

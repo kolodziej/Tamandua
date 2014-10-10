@@ -1,21 +1,18 @@
 #include "session.hpp"
+#include "server.hpp"
+#include "user.hpp"
+#include "message_buffer.hpp"
 
 using namespace tamandua;
 
 session::session(server &svr, boost::asio::ssl::context &ctx) :
 	server_(svr),
-	ssl_stream_(svr.get_io_stream(), ctx)
+	ssl_stream_(svr.get_io_service(), ctx)
 {}
 
-session::session(session &&sess) :
-	server_(sess.get_server()),
-	ssl_stream_(std::move(sess.get_ssl_stream()))
-{}
-
-void session::start(std::function<void()> handshake_callback, std::function<void(message&&)> message_received)
+void session::start()
 {
-	message_received_callback_ = message_received;
-	perform_handshake_(handshake_callback);
+	perform_handshake_();
 }
 
 void session::stop()
@@ -38,7 +35,7 @@ std::string session::get_ip_address()
 	return get_socket().remote_endpoint().address().to_string();
 }
 
-message session::read_message()
+void session::read_message()
 {
 	read_message_header_();
 }
@@ -48,13 +45,13 @@ server& session::get_server()
 	return server_;
 }
 
-void session::perform_handshake_(std::function<void()> callback)
+void session::perform_handshake_()
 {
 	ssl_stream_.async_handshake(boost::asio::ssl::stream_base::server,
-	[this, &callback](boost::system::error_code ec)
+	[this](boost::system::error_code ec)
 	{
 		if (!ec)
-			callback();
+			read_message();
 		else
 			Error(get_server().get_logger(), "Error while handshake: ", ec.message());
 	});
@@ -64,7 +61,7 @@ void session::read_message_header_()
 {
 	boost::asio::async_read(ssl_stream_,
 		boost::asio::buffer(reinterpret_cast<char*>(&read_message_.header), sizeof(read_message_.header)),
-		[this](boost::asio::error_code ec, size_t length)
+		[this](boost::system::error_code ec, size_t length)
 		{
 			if (!ec)
 				read_message_body_();
@@ -76,15 +73,37 @@ void session::read_message_header_()
 void session::read_message_body_()
 {
 	std::unique_ptr<char> buffer(new char[read_message_.header.size]);
-	boost::asio::async_read(ssl_socket_,
+	boost::asio::async_read(ssl_stream_,
 		boost::asio::buffer(buffer.get(), read_message_.header.size),
 		[this](boost::system::error_code ec, size_t length)
 		{
 			if (!ec)
 			{
-				get_server().process_message(read_message_);
+				get_server().process_message(nullptr, read_message_);
 				read_message_header_();
 			} else
 				Error(get_server().get_logger(), "Error while receiving message: ", ec.message());
+		});
+}
+
+void session::send_messages_()
+{
+	message_buffer buffer(messages_queue_.front().header, messages_queue_.front().body);
+	boost::asio::async_write(ssl_stream_,
+		boost::asio::buffer(buffer.get_buffer().get(), buffer.get_buffer_size()),
+		[this](boost::system::error_code ec, size_t length)
+		{
+			if (ec == boost::system::errc::operation_canceled)
+				return;
+
+			if (!ec)
+			{
+				messages_queue_.pop_front();
+				if (messages_queue_.empty() == false)
+					send_messages_();
+			} else
+			{
+				//Error(get_server().get_logger(), "An error occurred while sending message to user ", get_name(), " (ID: ", get_id(), "): ", ec.message());
+			}
 		});
 }

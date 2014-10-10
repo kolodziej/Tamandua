@@ -21,7 +21,7 @@ namespace tamandua
 		public std::enable_shared_from_this<user>
 	{
 		private:
-			// session
+			session &session_;
 			std::deque<message> messages_queue_;
 			message read_message_;
 			status quit_status_;
@@ -29,12 +29,13 @@ namespace tamandua
 			
 		public:
 			friend class server;
-			user(server &svr, std::string & name, boost::asio::ssl::context &context) : participant(svr, name), quit_status_(ok)
+			user(server &svr, session& sess, std::string & name) : participant(svr, name), session_(sess), quit_status_(ok)
 			{}
-			user(server &svr, std::string && name, boost::asio::ssl::context &context) : participant(svr, name), quit_status_(ok)
+			user(server &svr, session& sess, std::string && name) : participant(svr, name), session_(sess), quit_status_(ok)
 			{}
 			~user();
 
+			session& get_session();
 			virtual void read_message();
 			virtual void deliver_message(const message&);
 			void lock(unsigned int, std::string = std::string());
@@ -45,9 +46,6 @@ namespace tamandua
 			
 		private:
 			void add_to_hall_();
-			void process_message_();
-			void process_init_message_();
-			void send_messages_();
 
 			void quit_();
 			void error_quit_();
