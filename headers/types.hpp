@@ -1,16 +1,17 @@
 #ifndef TYPES_HPP
 #define TYPES_HPP
 #include <chrono>
+#include <cstdint>
 
 namespace tamandua
 {
 	typedef unsigned char byte;
-	typedef unsigned long long int message_time_t;
+	typedef uint64_t message_time_t;
 	typedef std::chrono::system_clock message_time_clock_t;
-	typedef unsigned long long int id_number_t;
-	typedef unsigned long long int message_size;
+	typedef uint64_t id_number_t;
+	typedef uint64_t message_size;
 
-	typedef enum {
+	typedef enum : uint64_t {
 		init_message = 0,
 		participants_list,
 		rooms_list,

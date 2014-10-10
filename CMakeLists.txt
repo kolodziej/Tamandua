@@ -13,11 +13,16 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG -g -Wall")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGES_RELEASE} -DRELEASE")
 
-find_package(Boost 1.49 COMPONENTS regex system REQUIRED)
-find_package(OpenSSL REQUIRED)
+if(NOT ${ONLY_MSG_LIB})
+	find_package(Boost 1.49 COMPONENTS system regex program_options REQUIRED)
+	find_package(OpenSSL REQUIRED)
+
+	include_directories(
+		"${Boost_INCLUDE_DIR}"
+	)
+endif(NOT ${ONLY_MSG_LIB})
 
 include_directories(
-	"${Boost_INCLUDE_DIR}"
 	"${PROJECT_SOURCE_DIR}/headers"
 )
 
@@ -101,27 +106,37 @@ set(MSG_HEADERS_FILES
 	headers/version_config.hpp
 )
 
-add_library(${LIB_NAME_FULL} STATIC
-	${HEADERS_FILES}
-	${SOURCES_FILES}
-)
+set(INSTALL_LIBS ${LIB_MSG_NAME_FULL})
+
+if(NOT ${ONLY_MSG_LIB})
+	add_library(${LIB_NAME_FULL} STATIC
+		${HEADERS_FILES}
+		${SOURCES_FILES}
+	)
+	set(INSTALL_LIBS ${INSTALL_LIBS} ${LIB_NAME_FULL})
+endif(NOT ${ONLY_MSG_LIB})
 
 add_library(${LIB_MSG_NAME_FULL} STATIC
 	${MSG_HEADERS_FILES}
 	${MSG_SOURCE_FILES}
 )
 
-add_subdirectory(examples examples)
+if(NOT ${NOMAKE_EXAMPLES})
+	add_subdirectory(examples examples)
+endif(NOT ${NOMAKE_EXAMPLES})
 
 if (UNIX)
-	install(TARGETS ${LIB_NAME_FULL} ${LIB_MSG_NAME_FULL}
+	install(TARGETS ${INSTALL_LIBS}
 		ARCHIVE DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}
 	)
 
 	install(DIRECTORY headers/
 		DESTINATION ${CMAKE_INSTALL_FULL_INCLUDEDIR}/tamandua)
 
-	install(CODE "EXECUTE_PROCESS(COMMAND ln -sf ${CMAKE_INSTALL_FULL_LIBDIR}/lib${LIB_NAME_FULL}.a ${CMAKE_INSTALL_FULL_LIBDIR}/lib${LIB_NAME}.a)")
+	if(NOT ${ONLY_MSG_LIB})
+		install(CODE "EXECUTE_PROCESS(COMMAND ln -sf ${CMAKE_INSTALL_FULL_LIBDIR}/lib${LIB_NAME_FULL}.a ${CMAKE_INSTALL_FULL_LIBDIR}/lib${LIB_NAME}.a)")
+	endif(NOT ${ONLY_MSG_LIB})
+
 	install(CODE "EXECUTE_PROCESS(COMMAND ln -sf ${CMAKE_INSTALL_FULL_LIBDIR}/lib${LIB_MSG_NAME_FULL}.a ${CMAKE_INSTALL_FULL_LIBDIR}/lib${LIB_MSG_NAME}.a)")
 	install(CODE "EXECUTE_PROCESS(COMMAND ln -sf ${CMAKE_INSTALL_FULL_INCLUDEDIR}/tamandua/tamandua.hpp ${CMAKE_INSTALL_FULL_INCLUDEDIR}/tamandua.hpp)")
 

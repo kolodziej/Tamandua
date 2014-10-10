@@ -6,6 +6,7 @@
 #include <utility>
 #include <iostream>
 #include <cmath>
+#include <boost/program_options.hpp>
 
 using namespace tamandua;
 

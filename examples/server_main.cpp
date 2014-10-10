@@ -27,7 +27,8 @@ int main(int argc, char ** argv)
 		boost::asio::ssl::context::default_workarounds |
 		boost::asio::ssl::context::no_sslv2 |
 		boost::asio::ssl::context::single_dh_use);
-	context.use_certificate_chain_file("ssl/server.pem");
+	context.use_certificate_chain_file("ssl/server_chain.pem");
+	context.use_certificate_file("ssl/server.pem", boost::asio::ssl::context::pem);
 	context.use_private_key_file("ssl/server.key", boost::asio::ssl::context::pem);
 	context.use_tmp_dh_file("ssl/dh512.pem");
 
