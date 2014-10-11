@@ -106,6 +106,11 @@ void server::process_message(std::shared_ptr<user> pt, message &msg)
 	CALL_MODULES_P(message_processed, pt, msg, msg_stat);
 }
 
+void server::add_session(std::shared_ptr<session> session)
+{
+	sessions_.push_back(session);
+}
+
 void server::add_participant(std::shared_ptr<participant> pt) throw(user_name_exists)
 {
 	std::string username = pt->get_name();
@@ -360,6 +365,7 @@ void server::accept_connection_()
 		{
 			Log(log_, "Accepted connection of new user from IP: ", new_session->get_socket().remote_endpoint().address().to_string());
 			new_session->start();
+			add_session(new_session);
 		} else
 		{
 			Error(log_, "Acceptation process could not be completed. Error: ", ec.message());

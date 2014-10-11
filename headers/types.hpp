@@ -12,7 +12,8 @@ namespace tamandua
 	typedef uint64_t message_size;
 
 	typedef enum : uint64_t {
-		init_message = 0,
+		auth_message = 0,
+		init_message,
 		participants_list,
 		rooms_list,
 		standard_message,

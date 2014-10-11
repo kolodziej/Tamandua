@@ -40,7 +40,7 @@ namespace tamandua
 			void read_message_header_();
 			void read_message_body_();
 			void send_messages_();
-			void process_session_message_();
+			void process_auth_message_();
 			void process_message_();
 	};
 }
