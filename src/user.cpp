@@ -183,6 +183,7 @@ void user::process_message_()
 	} else
 	{
 		read_message_.header.author = get_id();
+		read_message_.header.utc_time = message_time_clock_t::to_time_t(message_time_clock_t::now());
 		get_server().process_message(shared_from_this(), read_message_);
 		read_message();
 	}
